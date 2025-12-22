@@ -51,18 +51,10 @@ export default function MatchCounter({
   const team2Split = getSplitScore(score2);
 
   return (
-    <div className="w-full max-w-5xl space-y-8">
-      {winner && (
-        <div className="animate-bounce text-center">
-          <h2 className="text-4xl font-extrabold text-yellow-500">
-            🏆 ¡Ganó {winner}!
-          </h2>
-        </div>
-      )}
-
-      <div className="grid grid-cols-2 gap-4 md:gap-8">
+    <div className="w-full max-w-5xl">
+      <div className="grid grid-cols-2 gap-2 md:gap-8 pb-32">
         {/* Team 1 Counter - Nosotros */}
-        <div className="relative flex flex-col items-center rounded-3xl bg-blue-600/10 p-4 backdrop-blur-sm dark:bg-blue-900/20 md:p-8">
+        <div className="relative flex flex-col items-center rounded-2xl bg-blue-600/10 p-2 backdrop-blur-sm dark:bg-blue-900/20 md:p-8">
           <h3 className="mb-2 text-2xl font-black text-blue-500 md:text-3xl">
             Nosotros
           </h3>
@@ -101,25 +93,10 @@ export default function MatchCounter({
           <div className="absolute top-1/2 -right-3 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white shadow-lg md:flex">
             {score1}
           </div>
-
-          <div className="mt-8 flex gap-4">
-            <button
-              onClick={() => decrement(1)}
-              className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-xl font-bold transition-all hover:bg-white/20 dark:bg-black/20 dark:hover:bg-black/40 md:h-16 md:w-16 md:text-3xl"
-            >
-              -
-            </button>
-            <button
-              onClick={() => increment(1)}
-              className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500 text-xl font-bold text-white shadow-lg transition-all hover:bg-blue-600 hover:scale-105 active:scale-95 md:h-16 md:w-16 md:text-3xl"
-            >
-              +
-            </button>
-          </div>
         </div>
 
         {/* Team 2 Counter - Ellos */}
-        <div className="relative flex flex-col items-center rounded-3xl bg-green-600/10 p-4 backdrop-blur-sm dark:bg-green-900/20 md:p-8">
+        <div className="relative flex flex-col items-center rounded-2xl bg-green-600/10 p-2 backdrop-blur-sm dark:bg-green-900/20 md:p-8">
           <h3 className="mb-2 text-2xl font-black text-green-500 md:text-3xl">
             Ellos
           </h3>
@@ -158,17 +135,49 @@ export default function MatchCounter({
           <div className="absolute top-1/2 -left-3 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-green-500 text-xs font-bold text-white shadow-lg md:flex">
             {score2}
           </div>
+        </div>
+      </div>
 
-          <div className="mt-8 flex gap-4">
+      {/* Fixed Bottom Navbar Controls */}
+      <div className="fixed bottom-0 left-0 z-50 w-full border-t border-white/10 bg-zinc-950/80 p-4 backdrop-blur-lg">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
+          {/* Team 1 Controls */}
+          <div className="flex flex-1 items-center justify-center gap-4">
             <button
-              onClick={() => decrement(2)}
-              className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-xl font-bold transition-all hover:bg-white/20 dark:bg-black/20 dark:hover:bg-black/40 md:h-16 md:w-16 md:text-3xl"
+              onClick={() => decrement(1)}
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-xl font-bold text-blue-500 transition-all active:scale-90"
             >
               -
             </button>
+            <div className="flex flex-col items-center">
+              <span className="text-xl font-black text-blue-500">{score1}</span>
+            </div>
+            <button
+              onClick={() => increment(1)}
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-xl font-bold text-white shadow-lg transition-all active:scale-110"
+            >
+              +
+            </button>
+          </div>
+
+          <div className="h-8 w-px bg-white/10" />
+
+          {/* Team 2 Controls */}
+          <div className="flex flex-1 items-center justify-center gap-4">
+            <button
+              onClick={() => decrement(2)}
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-xl font-bold text-green-500 transition-all active:scale-90"
+            >
+              -
+            </button>
+            <div className="flex flex-col items-center">
+              <span className="text-xl font-black text-green-500">
+                {score2}
+              </span>
+            </div>
             <button
               onClick={() => increment(2)}
-              className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-500 text-xl font-bold text-white shadow-lg transition-all hover:bg-green-600 hover:scale-105 active:scale-95 md:h-16 md:w-16 md:text-3xl"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500 text-xl font-bold text-white shadow-lg transition-all active:scale-110"
             >
               +
             </button>
@@ -176,14 +185,24 @@ export default function MatchCounter({
         </div>
       </div>
 
-      <div className="flex justify-center pt-8">
-        <button
-          onClick={onFinish}
-          className="rounded-full bg-zinc-800 px-12 py-4 font-bold text-white transition-all hover:bg-zinc-950 dark:bg-zinc-200 dark:text-zinc-900 dark:hover:bg-white"
-        >
-          Terminar Partido
-        </button>
-      </div>
+      {/* Winner Confirmation Modal */}
+      {winner && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
+          <div className="w-full max-w-sm rounded-3xl bg-zinc-900 border border-white/10 p-8 text-center shadow-2xl">
+            <div className="mb-4 text-6xl">🏆</div>
+            <h2 className="mb-2 text-3xl font-black text-white">
+              ¡Ganó {winner}!
+            </h2>
+            <p className="mb-8 text-zinc-400">Tremendo partido. ¿Revancha?</p>
+            <button
+              onClick={onFinish}
+              className="w-full rounded-2xl bg-blue-600 py-4 font-bold text-white transition-all hover:bg-blue-700 active:scale-95"
+            >
+              Terminar y Salir
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
