@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { User } from "@/types/database";
+import TallyMarks from "@/components/TallyMarks";
 
 interface MatchCounterProps {
   team1: User[];
@@ -36,77 +37,138 @@ export default function MatchCounter({
   };
 
   const winner =
-    score1 >= maxPoints ? "Equipo 1" : score2 >= maxPoints ? "Equipo 2" : null;
+    score1 >= maxPoints ? "Nosotros" : score2 >= maxPoints ? "Ellos" : null;
+
+  const half = maxPoints / 2;
+
+  const getSplitScore = (score: number) => {
+    const malas = Math.min(score, half);
+    const buenas = Math.max(0, score - half);
+    return { malas, buenas };
+  };
+
+  const team1Split = getSplitScore(score1);
+  const team2Split = getSplitScore(score2);
 
   return (
-    <div className="w-full max-w-4xl space-y-8">
+    <div className="w-full max-w-5xl space-y-8">
       {winner && (
         <div className="animate-bounce text-center">
           <h2 className="text-4xl font-extrabold text-yellow-500">
-            🏆 ¡Ganó el {winner}!
+            🏆 ¡Ganó {winner}!
           </h2>
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        {/* Team 1 Counter */}
-        <div className="relative overflow-hidden rounded-3xl bg-blue-600/10 p-12 text-center backdrop-blur-sm dark:bg-blue-900/20">
-          <h3 className="mb-2 text-2xl font-bold text-blue-500">Nosotros</h3>
-          <div className="mb-4 flex flex-wrap justify-center gap-2">
+      <div className="grid grid-cols-2 gap-4 md:gap-8">
+        {/* Team 1 Counter - Nosotros */}
+        <div className="relative flex flex-col items-center rounded-3xl bg-blue-600/10 p-4 backdrop-blur-sm dark:bg-blue-900/20 md:p-8">
+          <h3 className="mb-2 text-2xl font-black text-blue-500 md:text-3xl">
+            Nosotros
+          </h3>
+          <div className="mb-4 flex flex-wrap justify-center gap-1">
             {team1.map((u) => (
               <span
                 key={u.id}
-                className="capitalize rounded-full bg-blue-500/20 px-3 py-1 text-sm font-medium text-blue-400"
+                className="capitalize rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400"
               >
                 {u.username}
               </span>
             ))}
           </div>
-          <div className="text-8xl font-black text-blue-600 dark:text-blue-400">
+
+          <div className="w-full space-y-4">
+            {/* Malas */}
+            <div className="relative flex min-h-[140px] flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
+              <span className="absolute top-1 left-2 text-[10px] font-bold uppercase tracking-widest text-blue-500/40">
+                Malas
+              </span>
+              <TallyMarks score={team1Split.malas} />
+            </div>
+
+            {/* Separator */}
+            <div className="h-1 w-full rounded-full bg-blue-500/20 shadow-inner" />
+
+            {/* Buenas */}
+            <div className="relative flex min-h-[140px] flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
+              <span className="absolute top-1 left-2 text-[10px] font-bold uppercase tracking-widest text-blue-500/40">
+                Buenas
+              </span>
+              <TallyMarks score={team1Split.buenas} />
+            </div>
+          </div>
+
+          <div className="absolute top-1/2 -right-3 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white shadow-lg md:flex">
             {score1}
           </div>
-          <div className="mt-8 flex justify-center gap-6">
+
+          <div className="mt-8 flex gap-4">
             <button
               onClick={() => decrement(1)}
-              className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-3xl font-bold transition-all hover:bg-white/20 dark:bg-black/20 dark:hover:bg-black/40"
+              className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-xl font-bold transition-all hover:bg-white/20 dark:bg-black/20 dark:hover:bg-black/40 md:h-16 md:w-16 md:text-3xl"
             >
               -
             </button>
             <button
               onClick={() => increment(1)}
-              className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500 text-3xl font-bold text-white shadow-lg transition-all hover:bg-blue-600 hover:scale-105 active:scale-95"
+              className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500 text-xl font-bold text-white shadow-lg transition-all hover:bg-blue-600 hover:scale-105 active:scale-95 md:h-16 md:w-16 md:text-3xl"
             >
               +
             </button>
           </div>
         </div>
 
-        {/* Team 2 Counter */}
-        <div className="relative overflow-hidden rounded-3xl bg-green-600/10 p-12 text-center backdrop-blur-sm dark:bg-green-900/20">
-          <h3 className="mb-2 text-2xl font-bold text-green-500">Ellos</h3>
-          <div className="mb-4 flex flex-wrap justify-center gap-2">
+        {/* Team 2 Counter - Ellos */}
+        <div className="relative flex flex-col items-center rounded-3xl bg-green-600/10 p-4 backdrop-blur-sm dark:bg-green-900/20 md:p-8">
+          <h3 className="mb-2 text-2xl font-black text-green-500 md:text-3xl">
+            Ellos
+          </h3>
+          <div className="mb-4 flex flex-wrap justify-center gap-1">
             {team2.map((u) => (
               <span
                 key={u.id}
-                className="capitalize rounded-full bg-green-500/20 px-3 py-1 text-sm font-medium text-green-400"
+                className="capitalize rounded-full bg-green-500/20 px-2 py-0.5 text-xs font-medium text-green-400"
               >
                 {u.username}
               </span>
             ))}
           </div>
-          <div className="text-8xl font-black text-green-600 dark:text-green-400">
+
+          <div className="w-full space-y-4">
+            {/* Malas */}
+            <div className="relative flex min-h-[140px] flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
+              <span className="absolute top-1 left-2 text-[10px] font-bold uppercase tracking-widest text-green-500/40">
+                Malas
+              </span>
+              <TallyMarks score={team2Split.malas} />
+            </div>
+
+            {/* Separator */}
+            <div className="h-1 w-full rounded-full bg-green-500/20 shadow-inner" />
+
+            {/* Buenas */}
+            <div className="relative flex min-h-[140px] flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
+              <span className="absolute top-1 left-2 text-[10px] font-bold uppercase tracking-widest text-green-500/40">
+                Buenas
+              </span>
+              <TallyMarks score={team2Split.buenas} />
+            </div>
+          </div>
+
+          <div className="absolute top-1/2 -left-3 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-green-500 text-xs font-bold text-white shadow-lg md:flex">
             {score2}
           </div>
-          <div className="mt-8 flex justify-center gap-6">
+
+          <div className="mt-8 flex gap-4">
             <button
               onClick={() => decrement(2)}
-              className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-3xl font-bold transition-all hover:bg-white/20 dark:bg-black/20 dark:hover:bg-black/40"
+              className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-xl font-bold transition-all hover:bg-white/20 dark:bg-black/20 dark:hover:bg-black/40 md:h-16 md:w-16 md:text-3xl"
             >
               -
             </button>
             <button
               onClick={() => increment(2)}
-              className="flex h-16 w-16 items-center justify-center rounded-2xl bg-green-500 text-3xl font-bold text-white shadow-lg transition-all hover:bg-green-600 hover:scale-105 active:scale-95"
+              className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-500 text-xl font-bold text-white shadow-lg transition-all hover:bg-green-600 hover:scale-105 active:scale-95 md:h-16 md:w-16 md:text-3xl"
             >
               +
             </button>

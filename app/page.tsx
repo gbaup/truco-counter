@@ -35,9 +35,6 @@ export default function Home() {
         <h1 className="text-5xl font-black tracking-tighter text-zinc-900 dark:text-white md:text-7xl">
           TRUCO<span className="text-blue-600">PRO</span>
         </h1>
-        <p className="mt-2 font-medium text-zinc-500 dark:text-zinc-400">
-          El anotador definitivo
-        </p>
       </header>
 
       <main className="w-full max-w-5xl flex items-center justify-center">
