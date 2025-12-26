@@ -42,7 +42,7 @@ export default function TeamCounter({
       <h3 className={`mb-2 text-2xl font-black md:text-3xl ${titleColor}`}>
         {title}
       </h3>
-      <div className="mb-4 flex flex-wrap justify-center gap-1">
+      {/* <div className="mb-4 flex flex-wrap justify-center gap-1">
         {players.map((u) => (
           <span
             key={u.id}
@@ -51,16 +51,11 @@ export default function TeamCounter({
             {u.username}
           </span>
         ))}
-      </div>
+      </div> */}
 
       <div className="w-full flex-1 flex flex-col gap-4">
         {/* Malas */}
-        <div className="relative flex flex-1 flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
-          <span
-            className={`absolute top-1 left-2 text-[10px] font-bold uppercase tracking-widest ${labelColor}`}
-          >
-            Malas
-          </span>
+        <div className="relative flex flex-1 flex-col items-center justify-start rounded-2xl bg-white/5 p-2 dark:bg-black/20">
           <TallyMarks score={malas} />
         </div>
 
@@ -72,12 +67,7 @@ export default function TeamCounter({
         />
 
         {/* Buenas */}
-        <div className="relative flex flex-1 flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
-          <span
-            className={`absolute top-1 left-2 text-[10px] font-bold uppercase tracking-widest ${labelColor}`}
-          >
-            Buenas
-          </span>
+        <div className="relative flex flex-1 flex-col items-center justify-start rounded-2xl bg-white/5 p-2 dark:bg-black/20">
           <TallyMarks score={buenas} />
         </div>
       </div>

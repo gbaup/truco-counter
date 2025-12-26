@@ -18,7 +18,7 @@ function TallyGroup({ points }: TallyGroupProps) {
           x2="20"
           y2="80"
           stroke="currentColor"
-          strokeWidth="8"
+          strokeWidth="4"
           strokeLinecap="round"
           className="transition-all duration-300"
         />
@@ -30,7 +30,7 @@ function TallyGroup({ points }: TallyGroupProps) {
           x2="80"
           y2="20"
           stroke="currentColor"
-          strokeWidth="8"
+          strokeWidth="4"
           strokeLinecap="round"
           className="transition-all duration-300"
         />
@@ -42,7 +42,7 @@ function TallyGroup({ points }: TallyGroupProps) {
           x2="80"
           y2="80"
           stroke="currentColor"
-          strokeWidth="8"
+          strokeWidth="4"
           strokeLinecap="round"
           className="transition-all duration-300"
         />
@@ -54,7 +54,7 @@ function TallyGroup({ points }: TallyGroupProps) {
           x2="80"
           y2="80"
           stroke="currentColor"
-          strokeWidth="8"
+          strokeWidth="4"
           strokeLinecap="round"
           className="transition-all duration-300"
         />
@@ -66,7 +66,7 @@ function TallyGroup({ points }: TallyGroupProps) {
           x2="80"
           y2="80"
           stroke="currentColor"
-          strokeWidth="10"
+          strokeWidth="4"
           strokeLinecap="round"
           className="transition-all duration-300"
         />
@@ -84,14 +84,11 @@ export default function TallyMarks({ score }: TallyMarksProps) {
   const partialGroup = score % 5;
 
   return (
-    <div className="flex flex-wrap justify-center gap-4 p-4">
+    <div className="flex flex-col justify-center gap-2 p-1">
       {Array.from({ length: fullGroups }).map((_, i) => (
         <TallyGroup key={`full-${i}`} points={5} />
       ))}
       {partialGroup > 0 && <TallyGroup points={partialGroup} />}
-      {score === 0 && (
-        <div className="h-12 w-12 border-2 border-dashed border-zinc-300 rounded-xl dark:border-zinc-700 lg:h-16 lg:w-16" />
-      )}
     </div>
   );
 }
