@@ -78,9 +78,6 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
               </button>
             ))}
           </div>
-          <p className="text-sm text-zinc-500">
-            {team1.length} / 3 jugadores seleccionados
-          </p>
         </div>
 
         {/* Team 2 Selection */}
@@ -106,9 +103,6 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
               </button>
             ))}
           </div>
-          <p className="text-sm text-zinc-500">
-            {team2.length} / 3 jugadores seleccionados
-          </p>
         </div>
       </div>
 
