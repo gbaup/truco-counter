@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { login } from "@/services/auth";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -25,21 +26,10 @@ export default function LoginPage() {
 
     // START TEMPORARY DIRECT IMPLEMENTATION TO AVOID SERVER/CLIENT COMPLEXITY WITHOUT ACTIONS
     try {
-      const { createClient } = await import("@supabase/supabase-js");
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-      const supabaseKey =
-        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
+      const { success, error } = await login(username, password);
 
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("username", username)
-        .eq("password", password)
-        .single();
-
-      if (error || !data) {
-        setError("Invalid credentials");
+      if (!success || error) {
+        setError(error || "Invalid credentials");
         return;
       }
 
