@@ -51,10 +51,6 @@ export default function Home() {
           />
         )}
       </main>
-
-      <footer className="mt-12 text-sm text-zinc-400">
-        © {new Date().getFullYear()} Anotador TrucoPro
-      </footer>
     </div>
   );
 }

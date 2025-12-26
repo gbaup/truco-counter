@@ -12,7 +12,7 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
   const [users, setUsers] = useState<User[]>([]);
   const [team1, setTeam1] = useState<User[]>([]);
   const [team2, setTeam2] = useState<User[]>([]);
-  const [maxPoints, setMaxPoints] = useState<number>(30);
+  const [maxPoints, setMaxPoints] = useState<number>(40);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,15 +54,6 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
 
   return (
     <div className="w-full max-w-2xl space-y-8 rounded-2xl bg-white/10 p-8 shadow-2xl backdrop-blur-md dark:bg-zinc-900/50">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Crear nueva partida
-        </h2>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-          Seleccioná los jugadores y el puntaje
-        </p>
-      </div>
-
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* Team 1 Selection */}
         <div className="space-y-4">
@@ -122,7 +113,7 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-center text-xl font-semibold">Puntaje Máximo</h3>
+        <h3 className="text-center text-xl font-semibold">Puntaje máximo</h3>
         <div className="flex justify-center gap-4">
           {[20, 30, 40, 50].map((points) => (
             <button

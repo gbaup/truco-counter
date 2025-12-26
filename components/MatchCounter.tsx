@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { User } from "@/types/database";
-import TallyMarks from "@/components/TallyMarks";
+import TeamCounter from "./TeamCounter";
 
 interface MatchCounterProps {
   team1: User[];
@@ -53,89 +53,25 @@ export default function MatchCounter({
   return (
     <div className="w-full max-w-5xl">
       <div className="grid grid-cols-2 gap-2 md:gap-8 pb-32">
-        {/* Team 1 Counter - Nosotros */}
-        <div className="relative flex flex-col items-center rounded-2xl bg-blue-600/10 p-2 backdrop-blur-sm dark:bg-blue-900/20 md:p-8">
-          <h3 className="mb-2 text-2xl font-black text-blue-500 md:text-3xl">
-            Nosotros
-          </h3>
-          <div className="mb-4 flex flex-wrap justify-center gap-1">
-            {team1.map((u) => (
-              <span
-                key={u.id}
-                className="capitalize rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400"
-              >
-                {u.username}
-              </span>
-            ))}
-          </div>
+        <TeamCounter
+          title="Nosotros"
+          players={team1}
+          totalScore={score1}
+          malas={team1Split.malas}
+          buenas={team1Split.buenas}
+          variant="blue"
+          badgePosition="right"
+        />
 
-          <div className="w-full space-y-4">
-            {/* Malas */}
-            <div className="relative flex min-h-[140px] flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
-              <span className="absolute top-1 left-2 text-[10px] font-bold uppercase tracking-widest text-blue-500/40">
-                Malas
-              </span>
-              <TallyMarks score={team1Split.malas} />
-            </div>
-
-            {/* Separator */}
-            <div className="h-1 w-full rounded-full bg-blue-500/20 shadow-inner" />
-
-            {/* Buenas */}
-            <div className="relative flex min-h-[140px] flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
-              <span className="absolute top-1 left-2 text-[10px] font-bold uppercase tracking-widest text-blue-500/40">
-                Buenas
-              </span>
-              <TallyMarks score={team1Split.buenas} />
-            </div>
-          </div>
-
-          <div className="absolute top-1/2 -right-3 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white shadow-lg md:flex">
-            {score1}
-          </div>
-        </div>
-
-        {/* Team 2 Counter - Ellos */}
-        <div className="relative flex flex-col items-center rounded-2xl bg-green-600/10 p-2 backdrop-blur-sm dark:bg-green-900/20 md:p-8">
-          <h3 className="mb-2 text-2xl font-black text-green-500 md:text-3xl">
-            Ellos
-          </h3>
-          <div className="mb-4 flex flex-wrap justify-center gap-1">
-            {team2.map((u) => (
-              <span
-                key={u.id}
-                className="capitalize rounded-full bg-green-500/20 px-2 py-0.5 text-xs font-medium text-green-400"
-              >
-                {u.username}
-              </span>
-            ))}
-          </div>
-
-          <div className="w-full space-y-4">
-            {/* Malas */}
-            <div className="relative flex min-h-[140px] flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
-              <span className="absolute top-1 left-2 text-[10px] font-bold uppercase tracking-widest text-green-500/40">
-                Malas
-              </span>
-              <TallyMarks score={team2Split.malas} />
-            </div>
-
-            {/* Separator */}
-            <div className="h-1 w-full rounded-full bg-green-500/20 shadow-inner" />
-
-            {/* Buenas */}
-            <div className="relative flex min-h-[140px] flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
-              <span className="absolute top-1 left-2 text-[10px] font-bold uppercase tracking-widest text-green-500/40">
-                Buenas
-              </span>
-              <TallyMarks score={team2Split.buenas} />
-            </div>
-          </div>
-
-          <div className="absolute top-1/2 -left-3 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-green-500 text-xs font-bold text-white shadow-lg md:flex">
-            {score2}
-          </div>
-        </div>
+        <TeamCounter
+          title="Ellos"
+          players={team2}
+          totalScore={score2}
+          malas={team2Split.malas}
+          buenas={team2Split.buenas}
+          variant="green"
+          badgePosition="left"
+        />
       </div>
 
       {/* Fixed Bottom Navbar Controls */}
