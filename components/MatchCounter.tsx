@@ -52,7 +52,7 @@ export default function MatchCounter({
 
   return (
     <div className="w-full max-w-5xl">
-      <div className="grid grid-cols-2 gap-2 md:gap-8 pb-32">
+      <div className="grid grid-cols-2 gap-2 md:gap-8 pb-32 min-h-[calc(100vh-1rem)]">
         <TeamCounter
           title="Nosotros"
           players={team1}

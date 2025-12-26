@@ -37,7 +37,7 @@ export default function TeamCounter({
 
   return (
     <div
-      className={`relative flex flex-col items-center rounded-2xl p-2 backdrop-blur-sm md:p-8 ${bgUserColor}`}
+      className={`relative flex flex-col items-center rounded-2xl p-2 backdrop-blur-sm md:p-8 h-full ${bgUserColor}`}
     >
       <h3 className={`mb-2 text-2xl font-black md:text-3xl ${titleColor}`}>
         {title}
@@ -53,9 +53,9 @@ export default function TeamCounter({
         ))}
       </div>
 
-      <div className="w-full space-y-4">
+      <div className="w-full flex-1 flex flex-col gap-4">
         {/* Malas */}
-        <div className="relative flex min-h-[140px] flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
+        <div className="relative flex flex-1 flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
           <span
             className={`absolute top-1 left-2 text-[10px] font-bold uppercase tracking-widest ${labelColor}`}
           >
@@ -72,7 +72,7 @@ export default function TeamCounter({
         />
 
         {/* Buenas */}
-        <div className="relative flex min-h-[140px] flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
+        <div className="relative flex flex-1 flex-col items-center justify-center rounded-2xl bg-white/5 p-2 dark:bg-black/20">
           <span
             className={`absolute top-1 left-2 text-[10px] font-bold uppercase tracking-widest ${labelColor}`}
           >
