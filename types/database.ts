@@ -7,9 +7,4 @@ export interface User {
 
 export type PublicUser = Omit<User, "password">;
 
-export interface MatchState {
-  view: "setup" | "match";
-  team1: PublicUser[];
-  team2: PublicUser[];
-  maxPoints: number;
-}
+

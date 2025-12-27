@@ -11,6 +11,10 @@ interface MatchCounterProps {
   team1: PublicUser[];
   team2: PublicUser[];
   maxPoints: number;
+  score1: number;
+  score2: number;
+  onIncrement: (team: 1 | 2) => void;
+  onDecrement: (team: 1 | 2) => void;
   onFinish: (result: { score1: number; score2: number }) => void;
 }
 
@@ -18,27 +22,13 @@ export default function MatchCounter({
   team1,
   team2,
   maxPoints,
+  score1,
+  score2,
+  onIncrement,
+  onDecrement,
   onFinish,
 }: MatchCounterProps) {
-  const [score1, setScore1] = useState(0);
-  const [score2, setScore2] = useState(0);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
-
-  const increment = (team: 1 | 2) => {
-    if (team === 1) {
-      if (score1 < maxPoints) setScore1(score1 + 1);
-    } else {
-      if (score2 < maxPoints) setScore2(score2 + 1);
-    }
-  };
-
-  const decrement = (team: 1 | 2) => {
-    if (team === 1) {
-      if (score1 > 0) setScore1(score1 - 1);
-    } else {
-      if (score2 > 0) setScore2(score2 - 1);
-    }
-  };
 
   const handleExitClick = () => {
     setShowExitConfirmation(true);
@@ -93,8 +83,8 @@ export default function MatchCounter({
 
       {/* Fixed Bottom Navbar Controls */}
       <Controls
-        onIncrement={increment}
-        onDecrement={decrement}
+        onIncrement={onIncrement}
+        onDecrement={onDecrement}
         onExit={handleExitClick}
         score1={score1}
         score2={score2}

@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
 import BurgerMenu from "@/components/BurgerMenu";
-import { PublicUser, MatchState } from "@/types/database";
+import { PublicUser } from "@/types/database";
+import { MatchState } from "@/types/game";
 import { saveMatch } from "@/services/matchService";
+
+const STORAGE_KEY = "truco-match-state";
 
 export default function Home() {
   const [matchState, setMatchState] = useState<MatchState>({
@@ -13,15 +16,67 @@ export default function Home() {
     team1: [],
     team2: [],
     maxPoints: 30,
+    score1: 0,
+    score2: 0,
   });
 
-  const startMatch = (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const savedState = localStorage.getItem(STORAGE_KEY);
+    if (savedState) {
+      try {
+        setMatchState(JSON.parse(savedState));
+      } catch (error) {
+        console.error("Failed to parse saved match state", error);
+      }
+    }
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(matchState));
+    }
+  }, [matchState, isLoaded]);
+
+  const startMatch = (
+    team1: PublicUser[],
+    team2: PublicUser[],
+    maxPoints: number
+  ) => {
     setMatchState({
       view: "match",
       team1,
       team2,
       maxPoints,
+      score1: 0,
+      score2: 0,
     });
+  };
+
+  const handleIncrement = (team: 1 | 2) => {
+    if (team === 1) {
+      if (matchState.score1 < matchState.maxPoints) {
+        setMatchState((prev) => ({ ...prev, score1: prev.score1 + 1 }));
+      }
+    } else {
+      if (matchState.score2 < matchState.maxPoints) {
+        setMatchState((prev) => ({ ...prev, score2: prev.score2 + 1 }));
+      }
+    }
+  };
+
+  const handleDecrement = (team: 1 | 2) => {
+    if (team === 1) {
+      if (matchState.score1 > 0) {
+        setMatchState((prev) => ({ ...prev, score1: prev.score1 - 1 }));
+      }
+    } else {
+      if (matchState.score2 > 0) {
+        setMatchState((prev) => ({ ...prev, score2: prev.score2 - 1 }));
+      }
+    }
   };
 
   const finishMatch = async (result: { score1: number; score2: number }) => {
@@ -46,11 +101,20 @@ export default function Home() {
       }
     }
 
-    setMatchState({
-      ...matchState,
+    const resetState: MatchState = {
       view: "setup",
-    });
+      team1: [],
+      team2: [],
+      maxPoints: 30,
+      score1: 0,
+      score2: 0,
+    };
+
+    setMatchState(resetState);
+    localStorage.removeItem(STORAGE_KEY);
   };
+
+  if (!isLoaded) return null; // Or a loading spinner
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 p-4 transition-colors dark:bg-zinc-950">
@@ -71,6 +135,10 @@ export default function Home() {
             team1={matchState.team1}
             team2={matchState.team2}
             maxPoints={matchState.maxPoints}
+            score1={matchState.score1}
+            score2={matchState.score2}
+            onIncrement={handleIncrement}
+            onDecrement={handleDecrement}
             onFinish={finishMatch}
           />
         )}
