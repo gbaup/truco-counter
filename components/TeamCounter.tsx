@@ -30,6 +30,7 @@ export default function TeamCounter({
   const badgeBgColor = isBlue ? "bg-blue-500" : "bg-green-500";
   const badgePositionClass = badgePosition === "right" ? "-right-3" : "-left-3";
 
+  //TODO: implement team members display
   return (
     <div
       className={`relative flex flex-col items-center rounded-2xl p-2 backdrop-blur-sm md:p-8 h-full ${bgUserColor}`}
@@ -37,7 +38,6 @@ export default function TeamCounter({
       <h3 className={`mb-2 text-2xl font-black md:text-3xl ${titleColor}`}>
         {title}
       </h3>
-      //TODO: implement team members display
 
       <div className="w-full flex-1 flex flex-col gap-4">
         <div className="relative flex flex-1 flex-col items-center justify-start rounded-2xl bg-white/5 p-2 dark:bg-black/20">

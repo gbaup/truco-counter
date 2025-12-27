@@ -62,33 +62,44 @@ export default function BurgerMenu() {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 z-50 h-screen w-64 transform bg-white p-6 shadow-2xl transition-transform dark:bg-zinc-900 ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 z-50 h-screen w-64 transform bg-white p-6 shadow-2xl transition-transform dark:bg-zinc-900 ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <nav className="mt-16 flex flex-col space-y-4">
           <Link
             href="/"
             onClick={closeMenu}
-            className={`text-lg font-medium transition-colors hover:text-blue-600 ${
-              pathname === "/"
+            className={`text-lg font-medium transition-colors hover:text-blue-600 ${pathname === "/"
                 ? "text-blue-600"
                 : "text-zinc-600 dark:text-zinc-400"
-            }`}
+              }`}
           >
             Home
           </Link>
           <Link
             href="/statistics"
             onClick={closeMenu}
-            className={`text-lg font-medium transition-colors hover:text-blue-600 ${
-              pathname === "/statistics"
+            className={`text-lg font-medium transition-colors hover:text-blue-600 ${pathname === "/statistics"
                 ? "text-blue-600"
                 : "text-zinc-600 dark:text-zinc-400"
-            }`}
+              }`}
           >
             Statistics
           </Link>
+          <button
+            onClick={async () => {
+              try {
+                await fetch("/api/auth/logout", { method: "POST" });
+                window.location.href = "/login";
+              } catch (error) {
+                console.error("Logout failed", error);
+              }
+              closeMenu();
+            }}
+            className="text-left text-lg font-medium text-red-600 transition-colors hover:text-red-700 dark:text-red-500 dark:hover:text-red-400"
+          >
+            Logout
+          </button>
         </nav>
       </div>
     </>

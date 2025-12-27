@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "@/lib/supabaseServer";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { signToken } from "@/lib/auth";
 
 export async function POST(request: Request) {
     try {
@@ -36,10 +37,20 @@ export async function POST(request: Request) {
             );
         }
 
-        // Return the user object (excluding the password ideally, but for now matching existing behavior)
-        // Be careful not to expose sensitive data if the client doesn't need it.
-        // The original service returned the whole user object.
-        return NextResponse.json({ success: true, user });
+        // Generate JWT
+        const token = await signToken({ userId: user.id, username: user.username });
+
+        const response = NextResponse.json({ success: true, user });
+
+        // Set HttpOnly Cookie
+        response.cookies.set("auth-token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 60 * 60 * 24, // 1 day
+            path: "/",
+        });
+
+        return response;
     } catch (err) {
         console.error("Login API error:", err);
         return NextResponse.json(

@@ -21,7 +21,6 @@ export default function LoginPage() {
         return;
       }
 
-      document.cookie = `auth-token=true; path=/; max-age=86400`;
       router.push("/");
     } catch (err) {
       console.error(err);
