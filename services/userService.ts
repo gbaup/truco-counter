@@ -1,10 +1,10 @@
 import { supabase } from "@/lib/supabase";
-import { User } from "@/types/database";
+import { PublicUser } from "@/types/database";
 
-export async function getUsers(): Promise<User[]> {
+export async function getUsers(): Promise<PublicUser[]> {
   const { data, error } = await supabase
     .from("users")
-    .select("id, name, username, password");
+    .select("id, name, username");
   if (error) {
     console.error("Error fetching users:", error);
     return [];

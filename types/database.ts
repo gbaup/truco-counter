@@ -5,9 +5,11 @@ export interface User {
   password: string;
 }
 
+export type PublicUser = Omit<User, "password">;
+
 export interface MatchState {
   view: "setup" | "match";
-  team1: User[];
-  team2: User[];
+  team1: PublicUser[];
+  team2: PublicUser[];
   maxPoints: number;
 }

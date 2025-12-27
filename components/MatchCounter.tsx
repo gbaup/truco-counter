@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { User } from "@/types/database";
+import { PublicUser } from "@/types/database";
 import TeamCounter from "./TeamCounter";
 import Controls from "./Controls";
 import WinnerModal from "./WinnerModal";
 import ConfirmationExitModal from "./ConfirmationExitModal";
 
 interface MatchCounterProps {
-  team1: User[];
-  team2: User[];
+  team1: PublicUser[];
+  team2: PublicUser[];
   maxPoints: number;
   onFinish: (result: { score1: number; score2: number }) => void;
 }

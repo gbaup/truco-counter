@@ -13,18 +13,6 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
-    // Simple querying via Supabase client directly here might be easier given it's client-side
-    // But let's try to keep logic separated.
-    // Wait, `services/auth.ts` imports `next/headers` which is Server Component only.
-    // I should refactor services/auth.ts to be client-friendly or use a Server Action.
-    // Let's use a Server Action or just client-side Supabase for now since the whole app seems client-heavy ("use client" in page.tsx).
-
-    // Actually, for simplicity and speed, let's query supabase directly here or move the logic to a client-safe service.
-    // I'll rewrite the service in the next step to be client-safe or define a server action.
-    // For now, let's assume a client-side service.
-
-    // START TEMPORARY DIRECT IMPLEMENTATION TO AVOID SERVER/CLIENT COMPLEXITY WITHOUT ACTIONS
     try {
       const { success, error } = await login(username, password);
 
@@ -33,8 +21,7 @@ export default function LoginPage() {
         return;
       }
 
-      // Set cookie manually for middleware
-      document.cookie = `auth-token=true; path=/; max-age=86400`; // Simple marker
+      document.cookie = `auth-token=true; path=/; max-age=86400`;
       router.push("/");
     } catch (err) {
       console.error(err);

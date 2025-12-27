@@ -4,7 +4,7 @@ import { useState } from "react";
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
 import BurgerMenu from "@/components/BurgerMenu";
-import { User, MatchState } from "@/types/database";
+import { PublicUser, MatchState } from "@/types/database";
 import { saveMatch } from "@/services/matchService";
 
 export default function Home() {
@@ -15,7 +15,7 @@ export default function Home() {
     maxPoints: 30,
   });
 
-  const startMatch = (team1: User[], team2: User[], maxPoints: number) => {
+  const startMatch = (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => {
     setMatchState({
       view: "match",
       team1,
@@ -43,7 +43,6 @@ export default function Home() {
         });
       } catch (error) {
         console.error("Failed to save match:", error);
-        // Optionally show an error toast here
       }
     }
 

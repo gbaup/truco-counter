@@ -1,9 +1,9 @@
 import { supabase } from "@/lib/supabase";
-import { User } from "@/types/database";
+import { PublicUser } from "@/types/database";
 
 export interface MatchResult {
-  team1: User[];
-  team2: User[];
+  team1: PublicUser[];
+  team2: PublicUser[];
   score1: number;
   score2: number;
   winner_team: 1 | 2;

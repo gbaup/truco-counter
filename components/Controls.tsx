@@ -16,7 +16,6 @@ export default function Controls({
   return (
     <div className="fixed bottom-0 left-0 z-50 w-full border-t border-white/10 bg-zinc-950/80 p-4 backdrop-blur-lg">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
-        {/* Team 1 Controls */}
         <div className="flex flex-1 items-center justify-center gap-4">
           <button
             onClick={() => onDecrement(1)}
@@ -35,7 +34,6 @@ export default function Controls({
           </button>
         </div>
 
-        {/* <div className="h-8 w-px bg-white/10" /> */}
         <button
           onClick={onExit}
           className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-lg transition-all active:scale-110"
@@ -43,7 +41,6 @@ export default function Controls({
           X
         </button>
 
-        {/* Team 2 Controls */}
         <div className="flex flex-1 items-center justify-center gap-4">
           <button
             onClick={() => onDecrement(2)}
