@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+
 import { PublicUser } from "@/types/database";
 
 export interface MatchResult {
@@ -11,39 +11,20 @@ export interface MatchResult {
 
 export async function saveMatch(matchData: MatchResult) {
   try {
-    const { data: match, error: matchError } = await supabase
-      .from("matches")
-      .insert({
-        score_team_1: matchData.score1,
-        score_team_2: matchData.score2,
-        winner_team: matchData.winner_team,
-        status: "finished",
-      })
-      .select()
-      .single();
+    const response = await fetch("/api/matches", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(matchData),
+    });
 
-    if (matchError) throw matchError;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to save match");
+    }
 
-    const participants = [
-      ...matchData.team1.map((user) => ({
-        match_id: match.id,
-        user_id: user.id,
-        team: 1,
-      })),
-      ...matchData.team2.map((user) => ({
-        match_id: match.id,
-        user_id: user.id,
-        team: 2,
-      })),
-    ];
-
-    const { error: participantsError } = await supabase
-      .from("match_participants")
-      .insert(participants);
-
-    if (participantsError) throw participantsError;
-
-    return match;
+    return await response.json();
   } catch (error) {
     console.error("Error saving match:", error);
     throw error;

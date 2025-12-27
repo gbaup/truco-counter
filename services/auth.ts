@@ -1,29 +1,28 @@
-import { supabase } from "@/lib/supabase";
 import { User } from "@/types/database";
-import bcrypt from "bcryptjs";
 
 export async function login(
   username: string,
   password: string
 ): Promise<{ success: boolean; user?: User; error?: string }> {
   try {
-    const { data: user, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("username", username)
-      .single();
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
 
-    if (error || !user) {
-      return { success: false, error: "Invalid username or password" };
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      return {
+        success: false,
+        error: data.error || "Invalid username or password",
+      };
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      return { success: false, error: "Invalid username or password" };
-    }
-
-    return { success: true, user: user };
+    return { success: true, user: data.user };
   } catch (err) {
     console.error("Login error:", err);
     return { success: false, error: "An unexpected error occurred" };
