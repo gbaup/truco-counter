@@ -11,7 +11,7 @@ interface MatchCounterProps {
   team1: User[];
   team2: User[];
   maxPoints: number;
-  onFinish: () => void;
+  onFinish: (result: { score1: number; score2: number }) => void;
 }
 
 export default function MatchCounter({
@@ -46,7 +46,7 @@ export default function MatchCounter({
 
   const handleConfirmExit = () => {
     setShowExitConfirmation(false);
-    onFinish();
+    onFinish({ score1, score2 });
   };
 
   const handleCancelExit = () => {
@@ -101,7 +101,10 @@ export default function MatchCounter({
       />
 
       {/* Winner Confirmation Modal */}
-      <WinnerModal winner={winner} onFinish={onFinish} />
+      <WinnerModal
+        winner={winner}
+        onFinish={() => onFinish({ score1, score2 })}
+      />
 
       {/* Exit Confirmation Modal */}
       {showExitConfirmation && (

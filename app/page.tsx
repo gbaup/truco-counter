@@ -5,6 +5,7 @@ import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
 import BurgerMenu from "@/components/BurgerMenu";
 import { User, MatchState } from "@/types/database";
+import { saveMatch } from "@/services/matchService";
 
 export default function Home() {
   const [matchState, setMatchState] = useState<MatchState>({
@@ -23,7 +24,29 @@ export default function Home() {
     });
   };
 
-  const finishMatch = () => {
+  const finishMatch = async (result: { score1: number; score2: number }) => {
+    const winner_team =
+      result.score1 >= matchState.maxPoints
+        ? 1
+        : result.score2 >= matchState.maxPoints
+          ? 2
+          : null;
+
+    if (winner_team) {
+      try {
+        await saveMatch({
+          team1: matchState.team1,
+          team2: matchState.team2,
+          score1: result.score1,
+          score2: result.score2,
+          winner_team,
+        });
+      } catch (error) {
+        console.error("Failed to save match:", error);
+        // Optionally show an error toast here
+      }
+    }
+
     setMatchState({
       ...matchState,
       view: "setup",
