@@ -4,7 +4,7 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error("Faltan las variables de entorno de Supabase en el servidor");
+    throw new Error("Missing Supabase environment variables");
 }
 
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
