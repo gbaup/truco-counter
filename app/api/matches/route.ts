@@ -68,3 +68,30 @@ export async function POST(request: Request) {
         );
     }
 }
+
+export async function GET() {
+    try {
+        const { data: matches, error } = await supabaseAdmin
+            .from("matches")
+            .select(`
+                *,
+                match_participants (
+                    user_id,
+                    team
+                )
+            `)
+            .eq("status", "finished");
+
+        if (error) {
+            throw error;
+        }
+
+        return NextResponse.json(matches);
+    } catch (error) {
+        console.error("Error fetching matches:", error);
+        return NextResponse.json(
+            { error: "Failed to fetch matches" },
+            { status: 500 }
+        );
+    }
+}
