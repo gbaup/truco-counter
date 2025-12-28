@@ -69,8 +69,8 @@ export default function BurgerMenu() {
           <Link
             href="/"
             onClick={closeMenu}
-            className={`text-lg font-medium transition-colors hover:text-blue-600 ${pathname === "/"
-              ? "text-blue-600"
+            className={`text-lg font-medium transition-colors hover:text-primary-600 ${pathname === "/"
+              ? "text-primary-600"
               : "text-zinc-600 dark:text-zinc-400"
               }`}
           >
@@ -79,8 +79,8 @@ export default function BurgerMenu() {
           <Link
             href="/statistics"
             onClick={closeMenu}
-            className={`text-lg font-medium transition-colors hover:text-blue-600 ${pathname === "/statistics"
-              ? "text-blue-600"
+            className={`text-lg font-medium transition-colors hover:text-primary-600 ${pathname === "/statistics"
+              ? "text-primary-600"
               : "text-zinc-600 dark:text-zinc-400"
               }`}
           >
@@ -89,8 +89,8 @@ export default function BurgerMenu() {
           <Link
             href="/versus"
             onClick={closeMenu}
-            className={`text-lg font-medium transition-colors hover:text-blue-600 ${pathname === "/versus"
-              ? "text-blue-600"
+            className={`text-lg font-medium transition-colors hover:text-primary-600 ${pathname === "/versus"
+              ? "text-primary-600"
               : "text-zinc-600 dark:text-zinc-400"
               }`}
           >

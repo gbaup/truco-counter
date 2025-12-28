@@ -47,7 +47,7 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
       </div>
     );
   }
@@ -56,14 +56,14 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
     <div className="w-full max-w-2xl space-y-8 rounded-2xl bg-white/10 p-8 shadow-2xl backdrop-blur-md dark:bg-zinc-900/50">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-blue-500">Nosotros</h3>
+          <h3 className="text-xl font-semibold text-primary-500">Nosotros</h3>
           <div className="max-h-60 overflow-y-auto space-y-2 rounded-xl bg-black/5 p-4 dark:bg-white/5">
             {users.map((user) => (
               <button
                 key={user.id}
                 onClick={() => toggleUserInTeam(user, 1)}
                 className={`capitalize w-full rounded-lg px-4 py-2 text-left transition-all ${team1.find((u) => u.id === user.id)
-                  ? "bg-blue-500 text-white"
+                  ? "bg-primary-500 text-white"
                   : "hover:bg-black/10 dark:hover:bg-white/10"
                   } ${team2.find((u) => u.id === user.id)
                     ? "opacity-30 cursor-not-allowed"
@@ -78,14 +78,14 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-green-500">Ellos</h3>
+          <h3 className="text-xl font-semibold text-secondary-500">Ellos</h3>
           <div className="max-h-60 overflow-y-auto space-y-2 rounded-xl bg-black/5 p-4 dark:bg-white/5">
             {users.map((user) => (
               <button
                 key={user.id}
                 onClick={() => toggleUserInTeam(user, 2)}
                 className={`capitalize w-full rounded-lg px-4 py-2 text-left transition-all ${team2.find((u) => u.id === user.id)
-                  ? "bg-green-500 text-white"
+                  ? "bg-secondary-500 text-white"
                   : "hover:bg-black/10 dark:hover:bg-white/10"
                   } ${team1.find((u) => u.id === user.id)
                     ? "opacity-30 cursor-not-allowed"
@@ -108,8 +108,8 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
               key={points}
               onClick={() => setMaxPoints(points)}
               className={`h-12 w-12 rounded-full border-2 transition-all ${maxPoints === points
-                ? "border-blue-500 bg-blue-500 text-white"
-                : "border-zinc-300 hover:border-blue-300 dark:border-zinc-700"
+                ? "border-primary-500 bg-primary-500 text-white"
+                : "border-zinc-300 hover:border-primary-300 dark:border-zinc-700"
                 }`}
             >
               {points}
@@ -128,7 +128,7 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
         <button
           disabled={!canStart}
           onClick={() => onStartMatch(team1, team2, maxPoints)}
-          className="group relative w-full overflow-hidden rounded-xl bg-blue-600 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-blue-700 disabled:bg-zinc-500 disabled:opacity-50"
+          className="group relative w-full overflow-hidden rounded-xl bg-primary-600 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-primary-700 disabled:bg-zinc-500 disabled:opacity-50"
         >
           <div className="relative z-10">
             {!canStart && (team1.length < 2 || team2.length < 2)
@@ -137,7 +137,7 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
                 ? "Equipos desiguales"
                 : "Empezar Partido"}
           </div>
-          <div className="absolute inset-0 z-0 origin-left scale-x-0 bg-blue-400 transition-transform duration-300 group-hover:scale-x-100"></div>
+          <div className="absolute inset-0 z-0 origin-left scale-x-0 bg-primary-400 transition-transform duration-300 group-hover:scale-x-100"></div>
         </button>
       </div>
     </div>

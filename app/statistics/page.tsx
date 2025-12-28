@@ -19,7 +19,7 @@ export default function StatisticsPage() {
 
   if (loading) return (
     <div className="flex h-64 items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
     </div>
   );
 
@@ -28,7 +28,7 @@ export default function StatisticsPage() {
       <BurgerMenu />
       <header className="mb-12 text-center">
         <h1 className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white md:text-7xl">
-          TRUCO<span className="text-blue-600">PRO</span>
+          TRUCO<span className="text-primary-600">PRO</span>
         </h1>
       </header>
       <main className="w-full max-w-lg text-center">
@@ -52,7 +52,7 @@ export default function StatisticsPage() {
                     <td className="whitespace-nowrap capitalize px-6 py-4 font-medium text-zinc-900 dark:text-white">
                       {userStat.username}
                     </td>
-                    <td className="px-6 py-4 text-center font-bold text-green-600">
+                    <td className="px-6 py-4 text-center font-bold text-secondary-600">
                       {userStat.wins}
                     </td>
                     <td className="px-6 py-4 text-center font-bold text-red-500">

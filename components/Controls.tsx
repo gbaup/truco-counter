@@ -19,16 +19,16 @@ export default function Controls({
         <div className="flex flex-1 items-center justify-center gap-4">
           <button
             onClick={() => onDecrement(1)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl font-bold text-blue-500 transition-all active:scale-90"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl font-bold text-primary-500 transition-all active:scale-90"
           >
             -
           </button>
           <div className="flex flex-col items-center">
-            <span className="text-xl font-black text-blue-500">{score1}</span>
+            <span className="text-xl font-black text-primary-500">{score1}</span>
           </div>
           <button
             onClick={() => onIncrement(1)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500 text-xl font-bold text-white shadow-lg transition-all active:scale-110"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 text-xl font-bold text-white shadow-lg transition-all active:scale-110"
           >
             +
           </button>
@@ -44,16 +44,16 @@ export default function Controls({
         <div className="flex flex-1 items-center justify-center gap-4">
           <button
             onClick={() => onDecrement(2)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl font-bold text-green-500 transition-all active:scale-90"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl font-bold text-secondary-500 transition-all active:scale-90"
           >
             -
           </button>
           <div className="flex flex-col items-center">
-            <span className="text-xl font-black text-green-500">{score2}</span>
+            <span className="text-xl font-black text-secondary-500">{score2}</span>
           </div>
           <button
             onClick={() => onIncrement(2)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500 text-xl font-bold text-white shadow-lg transition-all active:scale-110"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary-500 text-xl font-bold text-white shadow-lg transition-all active:scale-110"
           >
             +
           </button>

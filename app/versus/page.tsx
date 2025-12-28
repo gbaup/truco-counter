@@ -50,8 +50,8 @@ export default function VersusPage() {
                     onChange={setPlayer1}
                     users={users}
                     disabledId={player2}
-                    labelColorClass="text-blue-400"
-                    ringColorClass="focus:ring-blue-500"
+                    labelColorClass="text-primary-400"
+                    ringColorClass="focus:ring-primary-500"
                 />
 
                 <UserDropdown
@@ -60,8 +60,8 @@ export default function VersusPage() {
                     onChange={setPlayer2}
                     users={users}
                     disabledId={player1}
-                    labelColorClass="text-red-400"
-                    ringColorClass="focus:ring-red-500"
+                    labelColorClass="text-secondary-400"
+                    ringColorClass="focus:ring-secondary-500"
                 />
             </div>
 

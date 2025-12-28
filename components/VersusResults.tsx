@@ -37,9 +37,9 @@ export default function VersusResults({
     return (
         <div className="space-y-6 text-center animate-fade-in">
             <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="rounded-xl bg-blue-500/20 p-4">
-                    <div className="text-3xl font-bold text-blue-400">{stats.p1_wins}</div>
-                    <div className="text-sm capitalize text-blue-200">
+                <div className="rounded-xl bg-primary-500/20 p-4">
+                    <div className="text-3xl font-bold text-primary-400">{stats.p1_wins}</div>
+                    <div className="text-sm capitalize text-primary-200">
                         Victorias {p1Name}
                     </div>
                 </div>
@@ -49,9 +49,9 @@ export default function VersusResults({
                     <div className="text-sm text-gray-300">Empates</div>
                 </div>
 
-                <div className="rounded-xl bg-red-500/20 p-4">
-                    <div className="text-3xl font-bold text-red-400">{stats.p2_wins}</div>
-                    <div className="text-sm capitalize text-red-200">
+                <div className="rounded-xl bg-secondary-500/20 p-4">
+                    <div className="text-3xl font-bold text-secondary-400">{stats.p2_wins}</div>
+                    <div className="text-sm capitalize text-secondary-200">
                         Victorias {p2Name}
                     </div>
                 </div>
