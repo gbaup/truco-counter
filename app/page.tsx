@@ -122,7 +122,7 @@ export default function Home() {
       {matchState.view === "setup" && (
         <header className="mb-4 text-center">
           <h1 className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white md:text-7xl">
-            TRUCO<span className="text-blue-600">PRO</span>
+            TRUCO<span className="text-primary-600">PRO</span>
           </h1>
         </header>
       )}

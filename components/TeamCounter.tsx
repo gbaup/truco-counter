@@ -7,7 +7,7 @@ interface TeamCounterProps {
   totalScore: number;
   malas: number;
   buenas: number;
-  variant: "blue" | "green";
+  variant: "primary" | "secondary";
   badgePosition: "left" | "right";
 }
 
@@ -20,14 +20,14 @@ export default function TeamCounter({
   variant,
   badgePosition,
 }: TeamCounterProps) {
-  const isBlue = variant === "blue";
+  const isPrimary = variant === "primary";
 
-  const bgUserColor = isBlue
-    ? "bg-blue-600/10 dark:bg-blue-900/20"
-    : "bg-green-600/10 dark:bg-green-900/20";
-  const titleColor = isBlue ? "text-blue-500" : "text-green-500";
+  const bgUserColor = isPrimary
+    ? "bg-primary-600/10 dark:bg-primary-900/20"
+    : "bg-secondary-600/10 dark:bg-secondary-900/20";
+  const titleColor = isPrimary ? "text-primary-500" : "text-secondary-500";
 
-  const badgeBgColor = isBlue ? "bg-blue-500" : "bg-green-500";
+  const badgeBgColor = isPrimary ? "bg-primary-500" : "bg-secondary-500";
   const badgePositionClass = badgePosition === "right" ? "-right-3" : "-left-3";
 
   //TODO: implement team members display
@@ -45,7 +45,7 @@ export default function TeamCounter({
         </div>
 
         <div
-          className={`h-1 w-full rounded-full shadow-inner ${isBlue ? "bg-blue-500/20" : "bg-green-500/20"
+          className={`h-1 w-full rounded-full shadow-inner ${isPrimary ? "bg-primary-500/20" : "bg-secondary-500/20"
             }`}
         />
 
