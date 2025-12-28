@@ -13,7 +13,6 @@ interface TeamCounterProps {
 
 export default function TeamCounter({
   title,
-  players,
   totalScore,
   malas,
   buenas,

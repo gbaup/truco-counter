@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import BurgerMenu from "@/components/BurgerMenu";
+import { UserStats } from "@/types/database";
 import { getUserStats } from "@/services/userService";
 
 export default function StatisticsPage() {
-  const [userStats, setUserStats] = useState<any[]>([]);
+  const [userStats, setUserStats] = useState<UserStats[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

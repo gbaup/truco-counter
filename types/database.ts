@@ -9,7 +9,7 @@ export type PublicUser = Omit<User, "password">;
 
 
 export interface UserStats {
-  id: string;
+  user_id: string;
   username: string;
   wins: number;
   losses: number;

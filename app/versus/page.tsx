@@ -27,6 +27,7 @@ export default function VersusPage() {
 
     useEffect(() => {
         if (player1 && player2 && player1 !== player2) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setLoading(true);
             getUsersVersus(player1, player2)
                 .then((data) => setStats(data))

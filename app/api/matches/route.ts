@@ -35,12 +35,12 @@ export async function POST(request: Request) {
         }
 
         const participants = [
-            ...team1.map((user: any) => ({
+            ...team1.map((user: { id: string }) => ({
                 match_id: match.id,
                 user_id: user.id,
                 team: 1,
             })),
-            ...team2.map((user: any) => ({
+            ...team2.map((user: { id: string }) => ({
                 match_id: match.id,
                 user_id: user.id,
                 team: 2,

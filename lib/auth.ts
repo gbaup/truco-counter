@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 const SECRET_KEY = process.env.JWT_SECRET || "your-secret-key-change-this-in-prod";
 const key = new TextEncoder().encode(SECRET_KEY);
 
-export async function signToken(payload: any) {
+export async function signToken(payload: Record<string, unknown>) {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
@@ -16,7 +16,7 @@ export async function verifyToken(token: string) {
     try {
         const { payload } = await jwtVerify(token, key);
         return payload;
-    } catch (error) {
+    } catch {
         return null;
     }
 }
