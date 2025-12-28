@@ -29,3 +29,14 @@ export async function getUserStats(): Promise<UserStats[]> {
   }
 }
 
+export async function getUsersVersus(p1Id: string, p2Id: string) {
+  try {
+    const response = await fetch(`/api/users/versus?p1=${p1Id}&p2=${p2Id}`);
+    if (!response.ok) throw new Error("Error en el versus");
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
