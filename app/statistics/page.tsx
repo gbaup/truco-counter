@@ -1,37 +1,23 @@
+"use client"; // Ahora sí será respetado
+
+import { useState, useEffect } from "react";
 import BurgerMenu from "@/components/BurgerMenu";
-import { getMatches } from "@/services/matchService";
-import { getUsers } from "@/services/userService";
-import { PublicUser } from "@/types/database";
+import { getUserStats } from "@/services/userService";
 
-export default async function StatisticsPage() {
-  const [users, matches] = await Promise.all([getUsers(), getMatches()]);
+export default function StatisticsPage() {
+  const [userStats, setUserStats] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const userStats = users.map((user) => {
-    let wins = 0;
-    let losses = 0;
+  useEffect(() => {
+    async function fetchData() {
+      const stats = await getUserStats();
+      setUserStats(stats);
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
 
-    matches.forEach((match: any) => {
-      const isTeam1 = match.match_participants.some(
-        (p: any) => p.user_id === user.id && p.team === 1,
-      );
-      const isTeam2 = match.match_participants.some(
-        (p: any) => p.user_id === user.id && p.team === 2,
-      );
-
-      if (isTeam1) {
-        if (match.winner_team === 1) wins++;
-        else losses++;
-      } else if (isTeam2) {
-        if (match.winner_team === 2) wins++;
-        else losses++;
-      }
-    });
-
-    return { ...user, wins, losses };
-  });
-
-  // Sort by wins (descending)
-  userStats.sort((a, b) => b.wins - a.wins);
+  if (loading) return <div>Loading statistics...</div>;
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 p-4 transition-colors dark:bg-zinc-950">
@@ -57,16 +43,16 @@ export default async function StatisticsPage() {
                 </tr>
               </thead>
               <tbody>
-                {userStats.map((user) => (
-                  <tr key={user.id} className="border-b bg-white last:border-b-0 dark:border-zinc-800 dark:bg-zinc-900">
-                    <td className="whitespace-nowrap px-6 py-4 font-medium text-zinc-900 dark:text-white">
-                      {user.name}
+                {userStats.map((userStat) => (
+                  <tr key={userStat.user_id} className="border-b bg-white last:border-b-0 dark:border-zinc-800 dark:bg-zinc-900">
+                    <td className="whitespace-nowrap capitalize px-6 py-4 font-medium text-zinc-900 dark:text-white">
+                      {userStat.username}
                     </td>
                     <td className="px-6 py-4 text-center font-bold text-green-600">
-                      {user.wins}
+                      {userStat.wins}
                     </td>
                     <td className="px-6 py-4 text-center font-bold text-red-500">
-                      {user.losses}
+                      {userStat.losses}
                     </td>
                   </tr>
                 ))}

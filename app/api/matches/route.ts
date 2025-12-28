@@ -6,7 +6,6 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { score1, score2, winner_team, team1, team2 } = body;
 
-        // Basic validation
         if (
             score1 === undefined ||
             score2 === undefined ||
@@ -20,7 +19,6 @@ export async function POST(request: Request) {
             );
         }
 
-        // 1. Insert Match
         const { data: match, error: matchError } = await supabaseAdmin
             .from("matches")
             .insert({
@@ -36,7 +34,6 @@ export async function POST(request: Request) {
             throw matchError;
         }
 
-        // 2. Prepare Participants
         const participants = [
             ...team1.map((user: any) => ({
                 match_id: match.id,
@@ -50,7 +47,6 @@ export async function POST(request: Request) {
             })),
         ];
 
-        // 3. Insert Participants
         const { error: participantsError } = await supabaseAdmin
             .from("match_participants")
             .insert(participants);
@@ -85,6 +81,7 @@ export async function GET() {
         if (error) {
             throw error;
         }
+
 
         return NextResponse.json(matches);
     } catch (error) {
