@@ -70,8 +70,8 @@ export default function BurgerMenu() {
             href="/"
             onClick={closeMenu}
             className={`text-lg font-medium transition-colors hover:text-blue-600 ${pathname === "/"
-                ? "text-blue-600"
-                : "text-zinc-600 dark:text-zinc-400"
+              ? "text-blue-600"
+              : "text-zinc-600 dark:text-zinc-400"
               }`}
           >
             Home
@@ -80,11 +80,21 @@ export default function BurgerMenu() {
             href="/statistics"
             onClick={closeMenu}
             className={`text-lg font-medium transition-colors hover:text-blue-600 ${pathname === "/statistics"
-                ? "text-blue-600"
-                : "text-zinc-600 dark:text-zinc-400"
+              ? "text-blue-600"
+              : "text-zinc-600 dark:text-zinc-400"
               }`}
           >
             Statistics
+          </Link>
+          <Link
+            href="/versus"
+            onClick={closeMenu}
+            className={`text-lg font-medium transition-colors hover:text-blue-600 ${pathname === "/versus"
+              ? "text-blue-600"
+              : "text-zinc-600 dark:text-zinc-400"
+              }`}
+          >
+            Versus
           </Link>
           <button
             onClick={async () => {
