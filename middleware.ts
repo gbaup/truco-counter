@@ -6,8 +6,20 @@ export async function middleware(request: NextRequest) {
     const token = request.cookies.get("auth-token")?.value;
     const verifiedToken = token && (await verifyToken(token));
 
-    if (!verifiedToken && !request.nextUrl.pathname.startsWith("/login")) {
-        return NextResponse.redirect(new URL("/login", request.url));
+    if (!verifiedToken) {
+        if (request.nextUrl.pathname.startsWith("/api/")) {
+            if (request.nextUrl.pathname.startsWith("/api/auth/login")) {
+                return NextResponse.next();
+            }
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        if (!request.nextUrl.pathname.startsWith("/login")) {
+            return NextResponse.redirect(new URL("/login", request.url));
+        }
     }
 
     if (verifiedToken && request.nextUrl.pathname.startsWith("/login")) {
@@ -18,5 +30,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+    matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
