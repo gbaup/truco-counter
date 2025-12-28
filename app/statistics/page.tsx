@@ -17,7 +17,11 @@ export default function StatisticsPage() {
     fetchData();
   }, []);
 
-  if (loading) return <div>Loading statistics...</div>;
+  if (loading) return (
+    <div className="flex h-64 items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+    </div>
+  );
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 p-4 transition-colors dark:bg-zinc-950">

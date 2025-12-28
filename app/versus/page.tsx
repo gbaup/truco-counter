@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { PublicUser } from "@/types/database";
 import { getUsers, getUsersVersus } from "@/services/userService";
+import BurgerMenu from "@/components/BurgerMenu";
 
 interface VersusStats {
     total_matches: number;
@@ -36,6 +37,8 @@ export default function VersusPage() {
 
     return (
         <div className="flex min-h-screen flex-col items-center p-8 pt-24">
+            <BurgerMenu />
+
             <h1 className="mb-8 text-4xl font-bold text-white">Versus</h1>
 
             <div className="w-full max-w-4xl grid gap-8 md:grid-cols-2">

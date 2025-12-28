@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const p2 = searchParams.get("p2");
 
     if (!p1 || !p2) {
-        return NextResponse.json({ error: "Faltan IDs de jugadores" }, { status: 400 });
+        return NextResponse.json({ error: "Missing user IDs" }, { status: 400 });
     }
 
     try {
