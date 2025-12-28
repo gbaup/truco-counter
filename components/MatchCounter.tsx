@@ -66,7 +66,7 @@ export default function MatchCounter({
           totalScore={score1}
           malas={team1Split.malas}
           buenas={team1Split.buenas}
-          variant="blue"
+          variant="primary"
           badgePosition="right"
         />
 
@@ -76,7 +76,7 @@ export default function MatchCounter({
           totalScore={score2}
           malas={team2Split.malas}
           buenas={team2Split.buenas}
-          variant="green"
+          variant="secondary"
           badgePosition="left"
         />
       </div>

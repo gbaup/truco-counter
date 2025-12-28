@@ -14,7 +14,7 @@ export default function WinnerModal({ winner, onFinish }: WinnerModalProps) {
         <p className="mb-8 text-zinc-400">Tremendo partido. ¿Revancha?</p>
         <button
           onClick={onFinish}
-          className="w-full rounded-2xl bg-blue-600 py-4 font-bold text-white transition-all hover:bg-blue-700 active:scale-95"
+          className="w-full rounded-2xl bg-primary-600 py-4 font-bold text-white transition-all hover:bg-primary-700 active:scale-95"
         >
           Terminar y Salir
         </button>
