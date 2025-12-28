@@ -18,7 +18,9 @@ export async function GET(request: Request) {
 
         if (error) throw error;
         return NextResponse.json(data[0] || { total_matches: 0, p1_wins: 0, p2_wins: 0, draws: 0 });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        return NextResponse.json({
+            error: error instanceof Error ? error.message : "An unknown error occurred"
+        }, { status: 500 });
     }
 }
