@@ -1,20 +1,39 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { getSession } from "@/lib/auth";
+
+import { Session } from "@/types/auth";
+import { CreateMatchDto } from "@/types/match";
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const { score1, score2, winner_team, team1, team2 } = body;
+        const session = await getSession() as Session | null;
+
+        if (!session || !session.userId) {
+            return NextResponse.json(
+                { success: false, error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const body: CreateMatchDto = await request.json();
+        const { score1, score2, team1, team2, winner_team } = body;
 
         if (
             score1 === undefined ||
             score2 === undefined ||
-            !winner_team ||
-            !team1 ||
-            !team2
+            winner_team === undefined
         ) {
             return NextResponse.json(
-                { error: "Missing required match data" },
+                { error: "Missing required match data (score1, score2, winner_team)" },
+                { status: 400 }
+            );
+        }
+
+        // Validar que ambos equipos tengan jugadores
+        if (!team1 || team1.length === 0 || !team2 || team2.length === 0) {
+            return NextResponse.json(
+                { success: false, error: "Both teams must have at least one player" },
                 { status: 400 }
             );
         }
@@ -25,14 +44,15 @@ export async function POST(request: Request) {
                 score_team_2: score2,
                 winner_team: winner_team,
                 status: "finished",
+                created_by: session.userId,
 
                 match_participants: {
                     create: [
-                        ...team1.map((user: { id: string }) => ({
+                        ...team1.map((user) => ({
                             user_id: user.id,
                             team: 1,
                         })),
-                        ...team2.map((user: { id: string }) => ({
+                        ...team2.map((user) => ({
                             user_id: user.id,
                             team: 2,
                         })),
