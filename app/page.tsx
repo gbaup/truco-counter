@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
 import BurgerMenu from "@/components/BurgerMenu";
+import WinnerModal from "@/components/WinnerModal";
 import { PublicUser } from "@/types/database";
 import { MatchState } from "@/types/game";
 import { saveMatch } from "@/services/matchService";
@@ -123,6 +124,9 @@ export default function Home() {
     localStorage.removeItem(STORAGE_KEY);
   };
 
+  const winner =
+    matchState.score1 >= matchState.maxPoints ? "Nosotros" : matchState.score2 >= matchState.maxPoints ? "Ellos" : null;
+
   if (!isLoaded) return null; // Or a loading spinner
 
   return (
@@ -140,17 +144,23 @@ export default function Home() {
         {matchState.view === "setup" ? (
           <MatchSetup onStartMatch={startMatch} />
         ) : (
-          <MatchCounter
-            team1={matchState.team1}
-            team2={matchState.team2}
-            maxPoints={matchState.maxPoints}
-            score1={matchState.score1}
-            score2={matchState.score2}
-            onIncrement={handleIncrement}
-            onDecrement={handleDecrement}
-            onFinish={finishMatch}
-            isSaving={isSaving}
-          />
+          <>
+            <MatchCounter
+              team1={matchState.team1}
+              team2={matchState.team2}
+              maxPoints={matchState.maxPoints}
+              score1={matchState.score1}
+              score2={matchState.score2}
+              onIncrement={handleIncrement}
+              onDecrement={handleDecrement}
+              onFinish={finishMatch}
+            />
+            <WinnerModal
+              winner={winner}
+              onFinish={() => finishMatch({ score1: matchState.score1, score2: matchState.score2 })}
+              isLoading={isSaving}
+            />
+          </>
         )}
       </main>
     </div>

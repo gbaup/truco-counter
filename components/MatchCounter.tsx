@@ -4,9 +4,7 @@ import { useState } from "react";
 import { PublicUser } from "@/types/database";
 import TeamCounter from "./TeamCounter";
 import Controls from "./Controls";
-import WinnerModal from "./WinnerModal";
 import ConfirmationExitModal from "./ConfirmationExitModal";
-
 interface MatchCounterProps {
   team1: PublicUser[];
   team2: PublicUser[];
@@ -16,7 +14,6 @@ interface MatchCounterProps {
   onIncrement: (team: 1 | 2) => void;
   onDecrement: (team: 1 | 2) => void;
   onFinish: (result: { score1: number; score2: number }) => void;
-  isSaving?: boolean;
 }
 
 export default function MatchCounter({
@@ -28,7 +25,6 @@ export default function MatchCounter({
   onIncrement,
   onDecrement,
   onFinish,
-  isSaving,
 }: MatchCounterProps) {
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
@@ -44,9 +40,6 @@ export default function MatchCounter({
   const handleCancelExit = () => {
     setShowExitConfirmation(false);
   };
-
-  const winner =
-    score1 >= maxPoints ? "Nosotros" : score2 >= maxPoints ? "Ellos" : null;
 
   const half = maxPoints / 2;
 
@@ -90,13 +83,6 @@ export default function MatchCounter({
         onExit={handleExitClick}
         score1={score1}
         score2={score2}
-      />
-
-      {/* Winner Confirmation Modal */}
-      <WinnerModal
-        winner={winner}
-        onFinish={() => onFinish({ score1, score2 })}
-        isLoading={isSaving}
       />
 
       {/* Exit Confirmation Modal */}
