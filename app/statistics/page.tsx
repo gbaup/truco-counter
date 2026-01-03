@@ -12,7 +12,8 @@ export default function StatisticsPage() {
   useEffect(() => {
     async function fetchData() {
       const stats = await getUserStats();
-      setUserStats(stats);
+      const sortedStats = stats.sort((a, b) => (b.wins / (b.wins + b.losses)) - (a.wins / (a.wins + a.losses)));
+      setUserStats(sortedStats);
       setLoading(false);
     }
     fetchData();
@@ -48,19 +49,21 @@ export default function StatisticsPage() {
                 </tr>
               </thead>
               <tbody>
-                {userStats.map((userStat) => (
-                  <tr key={userStat.user_id} className="border-b bg-white last:border-b-0 dark:border-zinc-800 dark:bg-zinc-900">
-                    <td className="whitespace-nowrap capitalize px-6 py-4 font-medium text-zinc-900 dark:text-white">
-                      {userStat.username}
-                    </td>
-                    <td className="px-6 py-4 text-center font-bold text-secondary-600">
-                      {userStat.wins}
-                    </td>
-                    <td className="px-6 py-4 text-center font-bold text-red-500">
-                      {userStat.losses}
-                    </td>
-                  </tr>
-                ))}
+                {userStats.map((userStat) => {
+                  return (
+                    <tr key={userStat.user_id} className="border-b bg-white last:border-b-0 dark:border-zinc-800 dark:bg-zinc-900">
+                      <td className="whitespace-nowrap capitalize px-6 py-4 font-medium text-zinc-900 dark:text-white">
+                        {userStat.username}
+                      </td>
+                      <td className="px-6 py-4 text-center font-bold text-secondary-600">
+                        {userStat.wins}
+                      </td>
+                      <td className="px-6 py-4 text-center font-bold text-red-500">
+                        {userStat.losses}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
