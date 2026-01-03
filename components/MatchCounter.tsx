@@ -16,6 +16,7 @@ interface MatchCounterProps {
   onIncrement: (team: 1 | 2) => void;
   onDecrement: (team: 1 | 2) => void;
   onFinish: (result: { score1: number; score2: number }) => void;
+  isSaving?: boolean;
 }
 
 export default function MatchCounter({
@@ -27,6 +28,7 @@ export default function MatchCounter({
   onIncrement,
   onDecrement,
   onFinish,
+  isSaving,
 }: MatchCounterProps) {
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
@@ -94,6 +96,7 @@ export default function MatchCounter({
       <WinnerModal
         winner={winner}
         onFinish={() => onFinish({ score1, score2 })}
+        isLoading={isSaving}
       />
 
       {/* Exit Confirmation Modal */}

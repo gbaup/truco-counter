@@ -21,6 +21,7 @@ export default function Home() {
   });
 
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const savedState = localStorage.getItem(STORAGE_KEY);
@@ -81,6 +82,9 @@ export default function Home() {
   };
 
   const finishMatch = async (result: { score1: number; score2: number }) => {
+    if (isSaving) return;
+    setIsSaving(true);
+
     const winner_team =
       result.score1 >= matchState.maxPoints
         ? 1
@@ -99,7 +103,11 @@ export default function Home() {
         });
       } catch (error) {
         console.error("Failed to save match:", error);
+      } finally {
+        setIsSaving(false);
       }
+    } else {
+      setIsSaving(false);
     }
 
     const resetState: MatchState = {
@@ -141,6 +149,7 @@ export default function Home() {
             onIncrement={handleIncrement}
             onDecrement={handleDecrement}
             onFinish={finishMatch}
+            isSaving={isSaving}
           />
         )}
       </main>
