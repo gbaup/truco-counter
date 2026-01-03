@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "@/lib/supabaseServer";
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -19,41 +19,27 @@ export async function POST(request: Request) {
             );
         }
 
-        const { data: match, error: matchError } = await supabaseAdmin
-            .from("matches")
-            .insert({
+        const match = await prisma.matches.create({
+            data: {
                 score_team_1: score1,
                 score_team_2: score2,
                 winner_team: winner_team,
                 status: "finished",
-            })
-            .select()
-            .single();
 
-        if (matchError) {
-            throw matchError;
-        }
-
-        const participants = [
-            ...team1.map((user: { id: string }) => ({
-                match_id: match.id,
-                user_id: user.id,
-                team: 1,
-            })),
-            ...team2.map((user: { id: string }) => ({
-                match_id: match.id,
-                user_id: user.id,
-                team: 2,
-            })),
-        ];
-
-        const { error: participantsError } = await supabaseAdmin
-            .from("match_participants")
-            .insert(participants);
-
-        if (participantsError) {
-            throw participantsError;
-        }
+                match_participants: {
+                    create: [
+                        ...team1.map((user: { id: string }) => ({
+                            user_id: user.id,
+                            team: 1,
+                        })),
+                        ...team2.map((user: { id: string }) => ({
+                            user_id: user.id,
+                            team: 2,
+                        })),
+                    ],
+                },
+            },
+        });
 
         return NextResponse.json(match);
     } catch (error) {
@@ -67,21 +53,22 @@ export async function POST(request: Request) {
 
 export async function GET() {
     try {
-        const { data: matches, error } = await supabaseAdmin
-            .from("matches")
-            .select(`
-                *,
-                match_participants (
-                    user_id,
-                    team
-                )
-            `)
-            .eq("status", "finished");
-
-        if (error) {
-            throw error;
-        }
-
+        const matches = await prisma.matches.findMany({
+            where: {
+                status: "finished",
+            },
+            include: {
+                match_participants: {
+                    select: {
+                        user_id: true,
+                        team: true,
+                    },
+                },
+            },
+            orderBy: {
+                created_at: 'desc'
+            }
+        });
 
         return NextResponse.json(matches);
     } catch (error) {
