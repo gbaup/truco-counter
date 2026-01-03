@@ -28,7 +28,6 @@ export default function Home() {
     const savedState = localStorage.getItem(STORAGE_KEY);
     if (savedState) {
       try {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMatchState(JSON.parse(savedState));
       } catch (error) {
         console.error("Failed to parse saved match state", error);
