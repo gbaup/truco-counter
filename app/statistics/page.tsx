@@ -1,4 +1,4 @@
-"use client"; // Ahora sí será respetado
+"use client";
 
 import { useState, useEffect } from "react";
 import BurgerMenu from "@/components/BurgerMenu";
