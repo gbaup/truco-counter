@@ -99,12 +99,10 @@ export function useMatch() {
                 }
             } catch (error) {
                 console.error("Failed to save match:", error);
-            } finally {
-                setIsSaving(false);
             }
-        } else {
-            setIsSaving(false);
         }
+
+        setIsSaving(false);
 
         setMatchState({
             view: "setup",
