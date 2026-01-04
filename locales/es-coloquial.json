@@ -4,5 +4,16 @@
         "username": "Usuario",
         "password": "Contraseña",
         "button": "Entrar"
+    },
+    "matchSetup": {
+        "team1": "Nosotros",
+        "team2": "Ellos",
+        "maxPoints": "A cuánto se juega",
+        "equalPlayers": "Poné bien los equipos",
+        "button": {
+            "start": "Empezar!",
+            "loading": "Empezando...",
+            "disabled": "Por lo menos de a 2"
+        }
     }
 }
