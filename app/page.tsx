@@ -1,167 +1,43 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react"; // Solo para UI local como modales
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
 import BurgerMenu from "@/components/BurgerMenu";
 import WinnerModal from "@/components/WinnerModal";
 import ConfirmationExitModal from "@/components/ConfirmationExitModal";
+import { useMatch } from "@/hooks/useMatch";
 import { PublicUser } from "@/types/database";
-import { MatchState } from "@/types/game";
-import { createMatch, updateMatch, saveMatch } from "@/services/matchService";
 
-const STORAGE_KEY = "truco-match-state";
 
 export default function Home() {
-  const [matchState, setMatchState] = useState<MatchState>({
-    view: "setup",
-    team1: [],
-    team2: [],
-    maxPoints: 30,
-    score1: 0,
-    score2: 0,
-  });
+  const {
+    matchState, isLoaded, isSaving,
+    startMatch, finishMatch, incrementScore, decrementScore
+  } = useMatch();
 
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isStarting, setIsStarting] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
 
-  useEffect(() => {
-    const savedState = localStorage.getItem(STORAGE_KEY);
-    if (savedState) {
-      try {
-        setMatchState(JSON.parse(savedState));
-      } catch (error) {
-        console.error("Failed to parse saved match state", error);
-      }
-    }
-    setIsLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(matchState));
-    }
-  }, [matchState, isLoaded]);
-
-  const startMatch = async (
-    team1: PublicUser[],
-    team2: PublicUser[],
-    maxPoints: number
-  ) => {
-    if (isStarting) return;
-    setIsStarting(true);
-    try {
-      const match = await createMatch({
-        team1,
-        team2,
-        status: "ongoing",
-      });
-
-      setMatchState({
-        view: "match",
-        team1,
-        team2,
-        maxPoints,
-        score1: 0,
-        score2: 0,
-        matchId: match.id,
-      });
-    } catch (error) {
-      console.error("Failed to start match:", error);
-    } finally {
-      setIsStarting(false);
-    }
-  };
-
-  const handleIncrement = (team: 1 | 2) => {
-    if (team === 1) {
-      if (matchState.score1 < matchState.maxPoints) {
-        setMatchState((prev) => ({ ...prev, score1: prev.score1 + 1 }));
-      }
-    } else {
-      if (matchState.score2 < matchState.maxPoints) {
-        setMatchState((prev) => ({ ...prev, score2: prev.score2 + 1 }));
-      }
-    }
-  };
-
-  const handleDecrement = (team: 1 | 2) => {
-    if (team === 1) {
-      if (matchState.score1 > 0) {
-        setMatchState((prev) => ({ ...prev, score1: prev.score1 - 1 }));
-      }
-    } else {
-      if (matchState.score2 > 0) {
-        setMatchState((prev) => ({ ...prev, score2: prev.score2 - 1 }));
-      }
-    }
-  };
-
-  const finishMatch = async (result: {
-    score1: number;
-    score2: number;
-    status?: "finished" | "cancelled";
-  }) => {
-    if (isSaving) return;
-    setIsSaving(true);
-
-    const winner_team =
-      result.score1 >= matchState.maxPoints
-        ? 1
-        : result.score2 >= matchState.maxPoints
-          ? 2
-          : null;
-
-    if (winner_team || result.status === "cancelled") {
-      try {
-        if (matchState.matchId) {
-          await updateMatch(matchState.matchId, {
-            score1: result.score1,
-            score2: result.score2,
-            winner_team,
-            status: result.status,
-          });
-        } else {
-          await saveMatch({
-            team1: matchState.team1,
-            team2: matchState.team2,
-            score1: result.score1,
-            score2: result.score2,
-            winner_team,
-          });
-        }
-      } catch (error) {
-        console.error("Failed to save match:", error);
-      } finally {
-        setIsSaving(false);
-      }
-    } else {
-      setIsSaving(false);
-    }
-
-    const resetState: MatchState = {
-      view: "setup",
-      team1: [],
-      team2: [],
-      maxPoints: 30,
-      score1: 0,
-      score2: 0,
-    };
-
-    setMatchState(resetState);
-    localStorage.removeItem(STORAGE_KEY);
-  };
-
-  const winner =
-    matchState.score1 >= matchState.maxPoints ? "Nosotros" : matchState.score2 >= matchState.maxPoints ? "Ellos" : null;
+  const winner = matchState.score1 >= matchState.maxPoints ? "Nosotros" : matchState.score2 >= matchState.maxPoints ? "Ellos" : null;
 
   if (!isLoaded) return null;
+
+  const handleStartMatch = async (
+    t1: PublicUser[],
+    t2: PublicUser[],
+    max: number
+  ) => {
+    try {
+      await startMatch(t1, t2, max);
+    } catch (e: any) {
+      if (e.message === "PLAYERS_BUSY") alert("Jugadores ocupados...");
+    }
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 p-4 transition-colors dark:bg-zinc-950">
       {matchState.view === "setup" && <BurgerMenu />}
+
       {matchState.view === "setup" && (
         <header className="mb-4 text-center">
           <h1 className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white md:text-7xl">
@@ -172,17 +48,13 @@ export default function Home() {
 
       <main className="w-full max-w-5xl flex items-center justify-center">
         {matchState.view === "setup" ? (
-          <MatchSetup onStartMatch={startMatch} />
+          <MatchSetup onStartMatch={handleStartMatch} />
         ) : (
           <>
             <MatchCounter
-              team1={matchState.team1}
-              team2={matchState.team2}
-              maxPoints={matchState.maxPoints}
-              score1={matchState.score1}
-              score2={matchState.score2}
-              onIncrement={handleIncrement}
-              onDecrement={handleDecrement}
+              {...matchState}
+              onIncrement={incrementScore}
+              onDecrement={decrementScore}
               onExit={() => setShowExitModal(true)}
             />
             <WinnerModal
@@ -194,11 +66,7 @@ export default function Home() {
               <ConfirmationExitModal
                 onConfirm={() => {
                   setShowExitModal(false);
-                  finishMatch({
-                    score1: matchState.score1,
-                    score2: matchState.score2,
-                    status: "cancelled",
-                  });
+                  finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "cancelled" });
                 }}
                 onCancel={() => setShowExitModal(false)}
               />
