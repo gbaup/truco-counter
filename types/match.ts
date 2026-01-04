@@ -13,5 +13,5 @@ export interface UpdateMatchDto {
     score1?: number;
     score2?: number;
     winner_team?: number;
-    status?: "ongoing" | "finished";
+    status?: "ongoing" | "finished" | "cancelled";
 }

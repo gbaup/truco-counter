@@ -5,6 +5,7 @@ import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
 import BurgerMenu from "@/components/BurgerMenu";
 import WinnerModal from "@/components/WinnerModal";
+import ConfirmationExitModal from "@/components/ConfirmationExitModal";
 import { PublicUser } from "@/types/database";
 import { MatchState } from "@/types/game";
 import { createMatch, updateMatch, saveMatch } from "@/services/matchService";
@@ -24,6 +25,7 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
+  const [showExitModal, setShowExitModal] = useState(false);
 
   useEffect(() => {
     const savedState = localStorage.getItem(STORAGE_KEY);
@@ -97,7 +99,7 @@ export default function Home() {
     }
   };
 
-  const finishMatch = async (result: { score1: number; score2: number }) => {
+  const finishMatch = async (result: { score1: number; score2: number; status?: "finished" | "cancelled" }) => {
     if (isSaving) return;
     setIsSaving(true);
 
@@ -115,7 +117,7 @@ export default function Home() {
             score1: result.score1,
             score2: result.score2,
             winner_team,
-            status: "finished",
+            status: result.status,
           });
         } else {
           await saveMatch({
@@ -151,7 +153,7 @@ export default function Home() {
   const winner =
     matchState.score1 >= matchState.maxPoints ? "Nosotros" : matchState.score2 >= matchState.maxPoints ? "Ellos" : null;
 
-  if (!isLoaded) return null; // Or a loading spinner
+  if (!isLoaded) return null;
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 p-4 transition-colors dark:bg-zinc-950">
@@ -177,13 +179,26 @@ export default function Home() {
               score2={matchState.score2}
               onIncrement={handleIncrement}
               onDecrement={handleDecrement}
-              onFinish={finishMatch}
+              onExit={() => setShowExitModal(true)}
             />
             <WinnerModal
               winner={winner}
-              onFinish={() => finishMatch({ score1: matchState.score1, score2: matchState.score2 })}
+              onFinish={() => finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" })}
               isLoading={isSaving}
             />
+            {showExitModal && (
+              <ConfirmationExitModal
+                onConfirm={() => {
+                  setShowExitModal(false);
+                  finishMatch({
+                    score1: matchState.score1,
+                    score2: matchState.score2,
+                    status: "cancelled",
+                  });
+                }}
+                onCancel={() => setShowExitModal(false)}
+              />
+            )}
           </>
         )}
       </main>

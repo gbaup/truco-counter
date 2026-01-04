@@ -61,6 +61,3 @@ export async function getMatches() {
   }
 }
 
-export async function finishIncompleteMatch(id: string) {
-  return updateMatch(id, { status: "finished" });
-}
