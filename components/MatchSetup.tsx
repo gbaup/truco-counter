@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { PublicUser } from "@/types/database";
 import { getUsers } from "@/services/userService";
+import { twMerge } from "tailwind-merge";
 
 interface MatchSetupProps {
   onStartMatch: (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => void;
@@ -62,14 +63,11 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
               <button
                 key={user.id}
                 onClick={() => toggleUserInTeam(user, 1)}
-                className={`capitalize w-full rounded-lg px-4 py-2 text-left transition-all ${team1.find((u) => u.id === user.id)
+                className={twMerge(`disabled:opacity-30 disabled:cursor-not-allowed capitalize w-full rounded-lg px-4 py-2 text-left transition-all`, team1.find((u) => u.id === user.id)
                   ? "bg-primary-500 text-white"
                   : "hover:bg-black/10 dark:hover:bg-white/10"
-                  } ${team2.find((u) => u.id === user.id)
-                    ? "opacity-30 cursor-not-allowed"
-                    : ""
-                  }`}
-                disabled={!!team2.find((u) => u.id === user.id)}
+                )}
+                disabled={!!team2.find((u) => u.id === user.id) || user.isPlaying}
               >
                 {user.username}
               </button>
@@ -84,14 +82,11 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
               <button
                 key={user.id}
                 onClick={() => toggleUserInTeam(user, 2)}
-                className={`capitalize w-full rounded-lg px-4 py-2 text-left transition-all ${team2.find((u) => u.id === user.id)
+                className={twMerge(`disabled:opacity-30 disabled:cursor-not-allowed capitalize w-full rounded-lg px-4 py-2 text-left transition-all`, team2.find((u) => u.id === user.id)
                   ? "bg-secondary-500 text-white"
                   : "hover:bg-black/10 dark:hover:bg-white/10"
-                  } ${team1.find((u) => u.id === user.id)
-                    ? "opacity-30 cursor-not-allowed"
-                    : ""
-                  }`}
-                disabled={!!team1.find((u) => u.id === user.id)}
+                )}
+                disabled={!!team1.find((u) => u.id === user.id) || user.isPlaying}
               >
                 {user.username}
               </button>
