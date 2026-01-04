@@ -12,7 +12,7 @@ import { PublicUser } from "@/types/database";
 
 export default function Home() {
   const {
-    matchState, isLoaded, isSaving,
+    matchState, isLoaded, isSaving, isStarting,
     startMatch, finishMatch, incrementScore, decrementScore
   } = useMatch();
 
@@ -48,7 +48,7 @@ export default function Home() {
 
       <main className="w-full max-w-5xl flex items-center justify-center">
         {matchState.view === "setup" ? (
-          <MatchSetup onStartMatch={handleStartMatch} />
+          <MatchSetup onStartMatch={handleStartMatch} isStarting={isStarting} />
         ) : (
           <>
             <MatchCounter
