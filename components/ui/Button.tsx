@@ -18,7 +18,7 @@ const buttonVariants = tv({
             danger: "group bg-danger-600 text-white hover:bg-danger-700 disabled:bg-zinc-500",
         },
         size: {
-            sm: "px-4 py-2 text-sm",
+            sm: "px-4 py-2 text-sm rounded-lg",
             md: "px-6 py-3 text-base",
             lg: "px-8 py-4 text-lg",
         },

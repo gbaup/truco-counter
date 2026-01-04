@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react"; // Solo para UI local como modales
+import { toast } from "sonner";
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
 import BurgerMenu from "@/components/ui/BurgerMenu";
@@ -30,7 +31,11 @@ export default function Home() {
     try {
       await startMatch(t1, t2, max);
     } catch (e: unknown) {
-      if (e instanceof Error && e.message === "PLAYERS_BUSY") alert("Jugadores ocupados...");
+      if (e instanceof Error) {
+        toast.error(e.message);
+      } else {
+        toast.error("Error al iniciar el partido");
+      }
     }
   }
 

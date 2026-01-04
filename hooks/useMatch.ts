@@ -49,8 +49,8 @@ export function useMatch() {
                 matchId: match.id,
             });
         } catch (error: unknown) {
-            if (error instanceof Error && error.message === "PLAYERS_BUSY") throw error;
             console.error(error);
+            throw error;
         } finally {
             setIsStarting(false);
         }

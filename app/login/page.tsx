@@ -3,28 +3,28 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "@/services/auth";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/Button";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     try {
       const { success, error } = await login(username, password);
 
       if (!success || error) {
-        setError(error || "Invalid credentials");
+        toast.error(error || "Invalid credentials");
         return;
       }
 
       router.push("/");
     } catch (err) {
       console.error(err);
-      setError("Something went wrong");
+      toast.error("Something went wrong");
     }
   };
 
@@ -34,11 +34,6 @@ export default function LoginPage() {
         <h1 className="mb-6 text-center text-3xl font-bold text-zinc-900 dark:text-white">
           Login
         </h1>
-        {error && (
-          <div className="mb-4 rounded-lg bg-danger-100 p-3 text-sm text-danger-600 dark:bg-danger-900/30 dark:text-danger-400">
-            {error}
-          </div>
-        )}
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
@@ -64,12 +59,13 @@ export default function LoginPage() {
               required
             />
           </div>
-          <button
+          <Button
             type="submit"
-            className="w-full rounded-lg bg-primary-600 px-4 py-2 font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            size="sm"
+            className="font-normal"
           >
-            Sign In
-          </button>
+            Sign in
+          </Button>
         </form>
       </div>
     </div>
