@@ -19,7 +19,6 @@ export async function POST(request: Request) {
         const body: CreateMatchDto = await request.json();
         const { score1, score2, team1, team2, winner_team, status } = body;
 
-        // Validar que ambos equipos tengan jugadores
         if (!team1 || team1.length === 0 || !team2 || team2.length === 0) {
             return NextResponse.json(
                 { success: false, error: "Both teams must have at least one player" },
@@ -27,9 +26,38 @@ export async function POST(request: Request) {
             );
         }
 
+        const allPlayerIds = [...team1, ...team2].map(user => user.id);
+
+
+        const existingMatch = await prisma.matches.findFirst({
+            where: {
+                status: "ongoing",
+                match_participants: {
+                    some: {
+                        user_id: {
+                            in: allPlayerIds
+                        }
+                    }
+                }
+            },
+            include: {
+                match_participants: true
+            }
+        });
+
+        if (existingMatch) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: "Uno o más jugadores ya están en una partida activa.",
+                    code: "PLAYERS_BUSY"
+                },
+                { status: 409 }
+            );
+        }
+
         const matchStatus = status || "ongoing";
 
-        // Validate finished match requirements
         if (matchStatus === "finished") {
             if (
                 score1 === undefined ||

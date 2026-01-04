@@ -68,14 +68,6 @@ export default function Home() {
       });
     } catch (error) {
       console.error("Failed to start match:", error);
-      setMatchState({
-        view: "match",
-        team1,
-        team2,
-        maxPoints,
-        score1: 0,
-        score2: 0,
-      });
     } finally {
       setIsStarting(false);
     }

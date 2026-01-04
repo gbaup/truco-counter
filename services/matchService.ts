@@ -1,8 +1,3 @@
-
-import { PublicUser } from "@/types/database";
-
-
-
 import { CreateMatchDto, UpdateMatchDto } from "@/types/match";
 
 export async function createMatch(matchData: CreateMatchDto) {
@@ -64,4 +59,8 @@ export async function getMatches() {
     console.error("Error fetching matches:", error);
     return [];
   }
+}
+
+export async function finishIncompleteMatch(id: string) {
+  return updateMatch(id, { status: "finished" });
 }
