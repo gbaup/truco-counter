@@ -99,13 +99,10 @@ export function useMatch() {
                 }
             } catch (error) {
                 console.error("Failed to save match:", error);
-            } finally {
-                setIsSaving(false);
             }
-        } else {
-            setIsSaving(false);
         }
 
+        setIsSaving(false);
         setMatchState({
             view: "setup",
             team1: [], team2: [], maxPoints: 30, score1: 0, score2: 0,
