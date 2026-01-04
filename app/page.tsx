@@ -4,7 +4,7 @@ import { useState } from "react"; // Solo para UI local como modales
 import { toast } from "sonner";
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
-import BurgerMenu from "@/components/ui/BurgerMenu";
+import SideDrawer from "@/components/SideDrawer";
 import WinnerModal from "@/components/WinnerModal";
 import ConfirmationExitModal from "@/components/ConfirmationExitModal";
 import { useMatch } from "@/hooks/useMatch";
@@ -41,7 +41,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 p-4 transition-colors dark:bg-zinc-950">
-      {matchState.view === "setup" && <BurgerMenu />}
+      {matchState.view === "setup" && <SideDrawer />}
 
       {matchState.view === "setup" && (
         <header className="mb-4 text-center">

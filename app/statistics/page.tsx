@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import BurgerMenu from "@/components/ui/BurgerMenu";
+import SideDrawer from "@/components/SideDrawer";
 import { UserStats } from "@/types/database";
 import { getUserStats } from "@/services/userService";
 
@@ -27,7 +27,7 @@ export default function StatisticsPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 p-4 transition-colors dark:bg-zinc-950">
-      <BurgerMenu />
+      <SideDrawer />
       <header className="mb-12 text-center">
         <h1 className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white md:text-7xl">
           TRUCO<span className="text-primary-600">PRO</span>

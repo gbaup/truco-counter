@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { PublicUser } from "@/types/database";
 import { getUsers, getUsersVersus } from "@/services/userService";
-import BurgerMenu from "@/components/ui/BurgerMenu";
+import SideDrawer from "@/components/SideDrawer";
 import UserDropdown from "@/components/UserDropdown";
 import VersusResults from "@/components/VersusResults";
 
@@ -40,7 +40,7 @@ export default function VersusPage() {
 
     return (
         <div className="flex min-h-screen flex-col items-center p-8 pt-24">
-            <BurgerMenu />
+            <SideDrawer />
 
             <h1 className="mb-8 text-4xl font-bold text-white">Versus</h1>
 
