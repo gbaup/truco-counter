@@ -3,5 +3,4 @@
 
 echo "🚧 Pre-push checks..."
 npm run lint
-# Temporarily skip build due to Google Fonts network issue in CI environment
-# npm run build
+npm run build
