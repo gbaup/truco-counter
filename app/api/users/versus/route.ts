@@ -1,5 +1,18 @@
-import { supabaseAdmin } from "@/lib/supabaseServer";
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+
+type VersusStats = {
+    total_matches: number;
+    p1_wins: number;
+    p2_wins: number;
+    draws: number;
+};
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isValidUUID(uuid: string): boolean {
+    return UUID_REGEX.test(uuid);
+}
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -10,15 +23,32 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "Missing user IDs" }, { status: 400 });
     }
 
-    try {
-        const { data, error } = await supabaseAdmin.rpc("get_users_versus", {
-            player1_id: p1,
-            player2_id: p2,
-        });
+    if (!isValidUUID(p1) || !isValidUUID(p2)) {
+        return NextResponse.json({ error: "Invalid user ID format" }, { status: 400 });
+    }
 
-        if (error) throw error;
-        return NextResponse.json(data[0] || { total_matches: 0, p1_wins: 0, p2_wins: 0, draws: 0 });
-    } catch (error: unknown) {
+    try {
+        const result = await prisma.$queryRaw<VersusStats[]>`
+            SELECT * FROM get_users_versus(${p1}::uuid, ${p2}::uuid)
+        `;
+
+        const stats = result[0] || {
+            total_matches: 0,
+            p1_wins: 0,
+            p2_wins: 0,
+            draws: 0
+        };
+
+        const serializedStats = JSON.parse(JSON.stringify(stats, (key, value) =>
+            typeof value === 'bigint'
+                ? Number(value)
+                : value
+        ));
+
+        return NextResponse.json(serializedStats);
+
+    } catch (error) {
+        console.error("Error in versus API:", error);
         return NextResponse.json({
             error: error instanceof Error ? error.message : "An unknown error occurred"
         }, { status: 500 });

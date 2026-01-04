@@ -1,7 +1,7 @@
 "use client";
 
 interface TallyGroupProps {
-  points: number; // 1-5
+  points: number;
 }
 
 function TallyGroup({ points }: TallyGroupProps) {

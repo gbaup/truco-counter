@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 import { PublicUser } from "@/types/database";
 import { getUsers } from "@/services/userService";
+import { twMerge } from "tailwind-merge";
+import { Button } from "./ui/Button";
 
 interface MatchSetupProps {
   onStartMatch: (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => void;
+  isStarting: boolean;
 }
 
-export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
+export default function MatchSetup({ onStartMatch, isStarting }: MatchSetupProps) {
   const [users, setUsers] = useState<PublicUser[]>([]);
   const [team1, setTeam1] = useState<PublicUser[]>([]);
   const [team2, setTeam2] = useState<PublicUser[]>([]);
@@ -62,14 +65,14 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
               <button
                 key={user.id}
                 onClick={() => toggleUserInTeam(user, 1)}
-                className={`capitalize w-full rounded-lg px-4 py-2 text-left transition-all ${team1.find((u) => u.id === user.id)
-                  ? "bg-primary-500 text-white"
-                  : "hover:bg-black/10 dark:hover:bg-white/10"
-                  } ${team2.find((u) => u.id === user.id)
-                    ? "opacity-30 cursor-not-allowed"
-                    : ""
-                  }`}
-                disabled={!!team2.find((u) => u.id === user.id)}
+                className={twMerge(
+                  "capitalize w-full rounded-lg px-4 py-2 text-left transition-all",
+                  team1.find((u) => u.id === user.id)
+                    ? "bg-primary-500 text-white"
+                    : "hover:bg-black/10 dark:hover:bg-white/10",
+                  "disabled:opacity-30 disabled:cursor-not-allowed"
+                )}
+                disabled={!!team2.find((u) => u.id === user.id) || user.isPlaying}
               >
                 {user.username}
               </button>
@@ -84,14 +87,14 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
               <button
                 key={user.id}
                 onClick={() => toggleUserInTeam(user, 2)}
-                className={`capitalize w-full rounded-lg px-4 py-2 text-left transition-all ${team2.find((u) => u.id === user.id)
-                  ? "bg-secondary-500 text-white"
-                  : "hover:bg-black/10 dark:hover:bg-white/10"
-                  } ${team1.find((u) => u.id === user.id)
-                    ? "opacity-30 cursor-not-allowed"
-                    : ""
-                  }`}
-                disabled={!!team1.find((u) => u.id === user.id)}
+                className={twMerge(
+                  "capitalize w-full rounded-lg px-4 py-2 text-left transition-all",
+                  team2.find((u) => u.id === user.id)
+                    ? "bg-secondary-500 text-white"
+                    : "hover:bg-black/10 dark:hover:bg-white/10",
+                  "disabled:opacity-30 disabled:cursor-not-allowed"
+                )}
+                disabled={!!team1.find((u) => u.id === user.id) || user.isPlaying}
               >
                 {user.username}
               </button>
@@ -107,10 +110,12 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
             <button
               key={points}
               onClick={() => setMaxPoints(points)}
-              className={`h-12 w-12 rounded-full border-2 transition-all ${maxPoints === points
-                ? "border-primary-500 bg-primary-500 text-white"
-                : "border-zinc-300 hover:border-primary-300 dark:border-zinc-700"
-                }`}
+              className={twMerge(
+                "h-12 w-12 rounded-full border-2 transition-all",
+                maxPoints === points
+                  ? "border-primary-500 bg-primary-500 text-white"
+                  : "border-zinc-300 hover:border-primary-300 dark:border-zinc-700"
+              )}
             >
               {points}
             </button>
@@ -125,20 +130,17 @@ export default function MatchSetup({ onStartMatch }: MatchSetupProps) {
           </p>
         )}
 
-        <button
+        <Button
+          variant="primary"
+          isLoading={isStarting}
+          loadingText="Iniciando..."
           disabled={!canStart}
           onClick={() => onStartMatch(team1, team2, maxPoints)}
-          className="group relative w-full overflow-hidden rounded-xl bg-primary-600 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-primary-700 disabled:bg-zinc-500 disabled:opacity-50"
         >
-          <div className="relative z-10">
-            {!canStart && (team1.length < 2 || team2.length < 2)
-              ? "Mínimo 2 vs 2"
-              : !canStart && team1.length !== team2.length
-                ? "Equipos desiguales"
-                : "Empezar Partido"}
-          </div>
-          <div className="absolute inset-0 z-0 origin-left scale-x-0 bg-primary-400 transition-transform duration-300 group-hover:scale-x-100"></div>
-        </button>
+          {!canStart && (team1.length < 2 || team2.length < 2)
+            ? "Mínimo 2 vs 2"
+            : "Empezar Partido"}
+        </Button>
       </div>
     </div>
   );

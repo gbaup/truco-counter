@@ -1,7 +1,9 @@
-import { supabaseAdmin } from "@/lib/supabaseServer";
+
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+
 
 export async function POST(request: Request) {
     try {
@@ -15,13 +17,13 @@ export async function POST(request: Request) {
             );
         }
 
-        const { data: user, error } = await supabaseAdmin
-            .from("users")
-            .select("*")
-            .eq("username", username)
-            .single();
+        const user = await prisma.users.findUnique({
+            where: {
+                username: username,
+            },
+        });
 
-        if (error || !user) {
+        if (!user) {
             return NextResponse.json(
                 { success: false, error: "Invalid username or password" },
                 { status: 401 }
@@ -37,16 +39,16 @@ export async function POST(request: Request) {
             );
         }
 
-        // Generate JWT
         const token = await signToken({ userId: user.id, username: user.username });
 
-        const response = NextResponse.json({ success: true, user });
+        const { password: _, ...publicUser } = user;
 
-        // Set HttpOnly Cookie
+        const response = NextResponse.json({ success: true, user: publicUser });
+
         response.cookies.set("auth-token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            maxAge: 60 * 60 * 24, // 1 day
+            maxAge: 60 * 60 * 24,
             path: "/",
         });
 

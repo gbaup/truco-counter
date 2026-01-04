@@ -5,7 +5,7 @@ export interface User {
   password: string;
 }
 
-export type PublicUser = Omit<User, "password">;
+export type PublicUser = Omit<User, "password"> & { isPlaying?: boolean };
 
 
 export interface UserStats {
