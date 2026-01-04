@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { PublicUser } from "@/types/database";
 import { getUsers } from "@/services/userService";
 import { twMerge } from "tailwind-merge";
+import { Button } from "./ui/Button";
 
 interface MatchSetupProps {
   onStartMatch: (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => void;
@@ -121,48 +122,17 @@ export default function MatchSetup({ onStartMatch, isStarting }: MatchSetupProps
           </p>
         )}
 
-        <button
-          disabled={!canStart || isStarting}
+        <Button
+          variant="primary"
+          isLoading={isStarting}
+          loadingText="Iniciando..."
+          disabled={!canStart}
           onClick={() => onStartMatch(team1, team2, maxPoints)}
-          className="group relative w-full overflow-hidden rounded-xl bg-primary-600 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-primary-700 disabled:bg-zinc-500 disabled:opacity-50"
         >
-          <div className="relative z-10 flex items-center justify-center gap-2">
-            {isStarting ? (
-              <>
-                <svg
-                  className="h-5 w-5 animate-spin text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                <span>Iniciando...</span>
-              </>
-            ) : (
-              <>
-                {!canStart && (team1.length < 2 || team2.length < 2)
-                  ? "Mínimo 2 vs 2"
-                  : !canStart && team1.length !== team2.length
-                    ? "Equipos desiguales"
-                    : "Empezar Partido"}
-              </>
-            )}
-          </div>
-          <div className="absolute inset-0 z-0 origin-left scale-x-0 bg-primary-400 transition-transform duration-300 group-hover:scale-x-100"></div>
-        </button>
+          {!canStart && (team1.length < 2 || team2.length < 2)
+            ? "Mínimo 2 vs 2"
+            : "Empezar Partido"}
+        </Button>
       </div>
     </div>
   );
