@@ -19,5 +19,11 @@
     "matchCounter": {
         "team1": "Nosotros",
         "team2": "Ellos"
+    },
+    "confirmationExitModal": {
+        "title": "¿Salir del partido?",
+        "description": "Se perderá el progreso actual.",
+        "cancel": "Cancelar",
+        "confirm": "Salir"
     }
 }

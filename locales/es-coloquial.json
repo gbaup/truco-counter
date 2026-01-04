@@ -19,5 +19,11 @@
     "matchCounter": {
         "team1": "Nosotros",
         "team2": "Ellos"
+    },
+    "confirmationExitModal": {
+        "title": "Hee? Van a salir?",
+        "description": "Insólito. Vayanse si están cagados",
+        "cancel": "No",
+        "confirm": "Si"
     }
 }
