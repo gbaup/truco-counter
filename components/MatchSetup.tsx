@@ -65,9 +65,12 @@ export default function MatchSetup({ onStartMatch, isStarting }: MatchSetupProps
               <button
                 key={user.id}
                 onClick={() => toggleUserInTeam(user, 1)}
-                className={twMerge(`disabled:opacity-30 disabled:cursor-not-allowed capitalize w-full rounded-lg px-4 py-2 text-left transition-all`, team1.find((u) => u.id === user.id)
-                  ? "bg-primary-500 text-white"
-                  : "hover:bg-black/10 dark:hover:bg-white/10"
+                className={twMerge(
+                  "capitalize w-full rounded-lg px-4 py-2 text-left transition-all",
+                  team1.find((u) => u.id === user.id)
+                    ? "bg-primary-500 text-white"
+                    : "hover:bg-black/10 dark:hover:bg-white/10",
+                  "disabled:opacity-30 disabled:cursor-not-allowed"
                 )}
                 disabled={!!team2.find((u) => u.id === user.id) || user.isPlaying}
               >
@@ -84,9 +87,12 @@ export default function MatchSetup({ onStartMatch, isStarting }: MatchSetupProps
               <button
                 key={user.id}
                 onClick={() => toggleUserInTeam(user, 2)}
-                className={twMerge(`disabled:opacity-30 disabled:cursor-not-allowed capitalize w-full rounded-lg px-4 py-2 text-left transition-all`, team2.find((u) => u.id === user.id)
-                  ? "bg-secondary-500 text-white"
-                  : "hover:bg-black/10 dark:hover:bg-white/10"
+                className={twMerge(
+                  "capitalize w-full rounded-lg px-4 py-2 text-left transition-all",
+                  team2.find((u) => u.id === user.id)
+                    ? "bg-secondary-500 text-white"
+                    : "hover:bg-black/10 dark:hover:bg-white/10",
+                  "disabled:opacity-30 disabled:cursor-not-allowed"
                 )}
                 disabled={!!team1.find((u) => u.id === user.id) || user.isPlaying}
               >
