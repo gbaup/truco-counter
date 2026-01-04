@@ -8,6 +8,13 @@ type VersusStats = {
     draws: number;
 };
 
+// UUID validation regex (RFC 4122 compliant)
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isValidUUID(uuid: string): boolean {
+    return UUID_REGEX.test(uuid);
+}
+
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const p1 = searchParams.get("p1");
@@ -15,6 +22,11 @@ export async function GET(request: Request) {
 
     if (!p1 || !p2) {
         return NextResponse.json({ error: "Missing user IDs" }, { status: 400 });
+    }
+
+    // Validate UUIDs to prevent SQL injection
+    if (!isValidUUID(p1) || !isValidUUID(p2)) {
+        return NextResponse.json({ error: "Invalid user ID format" }, { status: 400 });
     }
 
     try {
