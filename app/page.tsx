@@ -99,7 +99,11 @@ export default function Home() {
     }
   };
 
-  const finishMatch = async (result: { score1: number; score2: number; status?: "finished" | "cancelled" }) => {
+  const finishMatch = async (result: {
+    score1: number;
+    score2: number;
+    status?: "finished" | "cancelled";
+  }) => {
     if (isSaving) return;
     setIsSaving(true);
 
@@ -110,7 +114,7 @@ export default function Home() {
           ? 2
           : null;
 
-    if (winner_team) {
+    if (winner_team || result.status === "cancelled") {
       try {
         if (matchState.matchId) {
           await updateMatch(matchState.matchId, {
