@@ -8,14 +8,15 @@ export async function GET() {
                 id: true,
                 name: true,
                 username: true,
-                match_participants: {
-                    where: {
-                        matches: {
-                            status: "ongoing",
-                        },
-                    },
+                _count: {
                     select: {
-                        match_id: true,
+                        match_participants: {
+                            where: {
+                                matches: {
+                                    status: "ongoing",
+                                },
+                            },
+                        },
                     },
                 },
             },
@@ -25,7 +26,7 @@ export async function GET() {
             id: user.id,
             name: user.name,
             username: user.username,
-            isPlaying: user.match_participants.length > 0,
+            isPlaying: user._count.match_participants > 0,
         }));
 
         return NextResponse.json(usersWithStatus);
