@@ -2,31 +2,24 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { login } from "@/services/auth";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
+import { useLogin } from "@/hooks/useLogin";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const { isLoading, error, handleLogin } = useLogin();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const { success, error } = await login(username, password);
-
-      if (!success || error) {
-        toast.error(error || "Invalid credentials");
-        return;
-      }
-
+    await handleLogin(username, password);
+    if (!error) {
       router.push("/");
-    } catch (err) {
-      console.error(err);
-      toast.error("Something went wrong");
     }
   };
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950 p-4">
@@ -34,7 +27,7 @@ export default function LoginPage() {
         <h1 className="mb-6 text-center text-3xl font-bold text-zinc-900 dark:text-white">
           Login
         </h1>
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
               Username
@@ -63,6 +56,7 @@ export default function LoginPage() {
             type="submit"
             size="sm"
             className="font-normal"
+            disabled={isLoading}
           >
             Sign in
           </Button>
