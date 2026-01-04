@@ -1,8 +1,3 @@
-
-import { PublicUser } from "@/types/database";
-
-
-
 import { CreateMatchDto, UpdateMatchDto } from "@/types/match";
 
 export async function createMatch(matchData: CreateMatchDto) {
@@ -65,3 +60,4 @@ export async function getMatches() {
     return [];
   }
 }
+

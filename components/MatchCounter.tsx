@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+
 import { PublicUser } from "@/types/database";
 import TeamCounter from "./TeamCounter";
 import Controls from "./Controls";
-import ConfirmationExitModal from "./ConfirmationExitModal";
+
 interface MatchCounterProps {
   team1: PublicUser[];
   team2: PublicUser[];
@@ -13,7 +13,7 @@ interface MatchCounterProps {
   score2: number;
   onIncrement: (team: 1 | 2) => void;
   onDecrement: (team: 1 | 2) => void;
-  onFinish: (result: { score1: number; score2: number }) => void;
+  onExit: () => void;
 }
 
 export default function MatchCounter({
@@ -24,23 +24,8 @@ export default function MatchCounter({
   score2,
   onIncrement,
   onDecrement,
-  onFinish,
+  onExit,
 }: MatchCounterProps) {
-  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
-
-  const handleExitClick = () => {
-    setShowExitConfirmation(true);
-  };
-
-  const handleConfirmExit = () => {
-    setShowExitConfirmation(false);
-    onFinish({ score1, score2 });
-  };
-
-  const handleCancelExit = () => {
-    setShowExitConfirmation(false);
-  };
-
   const half = maxPoints / 2;
 
   const getSplitScore = (score: number) => {
@@ -80,18 +65,10 @@ export default function MatchCounter({
       <Controls
         onIncrement={onIncrement}
         onDecrement={onDecrement}
-        onExit={handleExitClick}
+        onExit={onExit}
         score1={score1}
         score2={score2}
       />
-
-      {/* Exit Confirmation Modal */}
-      {showExitConfirmation && (
-        <ConfirmationExitModal
-          onConfirm={handleConfirmExit}
-          onCancel={handleCancelExit}
-        />
-      )}
     </div>
   );
 }

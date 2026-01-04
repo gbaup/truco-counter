@@ -1,3 +1,5 @@
+import { Button } from "./ui/Button";
+
 interface WinnerModalProps {
   winner: string | null;
   onFinish: () => void;
@@ -13,13 +15,9 @@ export default function WinnerModal({ winner, onFinish, isLoading }: WinnerModal
         <div className="mb-4 text-6xl">🏆</div>
         <h2 className="mb-2 text-3xl font-black text-white">¡Ganó {winner}!</h2>
         <p className="mb-8 text-zinc-400">Tremendo partido. ¿Revancha?</p>
-        <button
-          onClick={onFinish}
-          disabled={isLoading}
-          className="w-full rounded-2xl bg-primary-600 py-4 font-bold text-white transition-all hover:bg-primary-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
-        >
+        <Button onClick={onFinish} disabled={isLoading}>
           {isLoading ? "Guardando..." : "Terminar y Salir"}
-        </button>
+        </Button>
       </div>
     </div>
   );
