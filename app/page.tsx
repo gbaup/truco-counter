@@ -29,8 +29,8 @@ export default function Home() {
   ) => {
     try {
       await startMatch(t1, t2, max);
-    } catch (e: any) {
-      if (e.message === "PLAYERS_BUSY") alert("Jugadores ocupados...");
+    } catch (e: unknown) {
+      if (e instanceof Error && e.message === "PLAYERS_BUSY") alert("Jugadores ocupados...");
     }
   }
 

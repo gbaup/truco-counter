@@ -1,4 +1,3 @@
-// hooks/useMatchGame.ts
 import { useState, useEffect } from "react";
 import { PublicUser } from "@/types/database";
 import { MatchState } from "@/types/game";
@@ -38,7 +37,6 @@ export function useMatch() {
         }
     }, [matchState, isLoaded]);
 
-    // Lógica de Negocio
     const startMatch = async (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => {
         if (isStarting) return;
         setIsStarting(true);
@@ -50,9 +48,8 @@ export function useMatch() {
                 score1: 0, score2: 0,
                 matchId: match.id,
             });
-        } catch (error: any) {
-            // Manejo de errores
-            if (error.message === "PLAYERS_BUSY") throw error; // Re-lanzamos para manejarlo en la UI si queremos
+        } catch (error: unknown) {
+            if (error instanceof Error && error.message === "PLAYERS_BUSY") throw error;
             console.error(error);
         } finally {
             setIsStarting(false);
@@ -62,7 +59,7 @@ export function useMatch() {
     const incrementScore = (team: 1 | 2) => {
         setMatchState((prev) => {
             const currentScore = team === 1 ? prev.score1 : prev.score2;
-            if (currentScore >= prev.maxPoints) return prev; // No sumar más del max
+            if (currentScore >= prev.maxPoints) return prev;
             return {
                 ...prev,
                 [team === 1 ? 'score1' : 'score2']: currentScore + 1
