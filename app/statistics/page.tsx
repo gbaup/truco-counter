@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import BurgerMenu from "@/components/BurgerMenu";
+import BurgerMenu from "@/components/ui/BurgerMenu";
 import { UserStats } from "@/types/database";
 import { getUserStats } from "@/services/userService";
 

@@ -1,5 +1,5 @@
 import { PublicUser } from "@/types/database";
-import TallyMarks from "@/components/TallyMarks";
+import TallyMarks from "@/components/ui/TallyMarks";
 
 interface TeamCounterProps {
   title: string;

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { PublicUser } from "@/types/database";
 import { getUsers, getUsersVersus } from "@/services/userService";
-import BurgerMenu from "@/components/BurgerMenu";
+import BurgerMenu from "@/components/ui/BurgerMenu";
 import UserDropdown from "@/components/UserDropdown";
 import VersusResults from "@/components/VersusResults";
 

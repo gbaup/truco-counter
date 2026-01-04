@@ -3,7 +3,7 @@
 import { useState } from "react"; // Solo para UI local como modales
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
-import BurgerMenu from "@/components/BurgerMenu";
+import BurgerMenu from "@/components/ui/BurgerMenu";
 import WinnerModal from "@/components/WinnerModal";
 import ConfirmationExitModal from "@/components/ConfirmationExitModal";
 import { useMatch } from "@/hooks/useMatch";
