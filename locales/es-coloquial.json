@@ -33,5 +33,11 @@
             "confirm": "Dale, quedó pa la historia",
             "loading": "Escribiendo historia..."
         }
+    },
+    "sideDrawer": {
+        "home": "Nuevo partidito",
+        "statistics": "Histórico",
+        "versus": "Rivalidades",
+        "logout": "Cerrar sesión"
     }
 }

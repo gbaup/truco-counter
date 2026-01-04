@@ -3,10 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { twMerge } from "tailwind-merge";
+import { useTranslation } from "react-i18next";
 
 export default function SideDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
@@ -52,7 +55,6 @@ export default function SideDrawer() {
         )}
       </button>
 
-      {/* Overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
@@ -60,41 +62,30 @@ export default function SideDrawer() {
         />
       )}
 
-      {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 z-50 h-screen w-64 transform bg-white p-6 shadow-2xl transition-transform dark:bg-zinc-900 ${isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={twMerge("fixed top-0 right-0 z-50 h-screen w-64 transform bg-white p-6 shadow-2xl transition-transform dark:bg-zinc-900", isOpen ? "translate-x-0" : "translate-x-full")}
       >
         <nav className="mt-16 flex flex-col space-y-4">
           <Link
             href="/"
             onClick={closeMenu}
-            className={`text-lg font-medium transition-colors hover:text-primary-600 ${pathname === "/"
-              ? "text-primary-600"
-              : "text-zinc-600 dark:text-zinc-400"
-              }`}
+            className={twMerge("text-lg font-medium transition-colors hover:text-primary-600", pathname === "/" ? "text-primary-600" : "text-zinc-600 dark:text-zinc-400")}
           >
-            Home
+            {t("sideDrawer.home")}
           </Link>
           <Link
             href="/statistics"
             onClick={closeMenu}
-            className={`text-lg font-medium transition-colors hover:text-primary-600 ${pathname === "/statistics"
-              ? "text-primary-600"
-              : "text-zinc-600 dark:text-zinc-400"
-              }`}
+            className={twMerge("text-lg font-medium transition-colors hover:text-primary-600", pathname === "/statistics" ? "text-primary-600" : "text-zinc-600 dark:text-zinc-400")}
           >
-            Statistics
+            {t("sideDrawer.statistics")}
           </Link>
           <Link
             href="/versus"
             onClick={closeMenu}
-            className={`text-lg font-medium transition-colors hover:text-primary-600 ${pathname === "/versus"
-              ? "text-primary-600"
-              : "text-zinc-600 dark:text-zinc-400"
-              }`}
+            className={twMerge("text-lg font-medium transition-colors hover:text-primary-600", pathname === "/versus" ? "text-primary-600" : "text-zinc-600 dark:text-zinc-400")}
           >
-            Versus
+            {t("sideDrawer.versus")}
           </Link>
           <button
             onClick={async () => {
@@ -108,7 +99,7 @@ export default function SideDrawer() {
             }}
             className="text-left text-lg font-medium text-red-600 transition-colors hover:text-red-700 dark:text-red-500 dark:hover:text-red-400"
           >
-            Logout
+            {t("sideDrawer.logout")}
           </button>
         </nav>
       </div>
