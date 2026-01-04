@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const { isLoading, error, handleLogin } = useLogin();
+  const { isLoading, handleLogin } = useLogin();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

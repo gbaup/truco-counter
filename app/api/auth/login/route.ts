@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PublicUser } from "@/types/database";
 
 
 export async function POST(request: Request) {
