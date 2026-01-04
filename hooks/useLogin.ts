@@ -13,13 +13,15 @@ export const useLogin = () => {
             if (!success || error) {
                 toast.error(error || "Invalid credentials");
                 setError(error || "Invalid credentials");
-                return;
+                return false;
             }
             setIsLoading(false);
+            return true;
         } catch (err) {
             console.error(err);
             toast.error("Something went wrong");
             setError("Something went wrong");
+            return false;
         } finally {
             setIsLoading(false);
         }
