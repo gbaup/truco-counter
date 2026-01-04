@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model match_participants {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  match_id String?  @db.Uuid
+  user_id  String?  @db.Uuid
+  team     Int?
+  matches  matches? @relation(fields: [match_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users    users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([match_id, user_id])
+}
+
+model matches {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  score_team_1       Int?                 @default(0)
+  score_team_2       Int?                 @default(0)
+  winner_team        Int?
+  status             String?              @default("finished")
+  created_by         String?              @db.Uuid
+  updated_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  match_participants match_participants[]
+  users              users?               @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model users {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String
+  last_name          String
+  username           String               @unique
+  created_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  password           String               @default("")
+  match_participants match_participants[]
+  matches            matches[]
+}

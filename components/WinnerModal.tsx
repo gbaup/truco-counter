@@ -1,9 +1,10 @@
 interface WinnerModalProps {
   winner: string | null;
   onFinish: () => void;
+  isLoading?: boolean;
 }
 
-export default function WinnerModal({ winner, onFinish }: WinnerModalProps) {
+export default function WinnerModal({ winner, onFinish, isLoading }: WinnerModalProps) {
   if (!winner) return null;
 
   return (
@@ -14,9 +15,10 @@ export default function WinnerModal({ winner, onFinish }: WinnerModalProps) {
         <p className="mb-8 text-zinc-400">Tremendo partido. ¿Revancha?</p>
         <button
           onClick={onFinish}
-          className="w-full rounded-2xl bg-primary-600 py-4 font-bold text-white transition-all hover:bg-primary-700 active:scale-95"
+          disabled={isLoading}
+          className="w-full rounded-2xl bg-primary-600 py-4 font-bold text-white transition-all hover:bg-primary-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
         >
-          Terminar y Salir
+          {isLoading ? "Guardando..." : "Terminar y Salir"}
         </button>
       </div>
     </div>

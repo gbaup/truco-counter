@@ -1,5 +1,12 @@
-import { supabaseAdmin } from "@/lib/supabaseServer";
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+
+type VersusStats = {
+    total_matches: number;
+    p1_wins: number;
+    p2_wins: number;
+    draws: number;
+};
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -11,14 +18,27 @@ export async function GET(request: Request) {
     }
 
     try {
-        const { data, error } = await supabaseAdmin.rpc("get_users_versus", {
-            player1_id: p1,
-            player2_id: p2,
-        });
+        const result = await prisma.$queryRaw<VersusStats[]>`
+            SELECT * FROM get_users_versus(${p1}::uuid, ${p2}::uuid)
+        `;
 
-        if (error) throw error;
-        return NextResponse.json(data[0] || { total_matches: 0, p1_wins: 0, p2_wins: 0, draws: 0 });
-    } catch (error: unknown) {
+        const stats = result[0] || {
+            total_matches: 0,
+            p1_wins: 0,
+            p2_wins: 0,
+            draws: 0
+        };
+
+        const serializedStats = JSON.parse(JSON.stringify(stats, (key, value) =>
+            typeof value === 'bigint'
+                ? Number(value)
+                : value
+        ));
+
+        return NextResponse.json(serializedStats);
+
+    } catch (error) {
+        console.error("Error in versus API:", error);
         return NextResponse.json({
             error: error instanceof Error ? error.message : "An unknown error occurred"
         }, { status: 500 });
