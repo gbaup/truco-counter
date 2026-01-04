@@ -17,18 +17,7 @@ export async function POST(request: Request) {
         }
 
         const body: CreateMatchDto = await request.json();
-        const { score1, score2, team1, team2, winner_team } = body;
-
-        if (
-            score1 === undefined ||
-            score2 === undefined ||
-            winner_team === undefined
-        ) {
-            return NextResponse.json(
-                { error: "Missing required match data (score1, score2, winner_team)" },
-                { status: 400 }
-            );
-        }
+        const { score1, score2, team1, team2, winner_team, status } = body;
 
         // Validar que ambos equipos tengan jugadores
         if (!team1 || team1.length === 0 || !team2 || team2.length === 0) {
@@ -38,12 +27,28 @@ export async function POST(request: Request) {
             );
         }
 
+        const matchStatus = status || "ongoing";
+
+        // Validate finished match requirements
+        if (matchStatus === "finished") {
+            if (
+                score1 === undefined ||
+                score2 === undefined ||
+                winner_team === undefined
+            ) {
+                return NextResponse.json(
+                    { error: "Missing required match data for finished match (score1, score2, winner_team)" },
+                    { status: 400 }
+                );
+            }
+        }
+
         const match = await prisma.matches.create({
             data: {
-                score_team_1: score1,
-                score_team_2: score2,
+                score_team_1: score1 ?? 0,
+                score_team_2: score2 ?? 0,
                 winner_team: winner_team,
-                status: "finished",
+                status: matchStatus,
                 created_by: session.userId,
 
                 match_participants: {

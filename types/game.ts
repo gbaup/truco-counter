@@ -7,4 +7,5 @@ export interface MatchState {
     maxPoints: number;
     score1: number;
     score2: number;
+    matchId?: string;
 }

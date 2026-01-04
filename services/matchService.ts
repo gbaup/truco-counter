@@ -1,15 +1,11 @@
 
 import { PublicUser } from "@/types/database";
 
-export interface MatchResult {
-  team1: PublicUser[];
-  team2: PublicUser[];
-  score1: number;
-  score2: number;
-  winner_team: 1 | 2;
-}
 
-export async function saveMatch(matchData: MatchResult) {
+
+import { CreateMatchDto, UpdateMatchDto } from "@/types/match";
+
+export async function createMatch(matchData: CreateMatchDto) {
   try {
     const response = await fetch("/api/matches", {
       method: "POST",
@@ -21,14 +17,40 @@ export async function saveMatch(matchData: MatchResult) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to save match");
+      throw new Error(errorData.error || "Failed to create match");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error saving match:", error);
+    console.error("Error creating match:", error);
     throw error;
   }
+}
+
+export async function updateMatch(id: string, matchData: UpdateMatchDto) {
+  try {
+    const response = await fetch(`/api/matches/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(matchData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to update match");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating match:", error);
+    throw error;
+  }
+}
+
+export async function saveMatch(matchData: CreateMatchDto) {
+  return createMatch({ ...matchData, status: "finished" });
 }
 
 export async function getMatches() {

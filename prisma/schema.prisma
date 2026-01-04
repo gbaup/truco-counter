@@ -27,6 +27,7 @@ model matches {
   winner_team        Int?
   status             String?              @default("finished")
   created_by         String?              @db.Uuid
+  updated_at         DateTime?            @default(now()) @db.Timestamptz(6)
   match_participants match_participants[]
   users              users?               @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

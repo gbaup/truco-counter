@@ -7,7 +7,7 @@ import BurgerMenu from "@/components/BurgerMenu";
 import WinnerModal from "@/components/WinnerModal";
 import { PublicUser } from "@/types/database";
 import { MatchState } from "@/types/game";
-import { saveMatch } from "@/services/matchService";
+import { createMatch, updateMatch, saveMatch } from "@/services/matchService";
 
 const STORAGE_KEY = "truco-match-state";
 
@@ -23,6 +23,7 @@ export default function Home() {
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
 
   useEffect(() => {
     const savedState = localStorage.getItem(STORAGE_KEY);
@@ -42,19 +43,42 @@ export default function Home() {
     }
   }, [matchState, isLoaded]);
 
-  const startMatch = (
+  const startMatch = async (
     team1: PublicUser[],
     team2: PublicUser[],
     maxPoints: number
   ) => {
-    setMatchState({
-      view: "match",
-      team1,
-      team2,
-      maxPoints,
-      score1: 0,
-      score2: 0,
-    });
+    if (isStarting) return;
+    setIsStarting(true);
+    try {
+      const match = await createMatch({
+        team1,
+        team2,
+        status: "ongoing",
+      });
+
+      setMatchState({
+        view: "match",
+        team1,
+        team2,
+        maxPoints,
+        score1: 0,
+        score2: 0,
+        matchId: match.id,
+      });
+    } catch (error) {
+      console.error("Failed to start match:", error);
+      setMatchState({
+        view: "match",
+        team1,
+        team2,
+        maxPoints,
+        score1: 0,
+        score2: 0,
+      });
+    } finally {
+      setIsStarting(false);
+    }
   };
 
   const handleIncrement = (team: 1 | 2) => {
@@ -94,13 +118,22 @@ export default function Home() {
 
     if (winner_team) {
       try {
-        await saveMatch({
-          team1: matchState.team1,
-          team2: matchState.team2,
-          score1: result.score1,
-          score2: result.score2,
-          winner_team,
-        });
+        if (matchState.matchId) {
+          await updateMatch(matchState.matchId, {
+            score1: result.score1,
+            score2: result.score2,
+            winner_team,
+            status: "finished",
+          });
+        } else {
+          await saveMatch({
+            team1: matchState.team1,
+            team2: matchState.team2,
+            score1: result.score1,
+            score2: result.score2,
+            winner_team,
+          });
+        }
       } catch (error) {
         console.error("Failed to save match:", error);
       } finally {
