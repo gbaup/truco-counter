@@ -15,5 +15,9 @@
             "loading": "Comenzando...",
             "disabled": "Mínimo 2 vs 2"
         }
+    },
+    "matchCounter": {
+        "team1": "Nosotros",
+        "team2": "Ellos"
     }
 }

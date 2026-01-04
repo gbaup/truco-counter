@@ -4,6 +4,7 @@
 import { PublicUser } from "@/types/database";
 import TeamCounter from "./TeamCounter";
 import Controls from "./Controls";
+import { useTranslation } from "react-i18next";
 
 interface MatchCounterProps {
   team1: PublicUser[];
@@ -26,6 +27,7 @@ export default function MatchCounter({
   onDecrement,
   onExit,
 }: MatchCounterProps) {
+  const { t } = useTranslation();
   const half = maxPoints / 2;
 
   const getSplitScore = (score: number) => {
@@ -41,7 +43,7 @@ export default function MatchCounter({
     <div className="w-full max-w-5xl">
       <div className="grid grid-cols-2 gap-2 md:gap-8 pb-32 min-h-[calc(100vh-1rem)]">
         <TeamCounter
-          title="Nosotros"
+          title={t("matchCounter.team1")}
           players={team1}
           totalScore={score1}
           malas={team1Split.malas}
@@ -51,7 +53,7 @@ export default function MatchCounter({
         />
 
         <TeamCounter
-          title="Ellos"
+          title={t("matchCounter.team2")}
           players={team2}
           totalScore={score2}
           malas={team2Split.malas}
@@ -61,7 +63,6 @@ export default function MatchCounter({
         />
       </div>
 
-      {/* Fixed Bottom Navbar Controls */}
       <Controls
         onIncrement={onIncrement}
         onDecrement={onDecrement}
