@@ -1,9 +1,9 @@
-import { User } from "@/types/database";
+import { PublicUser } from "@/types/database";
 
 export async function login(
   username: string,
   password: string
-): Promise<{ success: boolean; user?: User; error?: string }> {
+): Promise<{ success: boolean; user?: PublicUser; error?: string }> {
   try {
     const response = await fetch("/api/auth/login", {
       method: "POST",

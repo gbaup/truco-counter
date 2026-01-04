@@ -41,7 +41,9 @@ export async function POST(request: Request) {
 
         const token = await signToken({ userId: user.id, username: user.username });
 
-        const response = NextResponse.json({ success: true, user });
+        const { password: _, ...publicUser } = user;
+
+        const response = NextResponse.json({ success: true, user: publicUser });
 
         response.cookies.set("auth-token", token, {
             httpOnly: true,

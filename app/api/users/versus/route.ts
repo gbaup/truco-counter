@@ -8,6 +8,12 @@ type VersusStats = {
     draws: number;
 };
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isValidUUID(uuid: string): boolean {
+    return UUID_REGEX.test(uuid);
+}
+
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const p1 = searchParams.get("p1");
@@ -15,6 +21,10 @@ export async function GET(request: Request) {
 
     if (!p1 || !p2) {
         return NextResponse.json({ error: "Missing user IDs" }, { status: 400 });
+    }
+
+    if (!isValidUUID(p1) || !isValidUUID(p2)) {
+        return NextResponse.json({ error: "Invalid user ID format" }, { status: 400 });
     }
 
     try {
