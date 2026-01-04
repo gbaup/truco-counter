@@ -35,7 +35,7 @@ export default function LoginPage() {
           Login
         </h1>
         {error && (
-          <div className="mb-4 rounded-lg bg-red-100 p-3 text-sm text-red-600 dark:bg-red-900/30 dark:text-red-400">
+          <div className="mb-4 rounded-lg bg-danger-100 p-3 text-sm text-danger-600 dark:bg-danger-900/30 dark:text-danger-400">
             {error}
           </div>
         )}
