@@ -25,5 +25,13 @@
         "description": "Insólito. Vayanse si están cagados",
         "cancel": "No",
         "confirm": "Si"
+    },
+    "winnerModal": {
+        "title": "Ganaron {{winner}}!",
+        "description": "Tremenda paliza, mal",
+        "button": {
+            "confirm": "Dale, quedó pa la historia",
+            "loading": "Escribiendo historia..."
+        }
     }
 }

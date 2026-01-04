@@ -25,5 +25,13 @@
         "description": "Se perderá el progreso actual.",
         "cancel": "Cancelar",
         "confirm": "Salir"
+    },
+    "winnerModal": {
+        "title": "¡Ganó {{winner}}!",
+        "description": "Tremendo partido. ¿Revancha?",
+        "button": {
+            "confirm": "Terminar y salir",
+            "loading": "Guardando..."
+        }
     }
 }
