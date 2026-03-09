@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PublicUser } from "@/types/database";
 import TallyMarks from "@/components/ui/TallyMarks";
+import PlayerChip from "@/components/ui/PlayerChip";
 
 interface TeamCounterProps {
   title: string;
@@ -30,9 +31,7 @@ export default function TeamCounter({
     ? "bg-primary-900/20"
     : "bg-secondary-900/20";
   const titleColor = isPrimary ? "text-primary-500" : "text-secondary-500";
-  const chipBg = isPrimary ? "bg-primary-500/15" : "bg-secondary-500/15";
-  const chipBorder = isPrimary ? "border-primary-500/30" : "border-secondary-500/30";
-  const chipText = isPrimary ? "text-primary-300" : "text-secondary-300";
+
 
   const badgeBgColor = isPrimary ? "bg-primary-500" : "bg-secondary-500";
   const badgePositionClass = badgePosition === "right" ? "-right-3" : "-left-3";
@@ -70,12 +69,11 @@ export default function TeamCounter({
       >
         <div className="flex flex-wrap justify-center gap-1.5 pb-2">
           {players.map((player) => (
-            <span
+            <PlayerChip
               key={player.id}
-              className={`inline-flex capitalize items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${chipBg} ${chipBorder} ${chipText}`}
-            >
-              {player.username}
-            </span>
+              label={player.username}
+              variant={variant}
+            />
           ))}
         </div>
       </div>
