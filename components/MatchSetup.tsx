@@ -58,11 +58,11 @@ export default function MatchSetup({ onStartMatch, isStarting }: MatchSetupProps
   }
 
   return (
-    <div className="w-full max-w-2xl space-y-8 rounded-2xl bg-white/10 p-8 shadow-2xl backdrop-blur-md dark:bg-zinc-900/50">
+    <div className="w-full max-w-2xl space-y-8 rounded-2xl bg-zinc-900/50 p-8 shadow-2xl backdrop-blur-md">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="space-y-4">
           <h3 className="text-xl font-semibold text-primary-500">{t("matchSetup.team1")}</h3>
-          <div className="max-h-60 overflow-y-auto space-y-2 rounded-xl bg-black/5 p-4 dark:bg-white/5">
+          <div className="max-h-60 overflow-y-auto space-y-2 rounded-xl bg-white/5 p-4">
             {users.map((user) => (
               <button
                 key={user.id}
@@ -71,7 +71,7 @@ export default function MatchSetup({ onStartMatch, isStarting }: MatchSetupProps
                   "capitalize w-full rounded-lg px-4 py-2 text-left transition-all",
                   team1.find((u) => u.id === user.id)
                     ? "bg-primary-500 text-white"
-                    : "hover:bg-black/10 dark:hover:bg-white/10",
+                    : "hover:bg-white/10",
                   "disabled:opacity-30 disabled:cursor-not-allowed"
                 )}
                 disabled={!!team2.find((u) => u.id === user.id) || user.isPlaying}
@@ -84,7 +84,7 @@ export default function MatchSetup({ onStartMatch, isStarting }: MatchSetupProps
 
         <div className="space-y-4">
           <h3 className="text-xl font-semibold text-secondary-500">{t("matchSetup.team2")}</h3>
-          <div className="max-h-60 overflow-y-auto space-y-2 rounded-xl bg-black/5 p-4 dark:bg-white/5">
+          <div className="max-h-60 overflow-y-auto space-y-2 rounded-xl bg-white/5 p-4">
             {users.map((user) => (
               <button
                 key={user.id}
@@ -93,7 +93,7 @@ export default function MatchSetup({ onStartMatch, isStarting }: MatchSetupProps
                   "capitalize w-full rounded-lg px-4 py-2 text-left transition-all",
                   team2.find((u) => u.id === user.id)
                     ? "bg-secondary-500 text-white"
-                    : "hover:bg-black/10 dark:hover:bg-white/10",
+                    : "hover:bg-white/10",
                   "disabled:opacity-30 disabled:cursor-not-allowed"
                 )}
                 disabled={!!team1.find((u) => u.id === user.id) || user.isPlaying}
@@ -116,7 +116,7 @@ export default function MatchSetup({ onStartMatch, isStarting }: MatchSetupProps
                 "h-12 w-12 rounded-full border-2 transition-all",
                 maxPoints === points
                   ? "border-primary-500 bg-primary-500 text-white"
-                  : "border-zinc-300 hover:border-primary-300 dark:border-zinc-700"
+                  : "border-zinc-700 hover:border-primary-300"
               )}
             >
               {points}

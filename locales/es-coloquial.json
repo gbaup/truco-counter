@@ -13,7 +13,7 @@
         "button": {
             "start": "Empezar!",
             "loading": "Empezando...",
-            "disabled": "Por lo menos de a 2"
+            "disabled": "Por lo menos de a 2 burrazo"
         }
     },
     "matchCounter": {

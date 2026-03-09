@@ -22,8 +22,8 @@ export default function TeamCounter({
   const isPrimary = variant === "primary";
 
   const bgUserColor = isPrimary
-    ? "bg-primary-600/10 dark:bg-primary-900/20"
-    : "bg-secondary-600/10 dark:bg-secondary-900/20";
+    ? "bg-primary-900/20"
+    : "bg-secondary-900/20";
   const titleColor = isPrimary ? "text-primary-500" : "text-secondary-500";
 
   const badgeBgColor = isPrimary ? "bg-primary-500" : "bg-secondary-500";
@@ -39,7 +39,7 @@ export default function TeamCounter({
       </h3>
 
       <div className="w-full flex-1 flex flex-col gap-4">
-        <div className="relative flex flex-1 flex-col items-center justify-start rounded-2xl bg-white/5 p-2 dark:bg-black/20">
+        <div className="relative flex flex-1 flex-col items-center justify-start rounded-2xl bg-black/20 p-2">
           <TallyMarks score={malas} />
         </div>
 
@@ -48,7 +48,7 @@ export default function TeamCounter({
             }`}
         />
 
-        <div className="relative flex flex-1 flex-col items-center justify-start rounded-2xl bg-white/5 p-2 dark:bg-black/20">
+        <div className="relative flex flex-1 flex-col items-center justify-start rounded-2xl bg-black/20 p-2">
           <TallyMarks score={buenas} />
         </div>
       </div>
