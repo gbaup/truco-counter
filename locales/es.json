@@ -1,0 +1,43 @@
+{
+    "login": {
+        "title": "Iniciar sesión",
+        "username": "Usuario",
+        "password": "Contraseña",
+        "button": "Entrar"
+    },
+    "matchSetup": {
+        "team1": "Nosotros",
+        "team2": "Ellos",
+        "maxPoints": "Puntaje máximo",
+        "equalPlayers": "Los equipos deben tener la misma cantidad de jugadores",
+        "button": {
+            "start": "Comenzar",
+            "loading": "Comenzando...",
+            "disabled": "Mínimo 2 vs 2"
+        }
+    },
+    "matchCounter": {
+        "team1": "Nosotros",
+        "team2": "Ellos"
+    },
+    "confirmationExitModal": {
+        "title": "¿Salir del partido?",
+        "description": "Se perderá el progreso actual.",
+        "cancel": "Cancelar",
+        "confirm": "Salir"
+    },
+    "winnerModal": {
+        "title": "¡Ganó {{winner}}!",
+        "description": "Tremendo partido. ¿Revancha?",
+        "button": {
+            "confirm": "Terminar y salir",
+            "loading": "Guardando..."
+        }
+    },
+    "sideDrawer": {
+        "home": "Nuevo partido",
+        "statistics": "Estadísticas",
+        "versus": "Versus",
+        "logout": "Cerrar sesión"
+    }
+}

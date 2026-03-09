@@ -4,7 +4,7 @@ import { useState } from "react"; // Solo para UI local como modales
 import { toast } from "sonner";
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
-import BurgerMenu from "@/components/ui/BurgerMenu";
+import SideDrawer from "@/components/SideDrawer";
 import WinnerModal from "@/components/WinnerModal";
 import ConfirmationExitModal from "@/components/ConfirmationExitModal";
 import { useMatch } from "@/hooks/useMatch";
@@ -40,12 +40,12 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 p-4 transition-colors dark:bg-zinc-950">
-      {matchState.view === "setup" && <BurgerMenu />}
+    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-950 p-4 transition-colors">
+      {matchState.view === "setup" && <SideDrawer />}
 
       {matchState.view === "setup" && (
         <header className="mb-4 text-center">
-          <h1 className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white md:text-7xl">
+          <h1 className="text-3xl font-black tracking-tighter text-white md:text-7xl">
             TRUCO<span className="text-primary-600">PRO</span>
           </h1>
         </header>

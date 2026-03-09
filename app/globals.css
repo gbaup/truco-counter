@@ -1,8 +1,9 @@
 @import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 @theme inline {
@@ -82,13 +83,6 @@
   --color-success-800: var(--color-green-800);
   --color-success-900: var(--color-green-900);
   --color-success-950: var(--color-green-950);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {

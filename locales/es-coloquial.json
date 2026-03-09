@@ -1,0 +1,43 @@
+{
+    "login": {
+        "title": "Iniciar sesión",
+        "username": "Usuario",
+        "password": "Contraseña",
+        "button": "Entrar"
+    },
+    "matchSetup": {
+        "team1": "Nosotros",
+        "team2": "Ellos",
+        "maxPoints": "A cuánto se juega",
+        "equalPlayers": "Poné bien los equipos",
+        "button": {
+            "start": "Empezar!",
+            "loading": "Empezando...",
+            "disabled": "Por lo menos de a 2 burrazo"
+        }
+    },
+    "matchCounter": {
+        "team1": "Nosotros",
+        "team2": "Ellos"
+    },
+    "confirmationExitModal": {
+        "title": "Hee? Van a salir?",
+        "description": "Insólito. Vayanse si están cagados",
+        "cancel": "No",
+        "confirm": "Si"
+    },
+    "winnerModal": {
+        "title": "Ganaron {{winner}}!",
+        "description": "Tremenda paliza, mal",
+        "button": {
+            "confirm": "Dale, quedó pa la historia",
+            "loading": "Escribiendo historia..."
+        }
+    },
+    "sideDrawer": {
+        "home": "Nuevo partidito",
+        "statistics": "Histórico",
+        "versus": "Rivalidades",
+        "logout": "Cerrar sesión"
+    }
+}
