@@ -12,8 +12,6 @@ export default function WinnerModal({ winner, onFinish, isLoading }: WinnerModal
 
   if (!winner) return null;
 
-  console.log("Winner is: ", winner)
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
       <div className="w-full max-w-sm rounded-3xl bg-zinc-900 border border-white/10 p-8 text-center shadow-2xl">
