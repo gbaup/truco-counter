@@ -13,4 +13,6 @@ export interface UserStats {
   username: string;
   wins: number;
   losses: number;
+  rating: number;
+  rating_deviation: number;
 }

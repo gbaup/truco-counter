@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-
+import { applyGlickoToMatch } from "@/lib/applyGlickoToMatch";
 import { Session } from "@/types/auth";
 import { CreateMatchDto } from "@/types/match";
 
@@ -71,28 +71,50 @@ export async function POST(request: Request) {
             }
         }
 
-        const match = await prisma.matches.create({
-            data: {
-                score_team_1: score1 ?? 0,
-                score_team_2: score2 ?? 0,
-                winner_team: winner_team,
-                status: matchStatus,
-                created_by: session.userId,
+        const team1Ids = team1.map((u) => u.id);
+        const team2Ids = team2.map((u) => u.id);
 
-                match_participants: {
-                    create: [
-                        ...team1.map((user) => ({
-                            user_id: user.id,
-                            team: 1,
-                        })),
-                        ...team2.map((user) => ({
-                            user_id: user.id,
-                            team: 2,
-                        })),
-                    ],
+        const match = await (matchStatus === "finished"
+            ? prisma.$transaction(async (tx) => {
+                const created = await tx.matches.create({
+                    data: {
+                        score_team_1: score1 ?? 0,
+                        score_team_2: score2 ?? 0,
+                        winner_team: winner_team,
+                        status: matchStatus,
+                        created_by: session.userId,
+                        match_participants: {
+                            create: [
+                                ...team1Ids.map((id) => ({ user_id: id, team: 1 })),
+                                ...team2Ids.map((id) => ({ user_id: id, team: 2 })),
+                            ],
+                        },
+                    },
+                });
+                await applyGlickoToMatch(
+                    tx,
+                    team1Ids,
+                    team2Ids,
+                    winner_team as 1 | 2,
+                    created.created_at!,
+                );
+                return created;
+            })
+            : prisma.matches.create({
+                data: {
+                    score_team_1: score1 ?? 0,
+                    score_team_2: score2 ?? 0,
+                    winner_team: winner_team,
+                    status: matchStatus,
+                    created_by: session.userId,
+                    match_participants: {
+                        create: [
+                            ...team1Ids.map((id) => ({ user_id: id, team: 1 })),
+                            ...team2Ids.map((id) => ({ user_id: id, team: 2 })),
+                        ],
+                    },
                 },
-            },
-        });
+            }));
 
         return NextResponse.json(match);
     } catch (error) {
