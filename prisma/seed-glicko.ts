@@ -103,8 +103,8 @@ async function main() {
       prisma.users.update({
         where: { id },
         data: {
-          rating: s.r,
-          rating_deviation: s.RD,
+          rating: Math.round(s.r * 100) / 100,
+          rating_deviation: Math.round(s.RD * 100) / 100,
           last_match_at:
             s.lastMatchIndex >= 0
               ? matches[s.lastMatchIndex].created_at

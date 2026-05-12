@@ -53,8 +53,8 @@ export async function applyGlickoToMatch(
       return tx.users.update({
         where: { id },
         data: {
-          rating: updated.r,
-          rating_deviation: updated.RD,
+          rating: Math.round(updated.r * 100) / 100,
+          rating_deviation: Math.round(updated.RD * 100) / 100,
           last_match_at: matchCreatedAt,
         },
       });

@@ -2,7 +2,7 @@ export const GLICKO = {
   r0: 1500,
   RD0: 350,
   RD_min: 50,
-  c: 15,
+  c: 25,
   q: Math.log(10) / 400,
 } as const;
 
