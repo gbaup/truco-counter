@@ -40,6 +40,9 @@ model users {
   created_at         DateTime?            @default(now()) @db.Timestamptz(6)
   updated_at         DateTime?            @default(now()) @db.Timestamptz(6)
   password           String               @default("")
+  rating             Float                @default(1500)
+  rating_deviation   Float                @default(350)
+  last_match_at      DateTime?            @db.Timestamptz(6)
   match_participants match_participants[]
   matches            matches[]
 }
