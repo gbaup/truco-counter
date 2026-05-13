@@ -21,10 +21,10 @@ export default function TeamColumn({
                 {score}
             </div>
             <div className="flex flex-col items-center gap-1">
-                {participants.map((p) => (
-                    <div key={p.user_id} className="flex items-center gap-1.5">
+                {participants.map((p, i) => (
+                    <div key={p.user_id ?? i} className="flex items-center gap-1.5">
                         <span className="capitalize text-sm text-zinc-300">
-                            {p.users.username}
+                            {p.users?.username ?? "—"}
                         </span>
                         {showRatings && p.rating_change != null && (
                             <span className={twMerge(

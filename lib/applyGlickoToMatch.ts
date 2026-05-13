@@ -39,13 +39,18 @@ export async function applyGlickoToMatch(
     });
   }
 
-  const team1 = team1UserIds.map((id) => decayed.get(id)!).filter(Boolean);
-  const team2 = team2UserIds.map((id) => decayed.get(id)!).filter(Boolean);
+  const resolvedTeam1Ids = team1UserIds.filter((id) => decayed.has(id));
+  const resolvedTeam2Ids = team2UserIds.filter((id) => decayed.has(id));
+  const team1 = resolvedTeam1Ids.map((id) => decayed.get(id)!);
+  const team2 = resolvedTeam2Ids.map((id) => decayed.get(id)!);
+
+  if (team1.length === 0 || team2.length === 0) return;
+
   const agg1 = teamAggregate(team1);
   const agg2 = teamAggregate(team2);
 
-  const eloAvg1 = teamAvgElo(team1UserIds.map((id) => byId.get(id)!.elo_rating));
-  const eloAvg2 = teamAvgElo(team2UserIds.map((id) => byId.get(id)!.elo_rating));
+  const eloAvg1 = teamAvgElo(resolvedTeam1Ids.map((id) => byId.get(id)!.elo_rating));
+  const eloAvg2 = teamAvgElo(resolvedTeam2Ids.map((id) => byId.get(id)!.elo_rating));
 
   await Promise.all(
     allIds.map((id) => {

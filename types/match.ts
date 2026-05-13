@@ -1,11 +1,11 @@
 import { PublicUser } from "./database";
 
 export interface MatchParticipantWithUser {
-    user_id: string;
+    user_id: string | null;
     team: number;
     rating_change: number | null;
     elo_rating_change: number | null;
-    users: { username: string };
+    users: { username: string } | null;
 }
 
 export interface MatchHistoryItem {

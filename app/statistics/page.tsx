@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import SideDrawer from "@/components/SideDrawer";
 import { UserStats } from "@/types/database";
 import { getUserStats } from "@/services/userService";
 
 export default function StatisticsPage() {
+  const { t } = useTranslation();
   const [userStats, setUserStats] = useState<UserStats[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +25,6 @@ export default function StatisticsPage() {
       <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
     </div>
   );
-
   const byGlicko = [...userStats].sort((a, b) => b.rating - a.rating);
   const byElo = [...userStats].sort((a, b) => b.elo_rating - a.elo_rating);
 
@@ -40,13 +41,13 @@ export default function StatisticsPage() {
         {/* Glicko ranking */}
         <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8 shadow-xl">
           <h2 className="mb-1 text-2xl font-bold text-white">Glicko</h2>
-          <p className="mb-6 text-xs text-zinc-500">Ajusta por incertidumbre e inactividad</p>
+          <p className="mb-6 text-xs text-zinc-500">{t("statistics.glickoDescription")}</p>
           <div className="overflow-hidden rounded-xl border border-zinc-800">
             <table className="w-full text-left text-sm text-zinc-400">
               <thead className="bg-zinc-800 text-xs uppercase text-zinc-400">
                 <tr>
                   <th scope="col" className="px-4 py-3">#</th>
-                  <th scope="col" className="px-4 py-3">Jugador</th>
+                  <th scope="col" className="px-4 py-3">{t("statistics.table.player")}</th>
                   <th scope="col" className="px-4 py-3 text-center">W</th>
                   <th scope="col" className="px-4 py-3 text-center">L</th>
                   <th scope="col" className="px-4 py-3 text-right">Rating</th>
@@ -70,13 +71,13 @@ export default function StatisticsPage() {
         {/* Elo ranking */}
         <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8 shadow-xl">
           <h2 className="mb-1 text-2xl font-bold text-white">Elo</h2>
-          <p className="mb-6 text-xs text-zinc-500">Clásico · K=32</p>
+          <p className="mb-6 text-xs text-zinc-500">{t("statistics.eloDescription")}</p>
           <div className="overflow-hidden rounded-xl border border-zinc-800">
             <table className="w-full text-left text-sm text-zinc-400">
               <thead className="bg-zinc-800 text-xs uppercase text-zinc-400">
                 <tr>
                   <th scope="col" className="px-4 py-3">#</th>
-                  <th scope="col" className="px-4 py-3">Jugador</th>
+                  <th scope="col" className="px-4 py-3">{t("statistics.table.player")}</th>
                   <th scope="col" className="px-4 py-3 text-center">W</th>
                   <th scope="col" className="px-4 py-3 text-center">L</th>
                   <th scope="col" className="px-4 py-3 text-right">Rating</th>

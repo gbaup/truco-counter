@@ -94,7 +94,7 @@ Before writing any ranking-related code, read that skill for the full algorithm 
 | `r0`          | 1500      | Conventional baseline                       |
 | `RD0`         | 350       | Maximum uncertainty for new players         |
 | `RD_min`      | 50        | Floor — prevents over-stabilization         |
-| `c`           | 15        | RD growth per global match missed           |
+| `c`           | 25        | RD growth per global match missed           |
 | Result type   | Binary    | Win = 1, Loss = 0. Score margin is ignored. |
 | Team strength | `average` | Equal contribution across teammates         |
 | Inactivity    | Match-based | N = finished matches played globally since player's last finished match. |

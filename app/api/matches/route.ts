@@ -62,10 +62,10 @@ export async function POST(request: Request) {
             if (
                 score1 === undefined ||
                 score2 === undefined ||
-                winner_team === undefined
+                (winner_team !== 1 && winner_team !== 2)
             ) {
                 return NextResponse.json(
-                    { error: "Missing required match data for finished match (score1, score2, winner_team)" },
+                    { error: "Missing required match data for finished match (score1, score2, winner_team must be 1 or 2)" },
                     { status: 400 }
                 );
             }

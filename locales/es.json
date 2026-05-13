@@ -53,5 +53,12 @@
         "losses": "Derrotas",
         "winRate": "% victorias",
         "noMatches": "Todavía no jugaste ningún partido"
+    },
+    "statistics": {
+        "glickoDescription": "Ajusta por incertidumbre e inactividad",
+        "eloDescription": "Clásico · K=32",
+        "table": {
+            "player": "Jugador"
+        }
     }
 }
