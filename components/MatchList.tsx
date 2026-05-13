@@ -1,4 +1,5 @@
 import { MatchHistoryItem, MatchParticipantWithUser } from "@/types/match";
+import { twMerge } from "tailwind-merge";
 
 const SESSION_GAP_MS = 12 * 60 * 60 * 1000;
 
@@ -42,7 +43,10 @@ function TeamColumn({
 }) {
     return (
         <div className="flex flex-1 flex-col items-center gap-2">
-            <div className={`text-3xl font-black ${isWinner ? "text-secondary-500" : "text-red-500"}`}>
+            <div className={twMerge(
+                "text-3xl font-black",
+                isWinner ? "text-secondary-500" : "text-red-500"
+            )}>
                 {score}
             </div>
             <div className="flex flex-col items-center gap-1">
@@ -52,7 +56,10 @@ function TeamColumn({
                             {p.users.username}
                         </span>
                         {p.rating_change != null && (
-                            <span className={`text-xs font-bold ${p.rating_change >= 0 ? "text-secondary-400" : "text-red-400"}`}>
+                            <span className={twMerge(
+                                "text-xs font-bold",
+                                p.rating_change >= 0 ? "text-secondary-400" : "text-red-400"
+                            )}>
                                 {p.rating_change >= 0 ? `+${p.rating_change}` : p.rating_change}
                             </span>
                         )}

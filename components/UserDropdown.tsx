@@ -1,4 +1,5 @@
 import { PublicUser } from "@/types/database";
+import { twMerge } from "tailwind-merge";
 
 interface UserDropdownProps {
     label: string;
@@ -21,13 +22,19 @@ export default function UserDropdown({
 }: UserDropdownProps) {
     return (
         <div className="rounded-2xl bg-white/5 p-6 backdrop-blur-md">
-            <label className={`mb-2 block text-sm font-medium ${labelColorClass}`}>
+            <label className={twMerge(
+                "mb-2 block text-sm font-medium",
+                labelColorClass
+            )}>
                 {label}
             </label>
             <select
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className={`w-full capitalize rounded-lg bg-black/20 p-3 text-white focus:outline-none focus:ring-2 ${ringColorClass}`}
+                className={twMerge(
+                    "w-full capitalize rounded-lg bg-black/20 p-3 text-white focus:outline-none focus:ring-2",
+                    ringColorClass
+                )}
             >
                 <option value="">Seleccionar jugador</option>
                 {users.map((user) => (
