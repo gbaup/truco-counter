@@ -14,7 +14,8 @@ export default function StatisticsPage() {
   useEffect(() => {
     async function fetchData() {
       const stats = await getUserStats();
-      setUserStats(stats);
+      const sortedStats = stats.sort((a, b) => (b.wins / (b.wins + b.losses)) - (a.wins / (a.wins + a.losses)));
+      setUserStats(sortedStats);
       setLoading(false);
     }
     fetchData();
