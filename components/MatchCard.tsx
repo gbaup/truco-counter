@@ -11,7 +11,7 @@ export default function MatchCard({ match }: { match: MatchHistoryItem }) {
 
     return (
         <div
-            className="cursor-pointer rounded-2xl border border-zinc-800 bg-zinc-950/50 p-4 transition-colors hover:border-zinc-700"
+            className="rounded-2xl border border-zinc-800 bg-zinc-950/50 p-4 transition-colors active:border-zinc-600 active:bg-zinc-900"
             onClick={() => setExpanded((prev) => !prev)}
         >
             <div className="flex items-center gap-4">
