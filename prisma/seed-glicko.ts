@@ -55,6 +55,8 @@ async function main() {
 
   console.log(`Processing ${matches.length} finished matches...`);
 
+  const ratingChanges: { matchId: string; userId: string; change: number }[] = [];
+
   for (let i = 0; i < matches.length; i++) {
     const match = matches[i];
     if (!match.winner_team) continue;
@@ -93,12 +95,16 @@ async function main() {
       s.r = updated.r;
       s.RD = updated.RD;
       s.lastMatchIndex = i;
+      ratingChanges.push({
+        matchId: match.id,
+        userId: id,
+        change: Math.round((updated.r - current.r) * 100) / 100,
+      });
     }
   }
 
-  // Bulk-write final ratings
-  console.log("Writing ratings to database...");
-  await prisma.$transaction(
+  console.log("Writing user ratings...");
+  await Promise.all(
     [...state.entries()].map(([id, s]) =>
       prisma.users.update({
         where: { id },
@@ -110,11 +116,21 @@ async function main() {
               ? matches[s.lastMatchIndex].created_at
               : null,
         },
-      }),
+      })
     ),
   );
 
-  console.log(`Done. Seeded ratings for ${state.size} players.`);
+  console.log("Writing participant rating changes...");
+  await Promise.all(
+    ratingChanges.map(({ matchId, userId, change }) =>
+      prisma.match_participants.update({
+        where: { match_id_user_id: { match_id: matchId, user_id: userId } },
+        data: { rating_change: change },
+      })
+    ),
+  );
+
+  console.log(`Done. Seeded ratings for ${state.size} players and ${ratingChanges.length} participant deltas.`);
 }
 
 main()

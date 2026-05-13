@@ -3,6 +3,7 @@ import { PublicUser } from "./database";
 export interface MatchParticipantWithUser {
     user_id: string;
     team: number;
+    rating_change: number | null;
     users: { username: string };
 }
 

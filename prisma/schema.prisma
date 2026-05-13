@@ -9,12 +9,13 @@ datasource db {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model match_participants {
-  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  match_id String?  @db.Uuid
-  user_id  String?  @db.Uuid
-  team     Int?
-  matches  matches? @relation(fields: [match_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  users    users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  match_id      String?  @db.Uuid
+  user_id       String?  @db.Uuid
+  team          Int?
+  rating_change Float?
+  matches       matches? @relation(fields: [match_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([match_id, user_id])
 }

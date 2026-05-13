@@ -97,6 +97,7 @@ export async function POST(request: Request) {
                     team2Ids,
                     winner_team as 1 | 2,
                     created.created_at!,
+                    created.id,
                 );
                 return created;
             })
@@ -137,6 +138,7 @@ export async function GET() {
                     select: {
                         user_id: true,
                         team: true,
+                        rating_change: true,
                         users: { select: { username: true } },
                     },
                 },

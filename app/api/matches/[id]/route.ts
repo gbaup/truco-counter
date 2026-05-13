@@ -70,6 +70,7 @@ export async function PATCH(
                     team2Ids,
                     winner_team as 1 | 2,
                     matchValue.created_at!,
+                    id,
                 );
                 return updated;
             })

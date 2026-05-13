@@ -7,6 +7,7 @@ export async function applyGlickoToMatch(
   team2UserIds: string[],
   winnerTeam: 1 | 2,
   matchCreatedAt: Date,
+  matchId: string,
 ): Promise<void> {
   const allIds = [...team1UserIds, ...team2UserIds];
 
@@ -50,14 +51,21 @@ export async function applyGlickoToMatch(
       const opponent = isTeam1 ? agg2 : agg1;
       const S: 0 | 1 = (isTeam1 ? 1 : 2) === winnerTeam ? 1 : 0;
       const updated = updateRating(current, opponent, S);
-      return tx.users.update({
-        where: { id },
-        data: {
-          rating: Math.round(updated.r * 100) / 100,
-          rating_deviation: Math.round(updated.RD * 100) / 100,
-          last_match_at: matchCreatedAt,
-        },
-      });
+      const ratingChange = Math.round((updated.r - current.r) * 100) / 100;
+      return Promise.all([
+        tx.users.update({
+          where: { id },
+          data: {
+            rating: Math.round(updated.r * 100) / 100,
+            rating_deviation: Math.round(updated.RD * 100) / 100,
+            last_match_at: matchCreatedAt,
+          },
+        }),
+        tx.match_participants.update({
+          where: { match_id_user_id: { match_id: matchId, user_id: id } },
+          data: { rating_change: ratingChange },
+        }),
+      ]);
     }),
   );
 }

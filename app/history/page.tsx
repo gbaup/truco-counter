@@ -18,37 +18,30 @@ function TeamColumn({
     participants,
     score,
     isWinner,
-    diff,
 }: {
     participants: MatchParticipantWithUser[];
     score: number;
     isWinner: boolean;
-    diff: number;
 }) {
     return (
         <div className="flex flex-1 flex-col items-center gap-2">
-            <div className="flex flex-wrap justify-center gap-1">
-                {participants.map((p) => (
-                    <span
-                        key={p.user_id}
-                        className="capitalize text-sm font-medium text-zinc-300"
-                    >
-                        {p.users.username}
-                    </span>
-                ))}
-            </div>
             <div className={`text-3xl font-black ${isWinner ? "text-secondary-500" : "text-red-500"}`}>
                 {score}
             </div>
-            <span
-                className={`rounded-full px-3 py-0.5 text-xs font-bold tracking-wide ${
-                    isWinner
-                        ? "bg-secondary-500/20 text-secondary-400"
-                        : "bg-red-500/20 text-red-400"
-                }`}
-            >
-                {isWinner ? `+${diff}` : `-${diff}`}
-            </span>
+            <div className="flex flex-col items-center gap-1">
+                {participants.map((p) => (
+                    <div key={p.user_id} className="flex items-center gap-1.5">
+                        <span className="capitalize text-sm text-zinc-300">
+                            {p.users.username}
+                        </span>
+                        {p.rating_change != null && (
+                            <span className={`text-xs font-bold ${p.rating_change >= 0 ? "text-secondary-400" : "text-red-400"}`}>
+                                {p.rating_change >= 0 ? `+${p.rating_change}` : p.rating_change}
+                            </span>
+                        )}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
@@ -96,7 +89,6 @@ export default function HistoryPage() {
                             {matches.map((match) => {
                                 const team1 = match.match_participants.filter((p) => p.team === 1);
                                 const team2 = match.match_participants.filter((p) => p.team === 2);
-                                const diff = Math.abs(match.score_team_1 - match.score_team_2);
 
                                 return (
                                     <div
@@ -108,14 +100,12 @@ export default function HistoryPage() {
                                                 participants={team1}
                                                 score={match.score_team_1}
                                                 isWinner={match.winner_team === 1}
-                                                diff={diff}
                                             />
                                             <span className="text-sm font-bold text-zinc-600">vs</span>
                                             <TeamColumn
                                                 participants={team2}
                                                 score={match.score_team_2}
                                                 isWinner={match.winner_team === 2}
-                                                diff={diff}
                                             />
                                         </div>
                                         <p className="mt-3 text-center text-xs text-zinc-600">
