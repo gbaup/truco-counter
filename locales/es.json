@@ -36,6 +36,7 @@
     },
     "sideDrawer": {
         "home": "Nuevo partido",
+        "profile": "Mi perfil",
         "statistics": "Estadísticas",
         "versus": "Versus",
         "history": "Historial",
@@ -44,5 +45,13 @@
     "matchHistory": {
         "title": "Historial de Partidas",
         "noMatches": "No hay partidas registradas todavía"
+    },
+    "profile": {
+        "rating": "Rating",
+        "rd": "Desviación",
+        "wins": "Victorias",
+        "losses": "Derrotas",
+        "winRate": "% victorias",
+        "noMatches": "Todavía no jugaste ningún partido"
     }
 }

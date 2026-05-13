@@ -127,11 +127,15 @@ export async function POST(request: Request) {
     }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
+        const { searchParams } = new URL(request.url);
+        const userId = searchParams.get("userId");
+
         const matches = await prisma.matches.findMany({
             where: {
                 status: "finished",
+                ...(userId ? { match_participants: { some: { user_id: userId } } } : {}),
             },
             include: {
                 match_participants: {

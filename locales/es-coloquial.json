@@ -36,7 +36,8 @@
     },
     "sideDrawer": {
         "home": "Nuevo partidito",
-        "statistics": "Histórico",
+        "profile": "Mi perfil",
+        "statistics": "Tabla",
         "versus": "Rivalidades",
         "history": "Historial",
         "logout": "Cerrar sesión"
@@ -44,5 +45,13 @@
     "matchHistory": {
         "title": "Historial de Partidas",
         "noMatches": "Todavía no hay historial, rompan el hielo"
+    },
+    "profile": {
+        "rating": "Rating",
+        "rd": "Desviación",
+        "wins": "Victorias",
+        "losses": "Derrotas",
+        "winRate": "% victorias",
+        "noMatches": "Ni una partida, empezá a jugar"
     }
 }

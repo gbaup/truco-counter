@@ -74,6 +74,13 @@ export default function SideDrawer() {
             {t("sideDrawer.home")}
           </Link>
           <Link
+            href="/profile"
+            onClick={closeMenu}
+            className={twMerge("text-lg font-medium transition-colors hover:text-primary-600", pathname === "/profile" ? "text-primary-600" : "text-zinc-400")}
+          >
+            {t("sideDrawer.profile")}
+          </Link>
+          <Link
             href="/statistics"
             onClick={closeMenu}
             className={twMerge("text-lg font-medium transition-colors hover:text-primary-600", pathname === "/statistics" ? "text-primary-600" : "text-zinc-400")}
