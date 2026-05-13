@@ -58,6 +58,7 @@ export async function applyGlickoToMatch(
       const updated = updateRating(current, opponent, S);
       const ratingChange = Math.round((updated.r - current.r) * 100) / 100;
       const newElo = Math.round(updateElo(p.elo_rating, isTeam1 ? eloAvg2 : eloAvg1, S) * 100) / 100;
+      const eloChange = Math.round((newElo - p.elo_rating) * 100) / 100;
       return Promise.all([
         tx.users.update({
           where: { id },
@@ -70,7 +71,7 @@ export async function applyGlickoToMatch(
         }),
         tx.match_participants.update({
           where: { match_id_user_id: { match_id: matchId, user_id: id } },
-          data: { rating_change: ratingChange },
+          data: { rating_change: ratingChange, elo_rating_change: eloChange },
         }),
       ]);
     }),

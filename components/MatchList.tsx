@@ -63,6 +63,14 @@ function TeamColumn({
                                 {p.rating_change >= 0 ? `+${p.rating_change}` : p.rating_change}
                             </span>
                         )}
+                        {p.elo_rating_change != null && (
+                            <span className={twMerge(
+                                "text-xs",
+                                p.elo_rating_change >= 0 ? "text-secondary-600" : "text-red-700"
+                            )}>
+                                {p.elo_rating_change >= 0 ? `+${p.elo_rating_change}` : p.elo_rating_change}
+                            </span>
+                        )}
                     </div>
                 ))}
             </div>

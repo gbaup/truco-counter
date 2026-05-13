@@ -58,7 +58,7 @@ async function main() {
 
   console.log(`Processing ${matches.length} finished matches...`);
 
-  const ratingChanges: { matchId: string; userId: string; change: number }[] = [];
+  const ratingChanges: { matchId: string; userId: string; change: number; eloChange: number }[] = [];
 
   for (let i = 0; i < matches.length; i++) {
     const match = matches[i];
@@ -100,12 +100,15 @@ async function main() {
       const s = state.get(id)!;
       s.r = updated.r;
       s.RD = updated.RD;
-      s.elo = updateElo(s.elo, isTeam1 ? eloAvg2 : eloAvg1, S);
+      const newElo = updateElo(s.elo, isTeam1 ? eloAvg2 : eloAvg1, S);
+      const eloChange = Math.round((newElo - s.elo) * 100) / 100;
+      s.elo = newElo;
       s.lastMatchIndex = i;
       ratingChanges.push({
         matchId: match.id,
         userId: id,
         change: Math.round((updated.r - current.r) * 100) / 100,
+        eloChange,
       });
     }
   }
@@ -130,10 +133,10 @@ async function main() {
 
   console.log("Writing participant rating changes...");
   await Promise.all(
-    ratingChanges.map(({ matchId, userId, change }) =>
+    ratingChanges.map(({ matchId, userId, change, eloChange }) =>
       prisma.match_participants.update({
         where: { match_id_user_id: { match_id: matchId, user_id: userId } },
-        data: { rating_change: change },
+        data: { rating_change: change, elo_rating_change: eloChange },
       })
     ),
   );

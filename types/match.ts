@@ -4,6 +4,7 @@ export interface MatchParticipantWithUser {
     user_id: string;
     team: number;
     rating_change: number | null;
+    elo_rating_change: number | null;
     users: { username: string };
 }
 
