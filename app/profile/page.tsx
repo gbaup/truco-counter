@@ -69,12 +69,16 @@ export default function ProfilePage() {
                     {stats ? (
                         <>
                             <div className="mt-4 flex justify-between text-sm text-zinc-400">
-                                <span>{t("profile.rating")}</span>
+                                <span>{t("profile.rating")} <span className="text-zinc-600">Glicko</span></span>
                                 <span className="font-bold text-white">{Math.round(stats.rating)}</span>
                             </div>
                             <div className="mt-2 flex justify-between text-sm text-zinc-400">
                                 <span>{t("profile.rd")}</span>
                                 <span className="font-bold text-white">{Math.round(stats.rating_deviation)}</span>
+                            </div>
+                            <div className="mt-2 flex justify-between text-sm text-zinc-400">
+                                <span>{t("profile.rating")} <span className="text-zinc-600">Elo</span></span>
+                                <span className="font-bold text-white">{Math.round(stats.elo_rating)}</span>
                             </div>
                             <div className="mt-4 grid grid-cols-3 gap-2 text-center">
                                 <div className="rounded-xl bg-zinc-800 p-3">

@@ -1,5 +1,6 @@
 import type { Prisma } from "@/lib/generated/prisma/client";
 import { applyDecay, teamAggregate, updateRating } from "@/lib/glicko";
+import { teamAvgElo, updateElo } from "@/lib/elo";
 
 export async function applyGlickoToMatch(
   tx: Prisma.TransactionClient,
@@ -13,7 +14,7 @@ export async function applyGlickoToMatch(
 
   const participants = await tx.users.findMany({
     where: { id: { in: allIds } },
-    select: { id: true, rating: true, rating_deviation: true, last_match_at: true },
+    select: { id: true, rating: true, rating_deviation: true, elo_rating: true, last_match_at: true },
   });
 
   const byId = new Map(participants.map((p) => [p.id, p]));
@@ -43,21 +44,27 @@ export async function applyGlickoToMatch(
   const agg1 = teamAggregate(team1);
   const agg2 = teamAggregate(team2);
 
+  const eloAvg1 = teamAvgElo(team1UserIds.map((id) => byId.get(id)!.elo_rating));
+  const eloAvg2 = teamAvgElo(team2UserIds.map((id) => byId.get(id)!.elo_rating));
+
   await Promise.all(
     allIds.map((id) => {
       const current = decayed.get(id);
-      if (!current) return Promise.resolve();
+      const p = byId.get(id);
+      if (!current || !p) return Promise.resolve();
       const isTeam1 = team1UserIds.includes(id);
       const opponent = isTeam1 ? agg2 : agg1;
       const S: 0 | 1 = (isTeam1 ? 1 : 2) === winnerTeam ? 1 : 0;
       const updated = updateRating(current, opponent, S);
       const ratingChange = Math.round((updated.r - current.r) * 100) / 100;
+      const newElo = Math.round(updateElo(p.elo_rating, isTeam1 ? eloAvg2 : eloAvg1, S) * 100) / 100;
       return Promise.all([
         tx.users.update({
           where: { id },
           data: {
             rating: Math.round(updated.r * 100) / 100,
             rating_deviation: Math.round(updated.RD * 100) / 100,
+            elo_rating: newElo,
             last_match_at: matchCreatedAt,
           },
         }),

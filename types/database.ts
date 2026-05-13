@@ -15,4 +15,5 @@ export interface UserStats {
   losses: number;
   rating: number;
   rating_deviation: number;
+  elo_rating: number;
 }

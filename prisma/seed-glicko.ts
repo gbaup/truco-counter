@@ -4,6 +4,7 @@ import { PrismaClient } from "../lib/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { applyDecay, teamAggregate, updateRating, GLICKO } from "../lib/glicko";
+import { teamAvgElo, updateElo, ELO_DEFAULT } from "../lib/elo";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
@@ -12,6 +13,7 @@ const prisma = new PrismaClient({ adapter });
 interface PlayerState {
   r: number;
   RD: number;
+  elo: number;
   lastMatchIndex: number; // index into the matches array (-1 = never played)
 }
 
@@ -31,18 +33,19 @@ async function main() {
           AND m.winner_team != mp.team
       ) AS losses,
       u.rating,
-      u.rating_deviation
+      u.rating_deviation,
+      u.elo_rating
     FROM users u
     LEFT JOIN match_participants mp ON mp.user_id = u.id
     LEFT JOIN matches m ON m.id = mp.match_id
-    GROUP BY u.id, u.username, u.rating, u.rating_deviation
+    GROUP BY u.id, u.username, u.rating, u.rating_deviation, u.elo_rating
   `;
   console.log("Recreated user_stats view");
 
   const users = await prisma.users.findMany({ select: { id: true } });
 
   const state = new Map<string, PlayerState>(
-    users.map((u) => [u.id, { r: GLICKO.r0, RD: GLICKO.RD0, lastMatchIndex: -1 }]),
+    users.map((u) => [u.id, { r: GLICKO.r0, RD: GLICKO.RD0, elo: ELO_DEFAULT, lastMatchIndex: -1 }]),
   );
 
   const matches = await prisma.matches.findMany({
@@ -72,7 +75,7 @@ async function main() {
 
     const allIds = [...team1Ids, ...team2Ids];
 
-    // Apply inactivity decay per player
+    // Apply inactivity decay per player (Glicko)
     const decayed = new Map<string, { r: number; RD: number }>();
     for (const id of allIds) {
       const p = state.get(id)!;
@@ -85,6 +88,9 @@ async function main() {
     const agg1 = teamAggregate(team1);
     const agg2 = teamAggregate(team2);
 
+    const eloAvg1 = teamAvgElo(team1Ids.map((id) => state.get(id)!.elo));
+    const eloAvg2 = teamAvgElo(team2Ids.map((id) => state.get(id)!.elo));
+
     for (const id of allIds) {
       const current = decayed.get(id)!;
       const isTeam1 = team1Ids.includes(id);
@@ -94,6 +100,7 @@ async function main() {
       const s = state.get(id)!;
       s.r = updated.r;
       s.RD = updated.RD;
+      s.elo = updateElo(s.elo, isTeam1 ? eloAvg2 : eloAvg1, S);
       s.lastMatchIndex = i;
       ratingChanges.push({
         matchId: match.id,
@@ -111,6 +118,7 @@ async function main() {
         data: {
           rating: Math.round(s.r * 100) / 100,
           rating_deviation: Math.round(s.RD * 100) / 100,
+          elo_rating: Math.round(s.elo * 100) / 100,
           last_match_at:
             s.lastMatchIndex >= 0
               ? matches[s.lastMatchIndex].created_at
