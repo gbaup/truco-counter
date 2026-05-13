@@ -6,12 +6,15 @@ type UserStat = {
     username: string;
     wins: number;
     losses: number;
+    rating: number;
+    rating_deviation: number;
+    elo_rating: number;
 };
 
 export async function GET() {
     try {
         const data = await prisma.$queryRaw<UserStat[]>`
-            SELECT user_id, username, wins, losses FROM user_stats
+            SELECT user_id, username, wins, losses, rating, rating_deviation, elo_rating FROM user_stats
         `;
 
         const serializedData = JSON.parse(

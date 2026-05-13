@@ -1,3 +1,5 @@
+import { twMerge } from "tailwind-merge";
+
 interface PlayerChipProps {
     label: string;
     variant: "primary" | "secondary";
@@ -14,7 +16,12 @@ export default function PlayerChip({ label, variant }: PlayerChipProps) {
 
     return (
         <span
-            className={`inline-flex capitalize items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${chipBg} ${chipBorder} ${chipText}`}
+            className={twMerge(
+                "inline-flex capitalize items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
+                chipBg,
+                chipBorder,
+                chipText
+            )}
         >
             {label}
         </span>

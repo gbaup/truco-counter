@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'URL=\"${DATABASE_URL:-}\"; if [ -n \"$URL\" ] && [ \"${CLAUDE_SAFE_DB:-}\" != \"1\" ]; then printf \"{\\\"continue\\\":false,\\\"stopReason\\\":\\\"Production DB protection: DATABASE_URL is set without CLAUDE_SAFE_DB=1. Claude cannot run commands against the production database. If this is your dev database, add CLAUDE_SAFE_DB=1 to your .env.local.\\\"}\"; exit 1; fi'",
+            "statusMessage": "Checking database safety..."
+          }
+        ]
+      }
+    ]
+  }
+}

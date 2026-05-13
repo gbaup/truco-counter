@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { twMerge } from "tailwind-merge";
 import { PublicUser } from "@/types/database";
 import TallyMarks from "@/components/ui/TallyMarks";
 import PlayerChip from "@/components/ui/PlayerChip";
@@ -38,19 +39,28 @@ export default function TeamCounter({
 
   return (
     <div
-      className={`relative flex flex-col items-center rounded-2xl p-2 backdrop-blur-sm md:p-8 h-full ${bgUserColor}`}
+      className={twMerge(
+        "relative flex flex-col items-center rounded-2xl p-2 backdrop-blur-sm md:p-8 h-full",
+        bgUserColor
+      )}
     >
       <button
         type="button"
         onClick={() => setShowPlayers((prev) => !prev)}
-        className={`mb-2 flex items-center gap-1 text-2xl font-black md:text-3xl ${titleColor} transition-colors hover:brightness-125 cursor-pointer`}
+        className={twMerge(
+          "mb-2 flex items-center gap-1 text-2xl font-black md:text-3xl transition-colors hover:brightness-125 cursor-pointer",
+          titleColor
+        )}
       >
         {title}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"
-          className={`h-5 w-5 transition-transform duration-200 ${showPlayers ? "rotate-180" : ""}`}
+          className={twMerge(
+            "h-5 w-5 transition-transform duration-200",
+            showPlayers ? "rotate-180" : ""
+          )}
         >
           <path
             fillRule="evenodd"
@@ -84,8 +94,10 @@ export default function TeamCounter({
         </div>
 
         <div
-          className={`h-1 w-full rounded-full shadow-inner ${isPrimary ? "bg-primary-500/20" : "bg-secondary-500/20"
-            }`}
+          className={twMerge(
+            "h-1 w-full rounded-full shadow-inner",
+            isPrimary ? "bg-primary-500/20" : "bg-secondary-500/20"
+          )}
         />
 
         <div className="relative flex flex-1 flex-col items-center justify-start rounded-2xl bg-black/20 p-2">
@@ -94,7 +106,11 @@ export default function TeamCounter({
       </div>
 
       <div
-        className={`absolute top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-xs font-bold text-white shadow-lg md:flex ${badgeBgColor} ${badgePositionClass}`}
+        className={twMerge(
+          "absolute top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-xs font-bold text-white shadow-lg md:flex",
+          badgeBgColor,
+          badgePositionClass
+        )}
       >
         {totalScore}
       </div>

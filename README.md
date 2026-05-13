@@ -16,6 +16,56 @@ Truco Counter es una herramienta digital que reemplaza el clásico anotador de p
 - **Versus** — compará el rendimiento entre jugadores o equipos.
 - **Internacionalización (i18n)** — soporte para español formal y español coloquial rioplatense, usando `react-i18next`.
 
+## 🏆 Sistema de Ranking
+
+El ranking individual usa el sistema **Glicko**, una evolución del Elo. Cada jugador tiene dos valores:
+
+| Valor | Nombre | Significado |
+|---|---|---|
+| `r` | Rating | Estimación de tu nivel de habilidad |
+| `RD` | Desviación de Rating | Qué tan seguro está el sistema de ese estimado |
+
+### Cómo se calcula el Rating (`r`)
+
+Después de cada partida, tu rating sube o baja según si el resultado fue mejor o peor de lo esperado:
+
+```
+r' = r + factor × (S - E)
+```
+
+- `S` = resultado real: `1` (victoria) o `0` (derrota)
+- `E` = resultado esperado: un número entre 0 y 1 según la diferencia de ratings con el equipo rival. Si sos mucho más fuerte, `E` se acerca a 1.
+- `factor` = peso de la partida (mayor cuando tu RD es alto — el sistema todavía no te conoce bien)
+
+Si se esperaba que ganaras (`E = 0.8`) y ganaste (`S = 1`), subís poco (`0.2`). Si se esperaba que ganaras y perdiste, bajás mucho (`-0.8`).
+
+### Cómo se calcula la Desviación de Rating (`RD`)
+
+El RD baja con cada partida (aprendimos algo) y sube con la inactividad (nos olvidamos):
+
+```
+RD' = sqrt( 1 / (1/RD² + 1/d²) )
+```
+
+`d²` mide qué tan informativa fue la partida. Jugar contra un rival con RD alto aporta menos información, así que tu RD no baja tanto.
+
+Por inactividad, antes de cada partida se aplica:
+
+```
+RD = min( sqrt(RD² + c² × N), 350 )
+```
+
+`N` = cantidad de partidas finalizadas globalmente desde tu última participación. Cuantas más te perdiste, más crece tu RD de vuelta hacia el máximo (`350`).
+
+### Configuración
+
+| Parámetro | Valor | Significado |
+|---|---|---|
+| Rating inicial | `1500` | Punto de partida para jugadores nuevos |
+| RD inicial | `350` | Máxima incertidumbre |
+| RD mínimo | `50` | Piso — el sistema siempre mantiene algo de incertidumbre |
+| Crecimiento por inactividad (`c`) | `15` | Velocidad a la que el RD crece al no jugar |
+
 ## 🛠️ Tecnologías
 
 | Tecnología | Versión | Uso |

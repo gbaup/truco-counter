@@ -74,6 +74,13 @@ export default function SideDrawer() {
             {t("sideDrawer.home")}
           </Link>
           <Link
+            href="/profile"
+            onClick={closeMenu}
+            className={twMerge("text-lg font-medium transition-colors hover:text-primary-600", pathname === "/profile" ? "text-primary-600" : "text-zinc-400")}
+          >
+            {t("sideDrawer.profile")}
+          </Link>
+          <Link
             href="/statistics"
             onClick={closeMenu}
             className={twMerge("text-lg font-medium transition-colors hover:text-primary-600", pathname === "/statistics" ? "text-primary-600" : "text-zinc-400")}
@@ -86,6 +93,13 @@ export default function SideDrawer() {
             className={twMerge("text-lg font-medium transition-colors hover:text-primary-600", pathname === "/versus" ? "text-primary-600" : "text-zinc-400")}
           >
             {t("sideDrawer.versus")}
+          </Link>
+          <Link
+            href="/history"
+            onClick={closeMenu}
+            className={twMerge("text-lg font-medium transition-colors hover:text-primary-600", pathname === "/history" ? "text-primary-600" : "text-zinc-400")}
+          >
+            {t("sideDrawer.history")}
           </Link>
           <button
             onClick={async () => {

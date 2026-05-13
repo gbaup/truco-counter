@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "prepare": "husky",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "seed:glicko": "tsx prisma/seed-glicko.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
@@ -34,10 +35,12 @@
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^16",
     "eslint": "^9",
     "eslint-config-next": "16.1.0",
     "husky": "^9.1.7",
     "tailwindcss": "^4",
+    "tsx": "^4",
     "typescript": "^5"
   }
 }
