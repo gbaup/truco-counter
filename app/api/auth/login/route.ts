@@ -17,9 +17,9 @@ export async function POST(request: Request) {
             );
         }
 
-        const user = await prisma.users.findUnique({
+        const user = await prisma.users.findFirst({
             where: {
-                username: username,
+                username: { equals: username, mode: "insensitive" },
             },
         });
 
