@@ -5,10 +5,12 @@ export default function TeamColumn({
     participants,
     score,
     isWinner,
+    showRatings = false,
 }: {
     participants: MatchParticipantWithUser[];
     score: number;
     isWinner: boolean;
+    showRatings?: boolean;
 }) {
     return (
         <div className="flex flex-1 flex-col items-center gap-2">
@@ -24,7 +26,7 @@ export default function TeamColumn({
                         <span className="capitalize text-sm text-zinc-300">
                             {p.users.username}
                         </span>
-                        {p.rating_change != null && (
+                        {showRatings && p.rating_change != null && (
                             <span className={twMerge(
                                 "text-xs font-bold",
                                 p.rating_change >= 0 ? "text-secondary-400" : "text-red-400"
@@ -32,7 +34,7 @@ export default function TeamColumn({
                                 {p.rating_change >= 0 ? `+${p.rating_change}` : p.rating_change}
                             </span>
                         )}
-                        {p.elo_rating_change != null && (
+                        {showRatings && p.elo_rating_change != null && (
                             <span className={twMerge(
                                 "text-xs",
                                 p.elo_rating_change >= 0 ? "text-secondary-600" : "text-red-700"
