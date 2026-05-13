@@ -1,11 +1,34 @@
 import { MatchHistoryItem, MatchParticipantWithUser } from "@/types/match";
 
+const SESSION_GAP_MS = 12 * 60 * 60 * 1000;
+
 function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString("es-UY", {
         day: "numeric",
         month: "short",
         year: "numeric",
     });
+}
+
+function groupBySessions(matches: MatchHistoryItem[]): { label: string; matches: MatchHistoryItem[] }[] {
+    if (matches.length === 0) return [];
+
+    // API returns DESC; reverse to process oldest-first so the first match opens each session
+    const asc = [...matches].reverse();
+    const groups: { start: number; label: string; matches: MatchHistoryItem[] }[] = [];
+
+    for (const match of asc) {
+        const t = new Date(match.created_at).getTime();
+        const last = groups[groups.length - 1];
+        if (!last || t - last.start > SESSION_GAP_MS) {
+            groups.push({ start: t, label: formatDate(match.created_at), matches: [match] });
+        } else {
+            last.matches.push(match);
+        }
+    }
+
+    // Newest session first; within each session, newest match first
+    return groups.reverse().map((g) => ({ label: g.label, matches: g.matches.reverse() }));
 }
 
 function TeamColumn({
@@ -51,35 +74,43 @@ export default function MatchList({
         return <p className="text-center text-zinc-500">{emptyMessage}</p>;
     }
 
+    const sessions = groupBySessions(matches);
+
     return (
-        <div className="flex flex-col gap-4">
-            {matches.map((match) => {
-                const team1 = match.match_participants.filter((p) => p.team === 1);
-                const team2 = match.match_participants.filter((p) => p.team === 2);
-                return (
-                    <div
-                        key={match.id}
-                        className="rounded-2xl border border-zinc-800 bg-zinc-950/50 p-4"
-                    >
-                        <div className="flex items-center gap-4">
-                            <TeamColumn
-                                participants={team1}
-                                score={match.score_team_1}
-                                isWinner={match.winner_team === 1}
-                            />
-                            <span className="text-sm font-bold text-zinc-600">vs</span>
-                            <TeamColumn
-                                participants={team2}
-                                score={match.score_team_2}
-                                isWinner={match.winner_team === 2}
-                            />
-                        </div>
-                        <p className="mt-3 text-center text-xs text-zinc-600">
-                            {formatDate(match.created_at)}
-                        </p>
+        <div className="flex flex-col gap-6">
+            {sessions.map((session) => (
+                <div key={session.label + session.matches[0].id}>
+                    <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">
+                        {session.label}
+                    </p>
+                    <div className="flex flex-col gap-3">
+                        {session.matches.map((match) => {
+                            const team1 = match.match_participants.filter((p) => p.team === 1);
+                            const team2 = match.match_participants.filter((p) => p.team === 2);
+                            return (
+                                <div
+                                    key={match.id}
+                                    className="rounded-2xl border border-zinc-800 bg-zinc-950/50 p-4"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <TeamColumn
+                                            participants={team1}
+                                            score={match.score_team_1}
+                                            isWinner={match.winner_team === 1}
+                                        />
+                                        <span className="text-sm font-bold text-zinc-600">vs</span>
+                                        <TeamColumn
+                                            participants={team2}
+                                            score={match.score_team_2}
+                                            isWinner={match.winner_team === 2}
+                                        />
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
-                );
-            })}
+                </div>
+            ))}
         </div>
     );
 }
