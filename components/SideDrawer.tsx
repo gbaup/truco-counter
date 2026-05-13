@@ -87,6 +87,13 @@ export default function SideDrawer() {
           >
             {t("sideDrawer.versus")}
           </Link>
+          <Link
+            href="/history"
+            onClick={closeMenu}
+            className={twMerge("text-lg font-medium transition-colors hover:text-primary-600", pathname === "/history" ? "text-primary-600" : "text-zinc-400")}
+          >
+            {t("sideDrawer.history")}
+          </Link>
           <button
             onClick={async () => {
               try {

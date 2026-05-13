@@ -137,6 +137,7 @@ export async function GET() {
                     select: {
                         user_id: true,
                         team: true,
+                        users: { select: { username: true } },
                     },
                 },
             },

@@ -38,6 +38,11 @@
         "home": "Nuevo partidito",
         "statistics": "Histórico",
         "versus": "Rivalidades",
+        "history": "Historial",
         "logout": "Cerrar sesión"
+    },
+    "matchHistory": {
+        "title": "Historial de Partidas",
+        "noMatches": "Todavía no hay historial, rompan el hielo"
     }
 }

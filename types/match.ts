@@ -1,5 +1,20 @@
 import { PublicUser } from "./database";
 
+export interface MatchParticipantWithUser {
+    user_id: string;
+    team: number;
+    users: { username: string };
+}
+
+export interface MatchHistoryItem {
+    id: string;
+    created_at: string;
+    score_team_1: number;
+    score_team_2: number;
+    winner_team: number | null;
+    match_participants: MatchParticipantWithUser[];
+}
+
 export interface CreateMatchDto {
     score1?: number;
     score2?: number;

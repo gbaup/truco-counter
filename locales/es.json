@@ -38,6 +38,11 @@
         "home": "Nuevo partido",
         "statistics": "Estadísticas",
         "versus": "Versus",
+        "history": "Historial",
         "logout": "Cerrar sesión"
+    },
+    "matchHistory": {
+        "title": "Historial de Partidas",
+        "noMatches": "No hay partidas registradas todavía"
     }
 }
