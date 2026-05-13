@@ -48,9 +48,10 @@ export async function saveMatch(matchData: CreateMatchDto) {
   return createMatch({ ...matchData, status: "finished" });
 }
 
-export async function getMatches() {
+export async function getMatches(userId?: string) {
   try {
-    const response = await fetch("/api/matches");
+    const url = userId ? `/api/matches?userId=${userId}` : "/api/matches";
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error("Failed to fetch matches");
     }

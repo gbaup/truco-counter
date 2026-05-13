@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "elo_rating" DOUBLE PRECISION NOT NULL DEFAULT 1200;

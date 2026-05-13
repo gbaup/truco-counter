@@ -8,7 +8,7 @@ function TallyGroup({ points }: TallyGroupProps) {
   return (
     <svg
       viewBox="0 0 100 100"
-      className="h-12 w-12 text-zinc-800 dark:text-zinc-200 lg:h-16 lg:w-16"
+      className="h-12 w-12 text-zinc-200 lg:h-16 lg:w-16"
     >
       {/* Stroke width and linecaps for a "hand-drawn" or "marker" look */}
       {points >= 1 && (
