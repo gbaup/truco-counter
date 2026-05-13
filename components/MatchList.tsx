@@ -1,5 +1,5 @@
-import { MatchHistoryItem, MatchParticipantWithUser } from "@/types/match";
-import { twMerge } from "tailwind-merge";
+import { MatchHistoryItem } from "@/types/match";
+import MatchCard from "@/components/MatchCard";
 
 const SESSION_GAP_MS = 12 * 60 * 60 * 1000;
 
@@ -32,52 +32,6 @@ function groupBySessions(matches: MatchHistoryItem[]): { label: string; matches:
     return groups.reverse().map((g) => ({ label: g.label, matches: g.matches.reverse() }));
 }
 
-function TeamColumn({
-    participants,
-    score,
-    isWinner,
-}: {
-    participants: MatchParticipantWithUser[];
-    score: number;
-    isWinner: boolean;
-}) {
-    return (
-        <div className="flex flex-1 flex-col items-center gap-2">
-            <div className={twMerge(
-                "text-3xl font-black",
-                isWinner ? "text-secondary-500" : "text-red-500"
-            )}>
-                {score}
-            </div>
-            <div className="flex flex-col items-center gap-1">
-                {participants.map((p) => (
-                    <div key={p.user_id} className="flex items-center gap-1.5">
-                        <span className="capitalize text-sm text-zinc-300">
-                            {p.users.username}
-                        </span>
-                        {p.rating_change != null && (
-                            <span className={twMerge(
-                                "text-xs font-bold",
-                                p.rating_change >= 0 ? "text-secondary-400" : "text-red-400"
-                            )}>
-                                {p.rating_change >= 0 ? `+${p.rating_change}` : p.rating_change}
-                            </span>
-                        )}
-                        {p.elo_rating_change != null && (
-                            <span className={twMerge(
-                                "text-xs",
-                                p.elo_rating_change >= 0 ? "text-secondary-600" : "text-red-700"
-                            )}>
-                                {p.elo_rating_change >= 0 ? `+${p.elo_rating_change}` : p.elo_rating_change}
-                            </span>
-                        )}
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-}
-
 export default function MatchList({
     matches,
     emptyMessage,
@@ -99,30 +53,9 @@ export default function MatchList({
                         {session.label}
                     </p>
                     <div className="flex flex-col gap-3">
-                        {session.matches.map((match) => {
-                            const team1 = match.match_participants.filter((p) => p.team === 1);
-                            const team2 = match.match_participants.filter((p) => p.team === 2);
-                            return (
-                                <div
-                                    key={match.id}
-                                    className="rounded-2xl border border-zinc-800 bg-zinc-950/50 p-4"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <TeamColumn
-                                            participants={team1}
-                                            score={match.score_team_1}
-                                            isWinner={match.winner_team === 1}
-                                        />
-                                        <span className="text-sm font-bold text-zinc-600">vs</span>
-                                        <TeamColumn
-                                            participants={team2}
-                                            score={match.score_team_2}
-                                            isWinner={match.winner_team === 2}
-                                        />
-                                    </div>
-                                </div>
-                            );
-                        })}
+                        {session.matches.map((match) => (
+                            <MatchCard key={match.id} match={match} />
+                        ))}
                     </div>
                 </div>
             ))}
