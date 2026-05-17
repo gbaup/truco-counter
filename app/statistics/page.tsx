@@ -39,8 +39,11 @@ export default function StatisticsPage() {
     );
   }
 
+  const glickoScore = (s: { rating: number; rating_deviation: number }) =>
+    s.rating - s.rating_deviation;
+
   const sorted = tab === "glicko"
-    ? [...userStats].sort((a, b) => b.rating - a.rating)
+    ? [...userStats].sort((a, b) => glickoScore(b) - glickoScore(a))
     : [...userStats].sort((a, b) => b.elo_rating - a.elo_rating);
 
   const top = sorted[0] ?? null;
@@ -179,7 +182,7 @@ export default function StatisticsPage() {
                     fontSize: 30,
                   }}
                 >
-                  {Math.round(tab === "glicko" ? top.rating : top.elo_rating)}
+                  {Math.round(tab === "glicko" ? glickoScore(top) : top.elo_rating)}
                 </p>
                 <p
                   className="text-label-overline mt-1"
@@ -224,7 +227,7 @@ export default function StatisticsPage() {
                 className="text-right font-extrabold text-[15px]"
                 style={{ fontFamily: "var(--font-space-grotesk), system-ui" }}
               >
-                {Math.round(tab === "glicko" ? s.rating : s.elo_rating)}
+                {Math.round(tab === "glicko" ? glickoScore(s) : s.elo_rating)}
               </span>
             </div>
           ))}
