@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { twMerge } from "tailwind-merge";
@@ -24,6 +24,7 @@ export default function SideDrawer({
 }: SideDrawerProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const hasFetched = useRef(false);
   const pathname = usePathname();
   const { t } = useTranslation();
 
@@ -33,10 +34,12 @@ export default function SideDrawer({
   const closeMenu = externalClose ?? (() => setInternalOpen(false));
 
   useEffect(() => {
+    if (!isOpen || hasFetched.current) return;
+    hasFetched.current = true;
     getMe().then((me) => {
       if (me) setUsername(me.username);
     });
-  }, []);
+  }, [isOpen]);
 
   const navItems = [
     { href: "/", label: t("sideDrawer.home") },

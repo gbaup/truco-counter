@@ -9,7 +9,17 @@ export async function POST() {
     try {
         const session = await getSession() as Session | null;
 
-        if (!session?.userId || session.role !== UserRole.admin) {
+        if (!session?.userId) {
+            return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+        }
+
+        // Re-read role from DB so stale/missing JWT claims don't affect access control
+        const caller = await prisma.users.findUnique({
+            where: { id: session.userId },
+            select: { role: true },
+        });
+
+        if (caller?.role !== UserRole.admin) {
             return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
         }
 
