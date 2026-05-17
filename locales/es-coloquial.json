@@ -3,22 +3,25 @@
         "title": "Iniciar sesión",
         "username": "Usuario",
         "password": "Contraseña",
-        "button": "Entrar"
+        "button": "Entrar a la mesa",
+        "tagline": "tu mesa, tu marca, tu ranking"
     },
     "matchSetup": {
         "team1": "Nosotros",
         "team2": "Ellos",
-        "maxPoints": "A cuánto se juega",
+        "maxPoints": "se juega a...",
+        "pool": "en el banco",
         "equalPlayers": "Poné bien los equipos",
         "button": {
-            "start": "Empezar!",
+            "start": "Cortar y empezar",
             "loading": "Empezando...",
             "disabled": "Por lo menos de a 2 burrazo"
         }
     },
     "matchCounter": {
         "team1": "Nosotros",
-        "team2": "Ellos"
+        "team2": "Ellos",
+        "playing": "se juega a {{max}}"
     },
     "confirmationExitModal": {
         "title": "Hee? Van a salir?",
@@ -35,12 +38,12 @@
         }
     },
     "sideDrawer": {
-        "home": "Nuevo partidito",
+        "home": "Armar mesa",
         "profile": "Mi perfil",
         "statistics": "Tabla",
         "versus": "Rivalidades",
         "history": "Historial",
-        "logout": "Cerrar sesión"
+        "logout": "levantarse de la mesa"
     },
     "matchHistory": {
         "title": "Historial de Partidas",
@@ -52,11 +55,15 @@
         "wins": "Victorias",
         "losses": "Derrotas",
         "winRate": "% victorias",
-        "noMatches": "Ni una partida, empezá a jugar"
+        "noMatches": "Ni una partida, empezá a jugar",
+        "label": "el jugador",
+        "recent": "últimas partidas",
+        "viewAll": "ver todas"
     },
     "statistics": {
         "glickoDescription": "Ajusta por incertidumbre e inactividad",
         "eloDescription": "Clásico · K=32",
+        "topPlayer": "el papá de todos",
         "table": {
             "player": "Jugador"
         }
