@@ -1,6 +1,6 @@
 # Truco Counter
 
-Aplicación web para llevar el marcador durante partidas de **Truco**, el juego de cartas más popular de Argentina y el Río de la Plata.
+Aplicación web para llevar el marcador durante partidas de **Truco**, el juego de cartas más popular de Uruguay y Argentina.
 
 ## 🃏 ¿Qué es esto?
 
@@ -93,37 +93,37 @@ RD = min( sqrt(RD² + c² × N), 350 )
 
 1. **Cloná el repositorio**
 
-   \`\`\`bash
+   ```bash
    git clone https://github.com/gbaup/truco-counter.git
    cd truco-counter
-   \`\`\`
+   ```
 
 2. **Instalá las dependencias**
 
-   \`\`\`bash
+   ```bash
    npm install
-   \`\`\`
+   ```
 
 3. **Configurá las variables de entorno**
 
-   Creá un archivo \`.env\` en la raíz del proyecto con las siguientes variables:
+   Creá un archivo `.env` en la raíz del proyecto con las siguientes variables:
 
-   \`\`\`env
+   ```env
    DATABASE_URL=postgresql://usuario:contraseña@host:puerto/nombre_db
    JWT_SECRET=tu_clave_secreta
-   \`\`\`
+   ```
 
 4. **Generá el cliente de Prisma y migrá la base de datos**
 
-   \`\`\`bash
+   ```bash
    npx prisma migrate dev
-   \`\`\`
+   ```
 
 5. **Iniciá el servidor de desarrollo**
 
-   \`\`\`bash
+   ```bash
    npm run dev
-   \`\`\`
+   ```
 
    Abrí [http://localhost:3000](http://localhost:3000) en tu navegador.
 
@@ -131,21 +131,21 @@ RD = min( sqrt(RD² + c² × N), 350 )
 
 | Comando | Descripción |
 |---|---|
-| \`npm run dev\` | Inicia el servidor de desarrollo |
-| \`npm run build\` | Compila la aplicación para producción |
-| \`npm run start\` | Inicia el servidor en modo producción |
-| \`npm run lint\` | Ejecuta el linter (ESLint) |
+| `npm run dev` | Inicia el servidor de desarrollo |
+| `npm run build` | Compila la aplicación para producción |
+| `npm run start` | Inicia el servidor en modo producción |
+| `npm run lint` | Ejecuta el linter (ESLint) |
 
 ## 🌐 Internacionalización
 
-El proyecto soporta múltiples idiomas a través de \`react-i18next\`. Los archivos de traducción se encuentran en la carpeta \`locales/\`:
+El proyecto soporta múltiples idiomas a través de `react-i18next`. Los archivos de traducción se encuentran en la carpeta `locales/`:
 
-- \`es.json\` — Español estándar
-- \`es-coloquial.json\` — Español coloquial rioplatense
+- `es.json` — Español estándar
+- `es-coloquial.json` — Español coloquial rioplatense
 
 ## 🗂️ Estructura del proyecto
 
-\`\`\`
+```
 truco-counter/
 ├── app/                  # Rutas y páginas (Next.js App Router)
 │   ├── api/              # API Routes
@@ -160,16 +160,16 @@ truco-counter/
 ├── prisma/               # Esquema y migraciones de la base de datos
 ├── services/             # Lógica de negocio y llamadas a la API
 └── types/                # Tipos TypeScript compartidos
-\`\`\`
+```
 
 ## 🚢 Despliegue
 
 La forma más sencilla de desplegar esta aplicación es con [Vercel](https://vercel.com/):
 
 1. Conectá tu repositorio de GitHub en Vercel.
-2. Configurá las variables de entorno (\`DATABASE_URL\`, \`JWT_SECRET\`).
+2. Configurá las variables de entorno (`DATABASE_URL`, `JWT_SECRET`).
 3. Vercel detectará automáticamente que es un proyecto Next.js y lo desplegará.
 
 ## 🤝 Contribuciones
 
-Las contribuciones son bienvenidas. Por favor, creá un branch a partir de \`develop\` y abrí un Pull Request con tus cambios.
+Las contribuciones son bienvenidas. Por favor, creá un branch a partir de `develop` y abrí un Pull Request con tus cambios.
