@@ -2,33 +2,133 @@
 
 import { useState } from "react";
 import { MatchHistoryItem } from "@/types/match";
-import TeamColumn from "@/components/TeamColumn";
+import Suit from "@/components/ui/Suit";
 
 export default function MatchCard({ match }: { match: MatchHistoryItem }) {
-    const [expanded, setExpanded] = useState(false);
-    const team1 = match.match_participants.filter((p) => p.team === 1);
-    const team2 = match.match_participants.filter((p) => p.team === 2);
+  const [expanded, setExpanded] = useState(false);
 
-    return (
-        <div
-            className="rounded-2xl border border-zinc-800 bg-zinc-950/50 p-4 transition-colors active:border-zinc-600 active:bg-zinc-900"
-            onClick={() => setExpanded((prev) => !prev)}
+  const won = match.winner_team === 1;
+  const decided = match.winner_team !== null;
+
+  const team1 = match.match_participants.filter((p) => p.team === 1);
+  const team2 = match.match_participants.filter((p) => p.team === 2);
+
+  const team1Names = team1.map((p) => p.users?.username).filter(Boolean).join(" · ");
+  const team2Names = team2.map((p) => p.users?.username).filter(Boolean).join(" · ");
+
+  const winScore = won ? match.score_team_1 : match.score_team_2;
+  const loseScore = won ? match.score_team_2 : match.score_team_1;
+
+  return (
+    <div
+      className="bg-surface rounded-lg border border-border shadow-card p-3 flex items-start gap-3 cursor-pointer active:bg-surface-elevated transition-colors"
+      onClick={() => setExpanded((v) => !v)}
+    >
+      {/* Mini Spanish card */}
+      <div
+        className="shrink-0 flex flex-col items-center justify-between py-1 px-0.5"
+        style={{
+          width: 32,
+          height: 40,
+          background: "var(--color-paper-ink)",
+          borderRadius: "var(--radius-xs)",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-crimson-pro), serif",
+            fontWeight: 800,
+            fontSize: 13,
+            color: "var(--color-paper)",
+            lineHeight: 1,
+          }}
         >
-            <div className="flex items-center gap-4">
-                <TeamColumn
-                    participants={team1}
-                    score={match.score_team_1}
-                    isWinner={match.winner_team === 1}
-                    showRatings={expanded}
-                />
-                <span className="text-sm font-bold text-zinc-600">vs</span>
-                <TeamColumn
-                    participants={team2}
-                    score={match.score_team_2}
-                    isWinner={match.winner_team === 2}
-                    showRatings={expanded}
-                />
-            </div>
-        </div>
-    );
+          {decided ? (won ? "G" : "P") : "—"}
+        </span>
+        <Suit
+          kind={decided ? (won ? "espada" : "basto") : "copa"}
+          size={12}
+          color="var(--color-paper)"
+        />
+        <span
+          className="rotate-180"
+          style={{
+            fontFamily: "var(--font-crimson-pro), serif",
+            fontWeight: 800,
+            fontSize: 13,
+            color: "var(--color-paper)",
+            lineHeight: 1,
+          }}
+        >
+          {decided ? (won ? "G" : "P") : "—"}
+        </span>
+      </div>
+
+      {/* Team names */}
+      <div className="flex-1 min-w-0 py-0.5">
+        <p className="text-text font-semibold text-[13px] truncate">{team1Names || "—"}</p>
+        <p
+          className="text-caption-italic text-text-dim truncate"
+          style={{ fontSize: 12 }}
+        >
+          vs {team2Names || "—"}
+        </p>
+
+        {/* Rating deltas (expanded) */}
+        {expanded && (
+          <div className="mt-2 flex flex-col gap-1">
+            {match.match_participants.map((p, i) => {
+              if (p.rating_change == null && p.elo_rating_change == null) return null;
+              return (
+                <div key={p.user_id ?? i} className="flex items-center gap-1.5">
+                  <span className="text-text-mute text-[11px] capitalize truncate">
+                    {p.users?.username ?? "—"}
+                  </span>
+                  {p.rating_change != null && (
+                    <span
+                      className={[
+                        "text-[11px] font-bold",
+                        p.rating_change >= 0 ? "text-them" : "text-danger",
+                      ].join(" ")}
+                    >
+                      {p.rating_change >= 0 ? `+${Math.round(p.rating_change)}` : Math.round(p.rating_change)}
+                    </span>
+                  )}
+                  {p.elo_rating_change != null && (
+                    <span
+                      className={[
+                        "text-[11px]",
+                        p.elo_rating_change >= 0 ? "text-them/70" : "text-danger/70",
+                      ].join(" ")}
+                    >
+                      elo {p.elo_rating_change >= 0 ? `+${Math.round(p.elo_rating_change)}` : Math.round(p.elo_rating_change)}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Score */}
+      <div className="shrink-0 text-right py-0.5">
+        <p
+          className={[
+            "font-extrabold text-[17px] leading-none",
+            decided ? (won ? "text-them" : "text-danger") : "text-text",
+          ].join(" ")}
+          style={{ fontFamily: "var(--font-space-grotesk), system-ui" }}
+        >
+          {decided ? winScore : match.score_team_1}
+        </p>
+        <p
+          className="font-extrabold text-[17px] leading-none text-text-dim mt-0.5"
+          style={{ fontFamily: "var(--font-space-grotesk), system-ui" }}
+        >
+          {decided ? loseScore : match.score_team_2}
+        </p>
+      </div>
+    </div>
+  );
 }

@@ -3,102 +3,232 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import SideDrawer from "@/components/SideDrawer";
+import PaperPanel from "@/components/ui/PaperPanel";
+import Suit from "@/components/ui/Suit";
+import Logo from "@/components/ui/Logo";
 import { UserStats } from "@/types/database";
 import { getUserStats } from "@/services/userService";
+import { getMe } from "@/services/auth";
+import MenuIcon from "@/components/ui/MenuIcon";
+
+type Tab = "glicko" | "elo";
 
 export default function StatisticsPage() {
   const { t } = useTranslation();
   const [userStats, setUserStats] = useState<UserStats[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<Tab>("glicko");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      const stats = await getUserStats();
-      const sortedStats = stats.sort((a, b) => (b.wins / (b.wins + b.losses)) - (a.wins / (a.wins + a.losses)));
-      setUserStats(sortedStats);
+      const [stats, me] = await Promise.all([getUserStats(), getMe()]);
+      setUserStats(stats);
+      if (me) setCurrentUserId(me.userId);
       setLoading(false);
     }
     fetchData();
   }, []);
 
-  if (loading) return (
-    <div className="flex h-64 items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
-    </div>
-  );
-  const byGlicko = [...userStats].sort((a, b) => b.rating - a.rating);
-  const byElo = [...userStats].sort((a, b) => b.elo_rating - a.elo_rating);
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-us border-t-transparent" />
+      </div>
+    );
+  }
+
+  const sorted = tab === "glicko"
+    ? [...userStats].sort((a, b) => b.rating - a.rating)
+    : [...userStats].sort((a, b) => b.elo_rating - a.elo_rating);
+
+  const top = sorted[0] ?? null;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-950 p-4 transition-colors">
-      <SideDrawer />
-      <header className="mb-12 text-center">
-        <h1 className="text-3xl font-black tracking-tighter text-white md:text-7xl">
-          TRUCO<span className="text-primary-600">PRO</span>
-        </h1>
-      </header>
-      <main className="w-full max-w-2xl space-y-6 text-center">
+    <div className="min-h-screen bg-background text-text">
+      <SideDrawer
+        isOpen={drawerOpen}
+        onToggle={() => setDrawerOpen((v) => !v)}
+        onClose={() => setDrawerOpen(false)}
+      />
 
-        {/* Glicko ranking */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8 shadow-xl">
-          <h2 className="mb-1 text-2xl font-bold text-white">Glicko</h2>
-          <p className="mb-6 text-xs text-zinc-500">{t("statistics.glickoDescription")}</p>
-          <div className="overflow-hidden rounded-xl border border-zinc-800">
-            <table className="w-full text-left text-sm text-zinc-400">
-              <thead className="bg-zinc-800 text-xs uppercase text-zinc-400">
-                <tr>
-                  <th scope="col" className="px-4 py-3">#</th>
-                  <th scope="col" className="px-4 py-3">{t("statistics.table.player")}</th>
-                  <th scope="col" className="px-4 py-3 text-center">W</th>
-                  <th scope="col" className="px-4 py-3 text-center">L</th>
-                  <th scope="col" className="px-4 py-3 text-right">Rating</th>
-                </tr>
-              </thead>
-              <tbody>
-                {byGlicko.map((s, i) => (
-                  <tr key={s.user_id} className="border-b border-zinc-800 bg-zinc-900 last:border-b-0">
-                    <td className="px-4 py-3 text-zinc-500">{i + 1}</td>
-                    <td className="whitespace-nowrap capitalize px-4 py-3 font-medium text-white">{s.username}</td>
-                    <td className="px-4 py-3 text-center font-bold text-secondary-500">{s.wins}</td>
-                    <td className="px-4 py-3 text-center font-bold text-red-500">{s.losses}</td>
-                    <td className="px-4 py-3 text-right font-bold text-white">{Math.round(s.rating)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 pt-14 pb-3">
+        <Logo size={18} />
+        <span
+          className="text-caption-italic text-text"
+          style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+        >
+          {t("sideDrawer.statistics")}
+        </span>
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
+          aria-label="Menú"
+        >
+          <MenuIcon />
+        </button>
+      </div>
+
+      <main className="flex flex-col gap-3 px-5 pb-8">
+
+        {/* Tab switcher */}
+        <div className="bg-surface rounded-md border border-border p-1 flex gap-1">
+          {(["glicko", "elo"] as Tab[]).map((t_) => (
+            <button
+              key={t_}
+              onClick={() => setTab(t_)}
+              className={[
+                "flex-1 py-2 rounded-sm text-sm font-semibold transition-colors",
+                tab === t_
+                  ? "bg-us text-white"
+                  : "text-text-dim hover:text-text",
+              ].join(" ")}
+              style={{ fontFamily: "var(--font-space-grotesk), system-ui" }}
+            >
+              {t_ === "glicko" ? "Glicko" : "Elo"}
+            </button>
+          ))}
         </div>
 
-        {/* Elo ranking */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8 shadow-xl">
-          <h2 className="mb-1 text-2xl font-bold text-white">Elo</h2>
-          <p className="mb-6 text-xs text-zinc-500">{t("statistics.eloDescription")}</p>
-          <div className="overflow-hidden rounded-xl border border-zinc-800">
-            <table className="w-full text-left text-sm text-zinc-400">
-              <thead className="bg-zinc-800 text-xs uppercase text-zinc-400">
-                <tr>
-                  <th scope="col" className="px-4 py-3">#</th>
-                  <th scope="col" className="px-4 py-3">{t("statistics.table.player")}</th>
-                  <th scope="col" className="px-4 py-3 text-center">W</th>
-                  <th scope="col" className="px-4 py-3 text-center">L</th>
-                  <th scope="col" className="px-4 py-3 text-right">Rating</th>
-                </tr>
-              </thead>
-              <tbody>
-                {byElo.map((s, i) => (
-                  <tr key={s.user_id} className="border-b border-zinc-800 bg-zinc-900 last:border-b-0">
-                    <td className="px-4 py-3 text-zinc-500">{i + 1}</td>
-                    <td className="whitespace-nowrap capitalize px-4 py-3 font-medium text-white">{s.username}</td>
-                    <td className="px-4 py-3 text-center font-bold text-secondary-500">{s.wins}</td>
-                    <td className="px-4 py-3 text-center font-bold text-red-500">{s.losses}</td>
-                    <td className="px-4 py-3 text-right font-bold text-white">{Math.round(s.elo_rating)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {/* Description */}
+        <p
+          className="text-caption-italic text-text-mute px-0.5"
+          style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+        >
+          {tab === "glicko" ? t("statistics.glickoDescription") : t("statistics.eloDescription")}
+        </p>
 
+        {/* Top-1 spotlight */}
+        {top && (
+          <PaperPanel lines={false}>
+            <div className="flex items-center gap-3">
+              {/* Mini Spanish card */}
+              <div
+                className="shrink-0 rounded-[6px] flex flex-col items-center justify-between py-1.5 px-1"
+                style={{
+                  width: 50,
+                  height: 64,
+                  background: "var(--color-paper-ink)",
+                }}
+              >
+                <span
+                  className="leading-none"
+                  style={{
+                    fontFamily: "var(--font-crimson-pro), serif",
+                    fontWeight: 800,
+                    fontSize: 16,
+                    color: "var(--color-paper)",
+                  }}
+                >
+                  1
+                </span>
+                <Suit kind="espada" size={18} color="var(--color-paper)" />
+                <span
+                  className="leading-none rotate-180"
+                  style={{
+                    fontFamily: "var(--font-crimson-pro), serif",
+                    fontWeight: 800,
+                    fontSize: 16,
+                    color: "var(--color-paper)",
+                  }}
+                >
+                  1
+                </span>
+              </div>
+
+              {/* Name + record */}
+              <div className="flex-1 min-w-0">
+                <p
+                  className="text-caption-italic"
+                  style={{
+                    color: "rgba(26,20,16,0.6)",
+                    fontFamily: "var(--font-crimson-pro), serif",
+                    fontSize: 11,
+                    letterSpacing: "0.12em",
+                  }}
+                >
+                  {t("statistics.topPlayer")}
+                </p>
+                <p
+                  className="text-paper-ink capitalize font-bold truncate"
+                  style={{
+                    fontFamily: "var(--font-crimson-pro), serif",
+                    fontSize: 20,
+                    lineHeight: 1.15,
+                  }}
+                >
+                  {top.username}
+                </p>
+                <p
+                  className="text-caption-italic mt-0.5"
+                  style={{ color: "rgba(26,20,16,0.55)", fontSize: 12 }}
+                >
+                  {top.wins}W · {top.losses}L
+                </p>
+              </div>
+
+              {/* Rating */}
+              <div className="shrink-0 text-right">
+                <p
+                  className="text-paper-ink leading-none"
+                  style={{
+                    fontFamily: "var(--font-space-grotesk), system-ui",
+                    fontWeight: 900,
+                    fontSize: 30,
+                  }}
+                >
+                  {Math.round(tab === "glicko" ? top.rating : top.elo_rating)}
+                </p>
+                <p
+                  className="text-label-overline mt-1"
+                  style={{ color: "rgba(26,20,16,0.5)", fontSize: 9 }}
+                >
+                  {tab === "glicko" ? "GLICKO" : "ELO"}
+                </p>
+              </div>
+            </div>
+          </PaperPanel>
+        )}
+
+        {/* Leaderboard */}
+        <div className="bg-surface rounded-xl border border-border overflow-hidden">
+          {/* Header row */}
+          <div
+            className="grid px-3.5 py-2.5 border-b border-border"
+            style={{ gridTemplateColumns: "28px 1fr 32px 32px 60px" }}
+          >
+            <span className="text-label-overline text-text-mute italic">#</span>
+            <span className="text-label-overline text-text-mute italic">{t("statistics.table.player")}</span>
+            <span className="text-label-overline text-text-mute italic text-center">W</span>
+            <span className="text-label-overline text-text-mute italic text-center">L</span>
+            <span className="text-label-overline text-text-mute italic text-right">Rating</span>
+          </div>
+
+          {/* Data rows */}
+          {sorted.map((s, i) => (
+            <div
+              key={s.user_id}
+              className={[
+                "grid items-center px-3.5 py-2.5 border-b border-border last:border-0",
+                s.user_id === currentUserId ? "bg-us/5" : "",
+              ].join(" ")}
+              style={{ gridTemplateColumns: "28px 1fr 32px 32px 60px" }}
+            >
+              <span className="text-text-mute text-[13px]">{i + 1}</span>
+              <span className="text-text font-medium text-[13px] truncate capitalize">{s.username}</span>
+              <span className="text-them font-bold text-[13px] text-center">{s.wins}</span>
+              <span className="text-danger font-bold text-[13px] text-center">{s.losses}</span>
+              <span
+                className="text-right font-extrabold text-[15px]"
+                style={{ fontFamily: "var(--font-space-grotesk), system-ui" }}
+              >
+                {Math.round(tab === "glicko" ? s.rating : s.elo_rating)}
+              </span>
+            </div>
+          ))}
+        </div>
       </main>
     </div>
   );

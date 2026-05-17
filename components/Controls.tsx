@@ -6,6 +6,30 @@ interface ControlsProps {
   score2: number;
 }
 
+function MinusIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+      <path d="M5 12h14" />
+    </svg>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+      <path d="M18 6 6 18M6 6l12 12" />
+    </svg>
+  );
+}
+
 export default function Controls({
   onIncrement,
   onDecrement,
@@ -14,50 +38,56 @@ export default function Controls({
   score2,
 }: ControlsProps) {
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full border-t border-white/10 bg-zinc-950/80 p-4 backdrop-blur-lg">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
-        <div className="flex flex-1 items-center justify-center gap-4">
-          <button
-            onClick={() => onDecrement(1)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl font-bold text-primary-500 transition-all active:scale-90"
-          >
-            -
-          </button>
-          <div className="flex flex-col items-center">
-            <span className="text-xl font-black text-primary-500">{score1}</span>
-          </div>
-          <button
-            onClick={() => onIncrement(1)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 text-xl font-bold text-white shadow-lg transition-all active:scale-110"
-          >
-            +
-          </button>
-        </div>
-
+    <div className="flex gap-1.5 items-center px-3.5 pb-8 pt-3">
+      {/* Team 1 (Nosotros) */}
+      <div className="flex-1 flex gap-1.5 bg-surface rounded-xl border border-border p-1.5">
         <button
-          onClick={onExit}
-          className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-lg transition-all active:scale-110"
+          onClick={() => onDecrement(1)}
+          className="w-[42px] h-[42px] min-w-[42px] rounded-md border border-us/40 text-us flex items-center justify-center active:scale-95 transition-transform"
+          aria-label="Restar punto Nosotros"
         >
-          X
+          <MinusIcon />
         </button>
-
-        <div className="flex flex-1 items-center justify-center gap-4">
-          <button
-            onClick={() => onDecrement(2)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl font-bold text-secondary-500 transition-all active:scale-90"
-          >
-            -
-          </button>
-          <div className="flex flex-col items-center">
-            <span className="text-xl font-black text-secondary-500">{score2}</span>
-          </div>
-          <button
-            onClick={() => onIncrement(2)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary-500 text-xl font-bold text-white shadow-lg transition-all active:scale-110"
-          >
-            +
-          </button>
+        <div className="flex-1 grid place-items-center text-display-md font-display text-us">
+          {score1}
         </div>
+        <button
+          onClick={() => onIncrement(1)}
+          className="w-[42px] h-[42px] min-w-[42px] rounded-md bg-us text-white flex items-center justify-center active:scale-95 transition-transform"
+          aria-label="Sumar punto Nosotros"
+        >
+          <PlusIcon />
+        </button>
+      </div>
+
+      {/* Exit */}
+      <button
+        onClick={onExit}
+        className="w-11 h-11 min-w-[44px] rounded-full bg-surface border border-border text-text-dim flex items-center justify-center active:scale-95 transition-transform"
+        aria-label="Salir del partido"
+      >
+        <CloseIcon />
+      </button>
+
+      {/* Team 2 (Ellos) */}
+      <div className="flex-1 flex gap-1.5 bg-surface rounded-xl border border-border p-1.5">
+        <button
+          onClick={() => onDecrement(2)}
+          className="w-[42px] h-[42px] min-w-[42px] rounded-md border border-them/40 text-them flex items-center justify-center active:scale-95 transition-transform"
+          aria-label="Restar punto Ellos"
+        >
+          <MinusIcon />
+        </button>
+        <div className="flex-1 grid place-items-center text-display-md font-display text-them">
+          {score2}
+        </div>
+        <button
+          onClick={() => onIncrement(2)}
+          className="w-[42px] h-[42px] min-w-[42px] rounded-md bg-them text-paper-ink flex items-center justify-center active:scale-95 transition-transform"
+          aria-label="Sumar punto Ellos"
+        >
+          <PlusIcon />
+        </button>
       </div>
     </div>
   );
