@@ -21,91 +21,83 @@ interface TeamConfig {
   label: string;
   color: string;
   colorClass: string;
-  borderClass: string;
-  chipBg: string;
-  chipText: string;
-  dashedBorder: string;
   suitKind: SuitKind;
-  list: PublicUser[];
-  otherList: PublicUser[];
+  // static class strings — all pre-computed so Tailwind can detect them
+  panelResting: string;
+  panelActive: string;
+  chipClass: string;
+  sumarResting: string;
+  sumarActive: string;
+  poolChipActive: string;
 }
 
-export default function MatchSetup({
-  onStartMatch,
-  isStarting,
-  onMenuOpen,
-}: MatchSetupProps) {
+const TEAM_CONFIGS: Omit<TeamConfig, "label" | "list">[] = [
+  {
+    team: 1,
+    color: "#8B5CF6",
+    colorClass: "text-us",
+    suitKind: "espada",
+    panelResting: "bg-surface border border-us/40",
+    panelActive: "bg-us/[0.07] border-2 border-us ring-4 ring-us/[0.08]",
+    chipClass: "bg-us/20 text-us",
+    sumarResting: "border border-dashed border-us/60 text-us opacity-60",
+    sumarActive: "bg-us/10 border border-us/60 text-us font-semibold",
+    poolChipActive: "bg-us/10 border-us/35 text-us hover:bg-us/20 cursor-pointer",
+  },
+  {
+    team: 2,
+    color: "#34D399",
+    colorClass: "text-them",
+    suitKind: "basto",
+    panelResting: "bg-surface border border-them/40",
+    panelActive: "bg-them/[0.07] border-2 border-them ring-4 ring-them/[0.08]",
+    chipClass: "bg-them/20 text-them",
+    sumarResting: "border border-dashed border-them/60 text-them opacity-60",
+    sumarActive: "bg-them/10 border border-them/60 text-them font-semibold",
+    poolChipActive: "bg-them/10 border-them/35 text-them hover:bg-them/20 cursor-pointer",
+  },
+];
+
+export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: MatchSetupProps) {
   const [users, setUsers] = useState<PublicUser[]>([]);
   const [team1, setTeam1] = useState<PublicUser[]>([]);
   const [team2, setTeam2] = useState<PublicUser[]>([]);
   const [maxPoints, setMaxPoints] = useState<number>(40);
   const [loading, setLoading] = useState(true);
+  const [activeTeam, setActiveTeam] = useState<1 | 2 | null>(null);
   const { t } = useTranslation();
 
   useEffect(() => {
-    async function fetchUsers() {
-      const data = await getUsers();
-      setUsers(data);
-      setLoading(false);
-    }
-    fetchUsers();
+    getUsers().then((data) => { setUsers(data); setLoading(false); });
   }, []);
 
-  const toggleUserInTeam = (user: PublicUser, team: 1 | 2) => {
-    if (team === 1) {
-      if (team1.find((u) => u.id === user.id)) {
-        setTeam1(team1.filter((u) => u.id !== user.id));
-      } else if (team1.length < 3 && !team2.find((u) => u.id === user.id)) {
-        setTeam1([...team1, user]);
-      }
-    } else {
-      if (team2.find((u) => u.id === user.id)) {
-        setTeam2(team2.filter((u) => u.id !== user.id));
-      } else if (team2.length < 3 && !team1.find((u) => u.id === user.id)) {
-        setTeam2([...team2, user]);
-      }
-    }
+  const getList = (team: 1 | 2) => (team === 1 ? team1 : team2);
+  const setList = (team: 1 | 2, list: PublicUser[]) =>
+    team === 1 ? setTeam1(list) : setTeam2(list);
+
+  const removeFromTeam = (user: PublicUser, team: 1 | 2) =>
+    setList(team, getList(team).filter((u) => u.id !== user.id));
+
+  const addToActiveTeam = (user: PublicUser) => {
+    if (!activeTeam) return;
+    const list = getList(activeTeam);
+    if (list.length < 3) setList(activeTeam, [...list, user]);
   };
 
-  const canStart = team1.length === team2.length && team1.length >= 2;
-  const showWarning =
-    team1.length !== team2.length && team1.length > 0 && team2.length > 0;
+  const toggleSumar = (team: 1 | 2) =>
+    setActiveTeam((prev) => (prev === team ? null : team));
 
-  const availableUsers = users.filter(
-    (u) =>
-      !team1.find((t) => t.id === u.id) &&
-      !team2.find((t) => t.id === u.id) &&
-      !u.isPlaying
+  const canStart = team1.length === team2.length && team1.length >= 2;
+  const showWarning = team1.length !== team2.length && team1.length > 0 && team2.length > 0;
+
+  const poolUsers = users.filter(
+    (u) => !team1.find((p) => p.id === u.id) && !team2.find((p) => p.id === u.id) && !u.isPlaying
   );
 
-  const teamConfigs: TeamConfig[] = [
-    {
-      team: 1,
-      label: t("matchSetup.team1"),
-      color: "#8B5CF6",
-      colorClass: "text-us",
-      borderClass: "border-us/40",
-      chipBg: "bg-us/20",
-      chipText: "text-us",
-      dashedBorder: "border-us/60 text-us",
-      suitKind: "espada",
-      list: team1,
-      otherList: team2,
-    },
-    {
-      team: 2,
-      label: t("matchSetup.team2"),
-      color: "#34D399",
-      colorClass: "text-them",
-      borderClass: "border-them/40",
-      chipBg: "bg-them/20",
-      chipText: "text-them",
-      dashedBorder: "border-them/60 text-them",
-      suitKind: "basto",
-      list: team2,
-      otherList: team1,
-    },
-  ];
+  const teamConfigs: TeamConfig[] = TEAM_CONFIGS.map((c) => ({
+    ...c,
+    label: c.team === 1 ? t("matchSetup.team1") : t("matchSetup.team2"),
+  }));
 
   if (loading) {
     return (
@@ -116,9 +108,15 @@ export default function MatchSetup({
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-text">
+    <div
+      className="flex flex-col min-h-screen bg-background text-text"
+      onClick={() => setActiveTeam(null)}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-14 pb-3">
+      <div
+        className="flex items-center justify-between px-5 pt-14 pb-3"
+        onClick={(e) => e.stopPropagation()}
+      >
         <Logo size={18} />
         <span
           className="text-caption-italic text-text"
@@ -136,27 +134,24 @@ export default function MatchSetup({
       </div>
 
       {/* Body */}
-      <div className="flex flex-col gap-3 px-5 pb-6 flex-1">
-
-        {/* Team panels — side by side */}
+      <div
+        className="flex flex-col gap-3 px-5 pb-6 flex-1"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Team panels */}
         <div className="grid grid-cols-2 gap-2.5">
-          {teamConfigs.map(
-            ({ team, label, color, colorClass, borderClass, chipBg, chipText, dashedBorder, suitKind, list, otherList }) => {
-              const visibleUsers = users.filter((u) => {
-                const inThis = !!list.find((t) => t.id === u.id);
-                const inOther = !!otherList.find((t) => t.id === u.id);
-                if (inThis) return true;
-                if (inOther || u.isPlaying) return false;
-                return true;
-              });
+          {teamConfigs.map(({ team, label, color, colorClass, suitKind, panelResting, panelActive, chipClass, sumarResting, sumarActive }) => {
+            const isActive = activeTeam === team;
+            const list = getList(team);
 
-              return (
-                <div
-                  key={team}
-                  className={`bg-surface rounded-xl border ${borderClass} p-3`}
-                >
-                  {/* Panel header */}
-                  <div className="flex items-center gap-1.5 mb-2.5">
+            return (
+              <div
+                key={team}
+                className={`${isActive ? panelActive : panelResting} rounded-xl p-3 transition-all duration-200`}
+              >
+                {/* Panel header */}
+                <div className="flex items-center justify-between mb-2.5">
+                  <div className="flex items-center gap-1.5">
                     <Suit kind={suitKind} size={12} color={color} />
                     <span
                       className={`text-heading-sm ${colorClass}`}
@@ -165,63 +160,76 @@ export default function MatchSetup({
                       {label}
                     </span>
                   </div>
-
-                  {/* Player chips */}
-                  <div className="flex flex-col gap-1">
-                    {visibleUsers.map((user) => {
-                      const inThis = !!list.find((u2) => u2.id === user.id);
-                      return (
-                        <button
-                          key={user.id}
-                          onClick={() => toggleUserInTeam(user, team)}
-                          className={[
-                            "flex items-center justify-between px-2.5 py-1.5 rounded-sm text-xs font-semibold transition-colors capitalize text-left",
-                            inThis
-                              ? `${chipBg} ${chipText}`
-                              : "border border-border text-text hover:bg-surface-elevated",
-                          ].join(" ")}
-                        >
-                          <span>{user.username}</span>
-                          {inThis && (
-                            <span className="opacity-50 ml-1 text-[10px]">×</span>
-                          )}
-                        </button>
-                      );
-                    })}
-
-                    {/* Dashed "+ sumar" placeholder */}
-                    {list.length < 3 && (
-                      <div
-                        className={`border border-dashed ${dashedBorder} px-2.5 py-1.5 rounded-sm text-[11px] italic text-center opacity-50 pointer-events-none select-none`}
-                      >
-                        + sumar
-                      </div>
-                    )}
-                  </div>
+                  <span
+                    className="text-caption-italic text-text-mute"
+                    style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 10 }}
+                  >
+                    {list.length}/3
+                  </span>
                 </div>
-              );
-            }
-          )}
+
+                {/* Selected chips */}
+                <div className="flex flex-col gap-1">
+                  {list.map((user) => (
+                    <button
+                      key={user.id}
+                      onClick={() => removeFromTeam(user, team)}
+                      className={`flex items-center justify-between px-2.5 py-1.5 rounded-sm text-xs font-semibold capitalize text-left transition-colors ${chipClass}`}
+                    >
+                      <span>{user.username}</span>
+                      <span className="opacity-50 ml-1 text-[10px]">×</span>
+                    </button>
+                  ))}
+
+                  {/* + sumar */}
+                  {list.length < 3 && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleSumar(team); }}
+                      aria-pressed={isActive}
+                      aria-label={`Sumar a ${label}`}
+                      className={`px-2.5 py-1.5 rounded-sm text-[11px] italic text-center transition-all duration-200 ${isActive ? sumarActive : sumarResting}`}
+                    >
+                      {isActive ? "↓ tocá un jugador" : "+ sumar"}
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Pool — "en el banco" */}
-        {availableUsers.length > 0 && (
-          <div>
+        {/* Pool */}
+        {poolUsers.length > 0 && (
+          <div onClick={(e) => e.stopPropagation()}>
             <p
               className="text-caption-italic text-text-mute mb-2"
               style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
             >
               {t("matchSetup.pool")}
+              {activeTeam && (
+                <span className={activeTeam === 1 ? "text-us" : "text-them"}>
+                  {" · "}sumando a {activeTeam === 1 ? t("matchSetup.team1") : t("matchSetup.team2")}
+                </span>
+              )}
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {availableUsers.map((user) => (
-                <span
-                  key={user.id}
-                  className="bg-surface border border-border text-text px-2.5 py-1.5 rounded-sm text-xs capitalize"
-                >
-                  {user.username}
-                </span>
-              ))}
+              {poolUsers.map((user) => {
+                const cfg = activeTeam ? teamConfigs.find((c) => c.team === activeTeam)! : null;
+                const chipClass = cfg
+                  ? `border ${cfg.poolChipActive}`
+                  : "bg-surface border border-border text-text cursor-default";
+
+                return (
+                  <button
+                    key={user.id}
+                    onClick={() => addToActiveTeam(user)}
+                    aria-disabled={!activeTeam}
+                    className={`px-2.5 py-1.5 rounded-sm text-xs capitalize transition-all duration-200 ${chipClass}`}
+                  >
+                    {user.username}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -264,23 +272,17 @@ export default function MatchSetup({
         <button
           onClick={() => canStart && onStartMatch(team1, team2, maxPoints)}
           disabled={!canStart || isStarting}
-          className="mt-auto w-full bg-us text-white rounded-lg py-4 text-base font-bold flex items-center justify-center gap-2 disabled:opacity-40 active:scale-[0.98] transition-transform"
+          className={[
+            "mt-auto w-full bg-us text-white rounded-lg py-4 text-base font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98]",
+            canStart
+              ? "shadow-[0_8px_20px_-10px_#8B5CF6] opacity-100"
+              : "opacity-40 cursor-not-allowed",
+          ].join(" ")}
         >
           {isStarting ? (
             <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
           ) : (
             <>
@@ -288,16 +290,7 @@ export default function MatchSetup({
                 ? t("matchSetup.button.disabled")
                 : t("matchSetup.button.start")}
               {canStart && (
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               )}
