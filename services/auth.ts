@@ -35,7 +35,7 @@ export async function logout() {
   // For this client-side first approach, we might just delete the cookie in the route or component.
 }
 
-export async function getMe(): Promise<{ userId: string; username: string } | null> {
+export async function getMe(): Promise<{ userId: string; username: string; role?: string } | null> {
   try {
     const res = await fetch("/api/auth/me");
     if (!res.ok) return null;

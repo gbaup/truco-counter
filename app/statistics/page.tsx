@@ -11,7 +11,7 @@ import { getUserStats } from "@/services/userService";
 import { getMe } from "@/services/auth";
 import MenuIcon from "@/components/ui/MenuIcon";
 
-type Tab = "glicko" | "elo";
+type Tab = "glicko" | "elo" | "classic";
 
 export default function StatisticsPage() {
   const { t } = useTranslation();
@@ -19,13 +19,19 @@ export default function StatisticsPage() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>("glicko");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserRole, setCurrentUserRole] = useState<string | undefined>(undefined);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<"idle" | "success" | "error">("idle");
 
   useEffect(() => {
     async function fetchData() {
       const [stats, me] = await Promise.all([getUserStats(), getMe()]);
       setUserStats(stats);
-      if (me) setCurrentUserId(me.userId);
+      if (me) {
+        setCurrentUserId(me.userId);
+        setCurrentUserRole(me.role);
+      }
       setLoading(false);
     }
     fetchData();
@@ -42,11 +48,48 @@ export default function StatisticsPage() {
   const glickoScore = (s: { rating: number; rating_deviation: number }) =>
     s.rating - s.rating_deviation;
 
-  const sorted = tab === "glicko"
-    ? [...userStats].sort((a, b) => glickoScore(b) - glickoScore(a))
-    : [...userStats].sort((a, b) => b.elo_rating - a.elo_rating);
+  const classicScore = (s: { wins: number; losses: number }) =>
+    s.wins * 2 + s.losses;
+
+  const sorted =
+    tab === "glicko"
+      ? [...userStats].sort((a, b) => glickoScore(b) - glickoScore(a))
+      : tab === "elo"
+        ? [...userStats].sort((a, b) => b.elo_rating - a.elo_rating)
+        : [...userStats].sort((a, b) => classicScore(b) - classicScore(a));
 
   const top = sorted[0] ?? null;
+
+  const tabDescription =
+    tab === "glicko"
+      ? t("statistics.glickoDescription")
+      : tab === "elo"
+        ? t("statistics.eloDescription")
+        : t("statistics.classicDescription");
+
+  const displayScore = (s: UserStats) => {
+    if (tab === "glicko") return Math.round(glickoScore(s));
+    if (tab === "elo") return Math.round(s.elo_rating);
+    return classicScore(s);
+  };
+
+  const ratingLabel = tab === "classic" ? "Pts" : "Rating";
+
+  async function handleSync() {
+    setSyncing(true);
+    setSyncStatus("idle");
+    try {
+      const res = await fetch("/api/admin/sync-ratings", { method: "POST" });
+      if (!res.ok) throw new Error("Failed");
+      const [stats] = await Promise.all([getUserStats()]);
+      setUserStats(stats);
+      setSyncStatus("success");
+    } catch {
+      setSyncStatus("error");
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background text-text">
@@ -78,7 +121,7 @@ export default function StatisticsPage() {
 
         {/* Tab switcher */}
         <div className="bg-surface rounded-md border border-border p-1 flex gap-1">
-          {(["glicko", "elo"] as Tab[]).map((t_) => (
+          {(["glicko", "elo", "classic"] as Tab[]).map((t_) => (
             <button
               key={t_}
               onClick={() => setTab(t_)}
@@ -90,7 +133,7 @@ export default function StatisticsPage() {
               ].join(" ")}
               style={{ fontFamily: "var(--font-space-grotesk), system-ui" }}
             >
-              {t_ === "glicko" ? "Glicko" : "Elo"}
+              {t_ === "glicko" ? "Glicko" : t_ === "elo" ? "Elo" : "Clásico"}
             </button>
           ))}
         </div>
@@ -100,7 +143,7 @@ export default function StatisticsPage() {
           className="text-caption-italic text-text-mute px-0.5"
           style={{ fontFamily: "var(--font-crimson-pro), serif" }}
         >
-          {tab === "glicko" ? t("statistics.glickoDescription") : t("statistics.eloDescription")}
+          {tabDescription}
         </p>
 
         {/* Top-1 spotlight */}
@@ -182,13 +225,13 @@ export default function StatisticsPage() {
                     fontSize: 30,
                   }}
                 >
-                  {Math.round(tab === "glicko" ? glickoScore(top) : top.elo_rating)}
+                  {displayScore(top)}
                 </p>
                 <p
                   className="text-label-overline mt-1"
                   style={{ color: "rgba(26,20,16,0.5)", fontSize: 9 }}
                 >
-                  {tab === "glicko" ? "GLICKO" : "ELO"}
+                  {tab === "glicko" ? "GLICKO" : tab === "elo" ? "ELO" : "PTS"}
                 </p>
               </div>
             </div>
@@ -206,7 +249,7 @@ export default function StatisticsPage() {
             <span className="text-label-overline text-text-mute italic">{t("statistics.table.player")}</span>
             <span className="text-label-overline text-text-mute italic text-center">W</span>
             <span className="text-label-overline text-text-mute italic text-center">L</span>
-            <span className="text-label-overline text-text-mute italic text-right">Rating</span>
+            <span className="text-label-overline text-text-mute italic text-right">{ratingLabel}</span>
           </div>
 
           {/* Data rows */}
@@ -227,11 +270,31 @@ export default function StatisticsPage() {
                 className="text-right font-extrabold text-[15px]"
                 style={{ fontFamily: "var(--font-space-grotesk), system-ui" }}
               >
-                {Math.round(tab === "glicko" ? glickoScore(s) : s.elo_rating)}
+                {displayScore(s)}
               </span>
             </div>
           ))}
         </div>
+
+        {/* Admin sync */}
+        {currentUserRole === "admin" && (
+          <div className="flex flex-col items-end gap-1 pt-1">
+            <button
+              onClick={handleSync}
+              disabled={syncing}
+              className="text-xs text-text-dim border border-border rounded-md px-3 py-1.5 hover:bg-surface transition-colors disabled:opacity-50"
+              style={{ fontFamily: "var(--font-space-grotesk), system-ui" }}
+            >
+              {syncing ? "…" : t("statistics.syncButton")}
+            </button>
+            {syncStatus === "success" && (
+              <span className="text-xs text-them">{t("statistics.syncSuccess")}</span>
+            )}
+            {syncStatus === "error" && (
+              <span className="text-xs text-danger">{t("statistics.syncError")}</span>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );

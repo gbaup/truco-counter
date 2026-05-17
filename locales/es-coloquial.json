@@ -63,7 +63,11 @@
     "statistics": {
         "glickoDescription": "Ajusta por incertidumbre e inactividad",
         "eloDescription": "Clásico · K=32",
+        "classicDescription": "2 puntos si ganás · 1 si perdés",
         "topPlayer": "el papá de todos",
+        "syncButton": "Sincronizar desviación",
+        "syncSuccess": "Sincronizado",
+        "syncError": "Error al sincronizar",
         "table": {
             "player": "Jugador"
         }

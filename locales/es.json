@@ -63,7 +63,11 @@
     "statistics": {
         "glickoDescription": "Ajusta por incertidumbre e inactividad",
         "eloDescription": "Clásico · K=32",
+        "classicDescription": "2 pts por ganar · 1 por perder",
         "topPlayer": "Líder del ranking",
+        "syncButton": "Sincronizar desviación",
+        "syncSuccess": "Sincronizado",
+        "syncError": "Error al sincronizar",
         "table": {
             "player": "Jugador"
         }
