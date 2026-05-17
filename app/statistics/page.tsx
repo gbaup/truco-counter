@@ -10,6 +10,7 @@ import { UserStats } from "@/types/database";
 import { getUserStats } from "@/services/userService";
 import { getMe } from "@/services/auth";
 import MenuIcon from "@/components/ui/MenuIcon";
+import { UserRole } from "@/types/auth";
 
 type Tab = "glicko" | "elo" | "classic";
 
@@ -19,7 +20,7 @@ export default function StatisticsPage() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>("glicko");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [currentUserRole, setCurrentUserRole] = useState<string | undefined>(undefined);
+  const [currentUserRole, setCurrentUserRole] = useState<UserRole | undefined>(undefined);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<"idle" | "success" | "error">("idle");
@@ -277,7 +278,7 @@ export default function StatisticsPage() {
         </div>
 
         {/* Admin sync */}
-        {currentUserRole === "admin" && (
+        {currentUserRole === UserRole.admin && (
           <div className="flex flex-col items-end gap-1 pt-1">
             <button
               onClick={handleSync}

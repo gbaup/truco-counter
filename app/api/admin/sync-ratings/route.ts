@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { Session } from "@/types/auth";
 import { prisma } from "@/lib/prisma";
+import { UserRole } from "@/types/auth";
 import { applyDecay } from "@/lib/glicko";
 
 export async function POST() {
     try {
         const session = await getSession() as Session | null;
 
-        if (!session?.userId || session.role !== "admin") {
+        if (!session?.userId || session.role !== UserRole.admin) {
             return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
         }
 
