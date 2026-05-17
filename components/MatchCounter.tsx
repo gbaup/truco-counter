@@ -4,6 +4,7 @@ import { PublicUser } from "@/types/database";
 import TeamCounter from "./TeamCounter";
 import Controls from "./Controls";
 import Logo from "@/components/ui/Logo";
+import MenuIcon from "@/components/ui/MenuIcon";
 import { useTranslation } from "react-i18next";
 
 interface MatchCounterProps {
@@ -67,19 +68,7 @@ export default function MatchCounter({
           className="w-[30px] h-[30px] rounded-full border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface"
           aria-label="Menú"
         >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <line x1="4" x2="20" y1="6" y2="6" />
-            <line x1="4" x2="20" y1="12" y2="12" />
-            <line x1="4" x2="20" y1="18" y2="18" />
-          </svg>
+          <MenuIcon size={14} />
         </button>
       </div>
 

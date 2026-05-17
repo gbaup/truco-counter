@@ -5,6 +5,7 @@ import { PublicUser } from "@/types/database";
 import { getUsers } from "@/services/userService";
 import { useTranslation } from "react-i18next";
 import Logo from "@/components/ui/Logo";
+import MenuIcon from "@/components/ui/MenuIcon";
 import Suit, { SuitKind } from "@/components/ui/Suit";
 
 interface MatchSetupProps {
@@ -130,19 +131,7 @@ export default function MatchSetup({
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
           aria-label="Menú"
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <line x1="4" x2="20" y1="6" y2="6" />
-            <line x1="4" x2="20" y1="12" y2="12" />
-            <line x1="4" x2="20" y1="18" y2="18" />
-          </svg>
+          <MenuIcon />
         </button>
       </div>
 
