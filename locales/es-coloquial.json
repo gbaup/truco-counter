@@ -4,7 +4,15 @@
         "username": "Usuario",
         "password": "Contraseña",
         "button": "Entrar a la mesa",
-        "tagline": "tu mesa, tu marca, tu ranking"
+        "tagline": "tu mesa, tu marca, tu ranking",
+        "orContinueWith": "o entrá con",
+        "googleButton": "Entrar con Google",
+        "errors": {
+            "not_linked": "Esa cuenta de Google no está ligada a ningún jugador",
+            "oauth_error": "Algo salió mal con Google",
+            "oauth_state_mismatch": "Error de seguridad. Probá de nuevo.",
+            "google_already_linked": "Esa cuenta de Google ya la tiene otro"
+        }
     },
     "matchSetup": {
         "team1": "Nosotros",
@@ -58,7 +66,17 @@
         "noMatches": "Ni una partida, empezá a jugar",
         "label": "el jugador",
         "recent": "últimas partidas",
-        "viewAll": "ver todas"
+        "viewAll": "ver todas",
+        "google": {
+            "title": "Google",
+            "linked": "Ligada",
+            "notLinked": "Sin ligar",
+            "link": "Ligar con Google",
+            "unlink": "Desligar",
+            "linkedSuccess": "Google ligado correctamente",
+            "alreadyLinked": "Esa cuenta la tiene otro jugador",
+            "unlinkError": "No se pudo desligar"
+        }
     },
     "statistics": {
         "glickoDescription": "Ajusta por incertidumbre e inactividad",

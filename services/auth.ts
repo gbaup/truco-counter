@@ -36,12 +36,21 @@ export async function logout() {
   // For this client-side first approach, we might just delete the cookie in the route or component.
 }
 
-export async function getMe(): Promise<{ userId: string; username: string; role?: UserRole } | null> {
+export async function getMe(): Promise<{ userId: string; username: string; role?: UserRole; googleLinked?: boolean } | null> {
   try {
     const res = await fetch("/api/auth/me");
     if (!res.ok) return null;
     return res.json();
   } catch {
     return null;
+  }
+}
+
+export async function unlinkGoogle(): Promise<{ success: boolean }> {
+  try {
+    const res = await fetch("/api/auth/google/unlink", { method: "POST" });
+    return res.json();
+  } catch {
+    return { success: false };
   }
 }
