@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react"; // Solo para UI local como modales
+import { useState } from "react";
 import { toast } from "sonner";
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
@@ -10,16 +10,27 @@ import ConfirmationExitModal from "@/components/ConfirmationExitModal";
 import { useMatch } from "@/hooks/useMatch";
 import { PublicUser } from "@/types/database";
 
-
 export default function Home() {
   const {
-    matchState, isLoaded, isSaving, isStarting,
-    startMatch, finishMatch, incrementScore, decrementScore
+    matchState,
+    isLoaded,
+    isSaving,
+    isStarting,
+    startMatch,
+    finishMatch,
+    incrementScore,
+    decrementScore,
   } = useMatch();
 
   const [showExitModal, setShowExitModal] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const winner = matchState.score1 >= matchState.maxPoints ? "Nosotros" : matchState.score2 >= matchState.maxPoints ? "Ellos" : null;
+  const winner =
+    matchState.score1 >= matchState.maxPoints
+      ? "Nosotros"
+      : matchState.score2 >= matchState.maxPoints
+        ? "Ellos"
+        : null;
 
   if (!isLoaded) return null;
 
@@ -37,48 +48,57 @@ export default function Home() {
         toast.error("Error al iniciar el partido");
       }
     }
-  }
+  };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-950 p-4 transition-colors">
-      {matchState.view === "setup" && <SideDrawer />}
+    <div className="min-h-screen bg-background">
+      <SideDrawer
+        isOpen={drawerOpen}
+        onToggle={() => setDrawerOpen((v) => !v)}
+        onClose={() => setDrawerOpen(false)}
+      />
 
-      {matchState.view === "setup" && (
-        <header className="mb-4 text-center">
-          <h1 className="text-3xl font-black tracking-tighter text-white md:text-7xl">
-            TRUCO<span className="text-primary-600">PRO</span>
-          </h1>
-        </header>
+      {matchState.view === "setup" ? (
+        <MatchSetup
+          onStartMatch={handleStartMatch}
+          isStarting={isStarting}
+          onMenuOpen={() => setDrawerOpen(true)}
+        />
+      ) : (
+        <main className="w-full">
+          <MatchCounter
+            {...matchState}
+            onIncrement={incrementScore}
+            onDecrement={decrementScore}
+            onExit={() => setShowExitModal(true)}
+            onMenuOpen={() => setDrawerOpen(true)}
+          />
+          <WinnerModal
+            winner={winner}
+            onFinish={() =>
+              finishMatch({
+                score1: matchState.score1,
+                score2: matchState.score2,
+                status: "finished",
+              })
+            }
+            isLoading={isSaving}
+          />
+          {showExitModal && (
+            <ConfirmationExitModal
+              onConfirm={() => {
+                setShowExitModal(false);
+                finishMatch({
+                  score1: matchState.score1,
+                  score2: matchState.score2,
+                  status: "cancelled",
+                });
+              }}
+              onCancel={() => setShowExitModal(false)}
+            />
+          )}
+        </main>
       )}
-
-      <main className="w-full max-w-5xl flex items-center justify-center">
-        {matchState.view === "setup" ? (
-          <MatchSetup onStartMatch={handleStartMatch} isStarting={isStarting} />
-        ) : (
-          <>
-            <MatchCounter
-              {...matchState}
-              onIncrement={incrementScore}
-              onDecrement={decrementScore}
-              onExit={() => setShowExitModal(true)}
-            />
-            <WinnerModal
-              winner={winner}
-              onFinish={() => finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" })}
-              isLoading={isSaving}
-            />
-            {showExitModal && (
-              <ConfirmationExitModal
-                onConfirm={() => {
-                  setShowExitModal(false);
-                  finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "cancelled" });
-                }}
-                onCancel={() => setShowExitModal(false)}
-              />
-            )}
-          </>
-        )}
-      </main>
     </div>
   );
 }

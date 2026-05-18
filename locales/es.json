@@ -3,22 +3,25 @@
         "title": "Iniciar sesión",
         "username": "Usuario",
         "password": "Contraseña",
-        "button": "Entrar"
+        "button": "Entrar",
+        "tagline": "Contador · Ranking · Historial"
     },
     "matchSetup": {
         "team1": "Nosotros",
         "team2": "Ellos",
         "maxPoints": "Puntaje máximo",
+        "pool": "Disponibles",
         "equalPlayers": "Los equipos deben tener la misma cantidad de jugadores",
         "button": {
-            "start": "Comenzar",
+            "start": "Empezar partido",
             "loading": "Comenzando...",
             "disabled": "Mínimo 2 vs 2"
         }
     },
     "matchCounter": {
         "team1": "Nosotros",
-        "team2": "Ellos"
+        "team2": "Ellos",
+        "playing": "Se juega a {{max}}"
     },
     "confirmationExitModal": {
         "title": "¿Salir del partido?",
@@ -35,7 +38,7 @@
         }
     },
     "sideDrawer": {
-        "home": "Nuevo partido",
+        "home": "Inicio",
         "profile": "Mi perfil",
         "statistics": "Estadísticas",
         "versus": "Versus",
@@ -52,11 +55,19 @@
         "wins": "Victorias",
         "losses": "Derrotas",
         "winRate": "% victorias",
-        "noMatches": "Todavía no jugaste ningún partido"
+        "noMatches": "Todavía no jugaste ningún partido",
+        "label": "El jugador",
+        "recent": "Últimas partidas",
+        "viewAll": "Ver todas"
     },
     "statistics": {
         "glickoDescription": "Ajusta por incertidumbre e inactividad",
         "eloDescription": "Clásico · K=32",
+        "classicDescription": "2 pts por ganar · 1 por perder",
+        "topPlayer": "Líder del ranking",
+        "syncButton": "Sincronizar desviación",
+        "syncSuccess": "Sincronizado",
+        "syncError": "Error al sincronizar",
         "table": {
             "player": "Jugador"
         }

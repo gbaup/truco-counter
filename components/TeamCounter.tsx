@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { twMerge } from "tailwind-merge";
 import { PublicUser } from "@/types/database";
-import TallyMarks from "@/components/ui/TallyMarks";
-import PlayerChip from "@/components/ui/PlayerChip";
+import Suit, { SuitKind } from "@/components/ui/Suit";
+import PaperPanel from "@/components/ui/PaperPanel";
+import { Tally } from "@/components/ui/Palito";
 
 interface TeamCounterProps {
   title: string;
@@ -13,7 +12,6 @@ interface TeamCounterProps {
   malas: number;
   buenas: number;
   variant: "primary" | "secondary";
-  badgePosition: "left" | "right";
 }
 
 export default function TeamCounter({
@@ -23,97 +21,57 @@ export default function TeamCounter({
   malas,
   buenas,
   variant,
-  badgePosition,
 }: TeamCounterProps) {
-  const [showPlayers, setShowPlayers] = useState(false);
-  const isPrimary = variant === "primary";
-
-  const bgUserColor = isPrimary
-    ? "bg-primary-900/20"
-    : "bg-secondary-900/20";
-  const titleColor = isPrimary ? "text-primary-500" : "text-secondary-500";
-
-
-  const badgeBgColor = isPrimary ? "bg-primary-500" : "bg-secondary-500";
-  const badgePositionClass = badgePosition === "right" ? "-right-3" : "-left-3";
+  const isUs = variant === "primary";
+  const color = isUs ? "#8B5CF6" : "#34D399";
+  const suitKind: SuitKind = isUs ? "espada" : "basto";
+  const colorClass = isUs ? "text-us" : "text-them";
 
   return (
-    <div
-      className={twMerge(
-        "relative flex flex-col items-center rounded-2xl p-2 backdrop-blur-sm md:p-8 h-full",
-        bgUserColor
-      )}
-    >
-      <button
-        type="button"
-        onClick={() => setShowPlayers((prev) => !prev)}
-        className={twMerge(
-          "mb-2 flex items-center gap-1 text-2xl font-black md:text-3xl transition-colors hover:brightness-125 cursor-pointer",
-          titleColor
-        )}
-      >
-        {title}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          className={twMerge(
-            "h-5 w-5 transition-transform duration-200",
-            showPlayers ? "rotate-180" : ""
-          )}
+    <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+      {/* Team header: suit + label left, score right */}
+      <div className="flex items-center justify-between px-1">
+        <div className="flex items-center gap-1.5">
+          <Suit kind={suitKind} size={10} color={color} />
+          <span
+            className={`text-heading-sm ${colorClass}`}
+            style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+          >
+            {title}
+          </span>
+        </div>
+        <span
+          className={`text-display-lg font-display ${colorClass}`}
         >
-          <path
-            fillRule="evenodd"
-            d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
-            clipRule="evenodd"
+          {totalScore}
+        </span>
+      </div>
+
+      {/* Player names — compact overline */}
+      <div className="text-label-overline text-text-mute px-1 truncate">
+        {players.map((p) => p.username).join(" · ").toUpperCase()}
+      </div>
+
+      {/* Paper panel — palitos live here */}
+      <PaperPanel className="flex-1 min-h-0">
+        {/* Malas (first half) */}
+        <div className="flex flex-col items-center gap-1.5 py-1">
+          <Tally score={malas} color={color} size={48} gap={6} />
+        </div>
+
+        {/* Divider — only visible when malas section has points */}
+        {malas > 0 && (
+          <div
+            className="mx-2 my-0.5 opacity-50"
+            style={{ height: 1, background: "var(--color-paper-line)" }}
           />
-        </svg>
-      </button>
-
-      <div
-        className="w-full overflow-hidden transition-all duration-300 ease-in-out"
-        style={{
-          maxHeight: showPlayers ? `${players.length * 40 + 16}px` : "0px",
-          opacity: showPlayers ? 1 : 0,
-        }}
-      >
-        <div className="flex flex-wrap justify-center gap-1.5 pb-2">
-          {players.map((player) => (
-            <PlayerChip
-              key={player.id}
-              label={player.username}
-              variant={variant}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="w-full flex-1 flex flex-col gap-4">
-        <div className="relative flex flex-1 flex-col items-center justify-start rounded-2xl bg-black/20 p-2">
-          <TallyMarks score={malas} />
-        </div>
-
-        <div
-          className={twMerge(
-            "h-1 w-full rounded-full shadow-inner",
-            isPrimary ? "bg-primary-500/20" : "bg-secondary-500/20"
-          )}
-        />
-
-        <div className="relative flex flex-1 flex-col items-center justify-start rounded-2xl bg-black/20 p-2">
-          <TallyMarks score={buenas} />
-        </div>
-      </div>
-
-      <div
-        className={twMerge(
-          "absolute top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-xs font-bold text-white shadow-lg md:flex",
-          badgeBgColor,
-          badgePositionClass
         )}
-      >
-        {totalScore}
-      </div>
+
+        {/* Buenas (second half) */}
+        <div className="flex flex-col items-center gap-1.5 py-1">
+          <Tally score={buenas} color={color} size={48} gap={6} />
+        </div>
+      </PaperPanel>
     </div>
   );
 }

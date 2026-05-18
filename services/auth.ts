@@ -1,4 +1,5 @@
 import { PublicUser } from "@/types/database";
+import { UserRole } from "@/types/auth";
 
 export async function login(
   username: string,
@@ -35,7 +36,7 @@ export async function logout() {
   // For this client-side first approach, we might just delete the cookie in the route or component.
 }
 
-export async function getMe(): Promise<{ userId: string; username: string } | null> {
+export async function getMe(): Promise<{ userId: string; username: string; role?: UserRole } | null> {
   try {
     const res = await fetch("/api/auth/me");
     if (!res.ok) return null;

@@ -4,45 +4,59 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import SideDrawer from "@/components/SideDrawer";
 import MatchList from "@/components/MatchList";
+import Logo from "@/components/ui/Logo";
 import { getMatches } from "@/services/matchService";
 import { MatchHistoryItem } from "@/types/match";
+import MenuIcon from "@/components/ui/MenuIcon";
 
 export default function HistoryPage() {
-    const { t } = useTranslation();
-    const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
-    const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
+  const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-    useEffect(() => {
-        getMatches().then((data) => {
-            setMatches(data);
-            setLoading(false);
-        });
-    }, []);
+  useEffect(() => {
+    getMatches().then((data) => {
+      setMatches(data);
+      setLoading(false);
+    });
+  }, []);
 
-    if (loading) {
-        return (
-            <div className="flex h-64 items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
-            </div>
-        );
-    }
-
+  if (loading) {
     return (
-        <div className="flex min-h-screen flex-col items-center bg-zinc-950 p-4 pt-16 transition-colors">
-            <SideDrawer />
-            <header className="mb-10 text-center">
-                <h1 className="text-3xl font-black tracking-tighter text-white md:text-7xl">
-                    TRUCO<span className="text-primary-600">PRO</span>
-                </h1>
-            </header>
-            <main className="w-full max-w-lg">
-                <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8 shadow-xl">
-                    <h2 className="mb-6 text-2xl font-bold text-white">
-                        {t("matchHistory.title")}
-                    </h2>
-                    <MatchList matches={matches} emptyMessage={t("matchHistory.noMatches")} />
-                </div>
-            </main>
-        </div>
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-us border-t-transparent" />
+      </div>
     );
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-text">
+      <SideDrawer
+        isOpen={drawerOpen}
+        onToggle={() => setDrawerOpen((v) => !v)}
+        onClose={() => setDrawerOpen(false)}
+      />
+      <div className="flex items-center justify-between px-5 pt-14 pb-3">
+        <Logo size={18} />
+        <span
+          className="text-caption-italic text-text"
+          style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+        >
+          {t("sideDrawer.history")}
+        </span>
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
+          aria-label="Menú"
+        >
+          <MenuIcon />
+        </button>
+      </div>
+
+      <main className="px-5 pb-8">
+        <MatchList matches={matches} emptyMessage={t("matchHistory.noMatches")} />
+      </main>
+    </div>
+  );
 }
