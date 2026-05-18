@@ -1,17 +1,12 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withAuth } from "@/lib/withAuth";
 
-export async function POST() {
-    const session = await getSession();
-    if (!session) {
-        return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-    }
-
+export const POST = withAuth(async (_request, session) => {
     await prisma.users.update({
-        where: { id: session.userId as string },
+        where: { id: session.userId },
         data: { google_id: null },
     });
 
     return NextResponse.json({ success: true });
-}
+});

@@ -1,21 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
-import { applyGlickoToMatch } from "@/lib/applyGlickoToMatch";
+import { applyRatingsToMatch } from "@/lib/applyRatingsToMatch";
 import { Session } from "@/types/auth";
 import { CreateMatchDto } from "@/types/match";
+import { withAuth } from "@/lib/withAuth";
 
-export async function POST(request: Request) {
+export const POST = withAuth(async (request, session: Session) => {
     try {
-        const session = await getSession() as Session | null;
-
-        if (!session || !session.userId) {
-            return NextResponse.json(
-                { success: false, error: "Unauthorized" },
-                { status: 401 }
-            );
-        }
-
         const body: CreateMatchDto = await request.json();
         const { score1, score2, team1, team2, winner_team, status } = body;
 
@@ -28,21 +19,14 @@ export async function POST(request: Request) {
 
         const allPlayerIds = [...team1, ...team2].map(user => user.id);
 
-
         const existingMatch = await prisma.matches.findFirst({
             where: {
                 status: "ongoing",
                 match_participants: {
-                    some: {
-                        user_id: {
-                            in: allPlayerIds
-                        }
-                    }
+                    some: { user_id: { in: allPlayerIds } }
                 }
             },
-            include: {
-                match_participants: true
-            }
+            include: { match_participants: true }
         });
 
         if (existingMatch) {
@@ -91,7 +75,7 @@ export async function POST(request: Request) {
                         },
                     },
                 });
-                await applyGlickoToMatch(
+                await applyRatingsToMatch(
                     tx,
                     team1Ids,
                     team2Ids,
@@ -125,7 +109,7 @@ export async function POST(request: Request) {
             { status: 500 }
         );
     }
-}
+});
 
 export async function GET(request: Request) {
     try {
@@ -148,9 +132,7 @@ export async function GET(request: Request) {
                     },
                 },
             },
-            orderBy: {
-                created_at: 'desc'
-            }
+            orderBy: { created_at: 'desc' }
         });
 
         return NextResponse.json(matches);

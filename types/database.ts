@@ -17,3 +17,10 @@ export interface UserStats {
   rating_deviation: number;
   elo_rating: number;
 }
+
+export interface VersusStats {
+  total_matches: number;
+  p1_wins: number;
+  p2_wins: number;
+  draws: number;
+}
