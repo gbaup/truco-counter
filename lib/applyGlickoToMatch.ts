@@ -14,7 +14,7 @@ export async function applyGlickoToMatch(
 
   const participants = await tx.users.findMany({
     where: { id: { in: allIds } },
-    select: { id: true, rating: true, rating_deviation: true, elo_rating: true, last_match_at: true },
+    select: { id: true, rating: true, rating_deviation: true, elo_rating: true, last_decay_at: true },
   });
 
   const byId = new Map(participants.map((p) => [p.id, p]));
@@ -25,11 +25,11 @@ export async function applyGlickoToMatch(
     const p = byId.get(id);
     if (!p) continue;
     let missedMatches = 0;
-    if (p.last_match_at !== null) {
+    if (p.last_decay_at !== null) {
       missedMatches = await tx.matches.count({
         where: {
           status: "finished",
-          created_at: { gt: p.last_match_at, lt: matchCreatedAt },
+          created_at: { gt: p.last_decay_at, lt: matchCreatedAt },
         },
       });
     }
@@ -71,7 +71,7 @@ export async function applyGlickoToMatch(
             rating: Math.round(updated.r * 100) / 100,
             rating_deviation: Math.round(updated.RD * 100) / 100,
             elo_rating: newElo,
-            last_match_at: matchCreatedAt,
+            last_decay_at: matchCreatedAt,
           },
         }),
         tx.match_participants.update({
