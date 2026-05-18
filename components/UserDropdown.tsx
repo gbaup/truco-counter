@@ -1,5 +1,4 @@
 import { PublicUser } from "@/types/database";
-import { twMerge } from "tailwind-merge";
 
 interface UserDropdownProps {
   label: string;

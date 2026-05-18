@@ -41,7 +41,7 @@ export async function POST(request: Request) {
 
         const token = await signToken({ userId: user.id, username: user.username, role: user.role });
 
-        const { password: _, ...publicUser } = user;
+        const { password: _password, ...publicUser } = user;
 
         const response = NextResponse.json({ success: true, user: publicUser });
 
