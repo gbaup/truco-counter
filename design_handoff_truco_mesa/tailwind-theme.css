@@ -1,5 +1,8 @@
 @import "tailwindcss";
-@custom-variant dark (&:is(.dark *));
+
+/* TrucoPro · Mesa — Design tokens
+   Generated from DESIGN.md. Replace the existing @theme block in
+   app/globals.css with this one. */
 
 @theme inline {
   /* ───────── Surfaces (dark mesa) */
@@ -29,6 +32,16 @@
   --color-danger: #EF4444;
   --color-warning: #E0A83A;
   --color-success: #34D399;
+
+  /* ───────── Backwards-compat aliases (keep existing class names working
+     during the migration). Remove once all usages are migrated to the new
+     names. */
+  --color-primary-500: var(--color-us);
+  --color-primary-600: var(--color-us-deep);
+  --color-primary-900: #2E1065;
+  --color-secondary-500: var(--color-them);
+  --color-secondary-600: var(--color-them-deep);
+  --color-secondary-900: #064E3B;
 
   /* ───────── Fonts (loaded via next/font in app/layout.tsx) */
   --font-sans: var(--font-inter);
@@ -66,59 +79,14 @@ body {
 
 /* ───────── Typography utilities — match DESIGN.md scales.
    Use `font-display` with these on the same element. */
-.text-display-xl {
-  font-size: 40px;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
+.text-display-xl { font-size: 40px; font-weight: 900; line-height: 1; letter-spacing: -0.04em; }
+.text-display-lg { font-size: 30px; font-weight: 900; line-height: 1; letter-spacing: -0.04em; }
+.text-display-md { font-size: 22px; font-weight: 900; line-height: 1; letter-spacing: -0.04em; }
 
-.text-display-lg {
-  font-size: 30px;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
+.text-heading-lg { font-size: 30px; font-weight: 700; line-height: 1.1; }
+.text-heading-md { font-size: 22px; font-weight: 700; line-height: 1.1; }
+.text-heading-sm { font-size: 17px; font-weight: 700; font-style: italic; }
+.text-caption-italic { font-size: 13px; font-style: italic; line-height: 1.4; }
 
-.text-display-md {
-  font-size: 22px;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
-
-.text-heading-lg {
-  font-size: 30px;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.text-heading-md {
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.text-heading-sm {
-  font-size: 17px;
-  font-weight: 700;
-  font-style: italic;
-}
-
-.text-caption-italic {
-  font-size: 13px;
-  font-style: italic;
-  line-height: 1.4;
-}
-
-.text-label-xs {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-}
-
-.text-label-overline {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-}
+.text-label-xs { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; }
+.text-label-overline { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; }
