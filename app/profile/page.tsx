@@ -41,7 +41,7 @@ export default function ProfilePage() {
       const linkedParam = params.get("linked") === "true";
       const errorParam = params.get("error");
 
-      setGoogleLinked(linkedParam || (me.googleLinked ?? false));
+      setGoogleLinked(me.googleLinked ?? false);
 
       if (linkedParam) {
         toast.success(t("profile.google.linkedSuccess"));

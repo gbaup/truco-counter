@@ -30,14 +30,18 @@ export function withAdminAuth<TContext extends Record<string, unknown> = Record<
     if (!session?.userId) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
-    // Re-read role from DB so stale JWT claims don't affect admin access control
-    const caller = await prisma.users.findUnique({
-      where: { id: session.userId },
-      select: { role: true },
-    });
-    if (caller?.role !== UserRole.admin) {
-      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    try {
+      // Re-read role from DB so stale JWT claims don't affect admin access control
+      const caller = await prisma.users.findUnique({
+        where: { id: session.userId },
+        select: { role: true },
+      });
+      if (caller?.role !== UserRole.admin) {
+        return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+      }
+      return handler(request, session, context);
+    } catch {
+      return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
-    return handler(request, session, context);
   };
 }

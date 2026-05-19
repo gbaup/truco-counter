@@ -40,7 +40,7 @@ gh api repos/{OWNER_REPO}/pulls/{PR_NUMBER}/comments --paginate \
       line: (.line // .original_line),
       body,
       user: .user.login,
-      resolved: (if .in_reply_to_id then true else false end),
+      resolved: false,
       created_at
     }]'
 

@@ -42,6 +42,11 @@ export async function GET(request: Request) {
         return res;
     }
 
+    const providerError = searchParams.get("error");
+    if (providerError) {
+        return redirect("/login?error=oauth_cancelled");
+    }
+
     if (!code || !state || state !== savedState) {
         return redirect("/login?error=oauth_state_mismatch");
     }
@@ -100,6 +105,6 @@ export async function GET(request: Request) {
         return response;
     } catch (err) {
         console.error("Google OAuth callback error:", err);
-        return redirect("/login?error=oauth_error");
+        return redirect(action === "link" ? "/profile?error=oauth_error" : "/login?error=oauth_error");
     }
 }
