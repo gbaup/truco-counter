@@ -13,6 +13,7 @@ import { MatchHistoryItem } from "@/types/match";
 import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
 import MenuIcon from "@/components/ui/MenuIcon";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 export default function ProfilePage() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -46,13 +47,7 @@ export default function ProfilePage() {
     fetchData();
   }, [router, t]);
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-us border-t-transparent" />
-      </div>
-    );
-  }
+  if (loading) return <LoadingScreen />;
 
   const winRate =
     stats && stats.wins + stats.losses > 0

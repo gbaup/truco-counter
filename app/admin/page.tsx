@@ -13,11 +13,13 @@ import ChangeNicknameSheet from "@/components/ui/ChangeNicknameSheet";
 import CreatePlayerSheet from "@/components/ui/CreatePlayerSheet";
 import { getMe } from "@/services/auth";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function AdminPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const {
     players,
@@ -44,9 +46,12 @@ export default function AdminPage() {
         return;
       }
       await fetchPlayers();
+      setLoading(false);
     }
     init();
   }, [router, fetchPlayers]);
+
+  if (loading) return <LoadingScreen />;
 
   return (
     <div className="min-h-screen bg-background text-text">
