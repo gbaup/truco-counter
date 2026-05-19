@@ -26,7 +26,8 @@ function PencilIcon() {
 }
 
 export default function AdminUserRow({ user, onEdit }: AdminUserRowProps) {
-  const initial = (user.name?.[0] ?? user.username[0]).toUpperCase();
+  const nameInitial = (user.name?.[0] ?? user.username[0]).toUpperCase();
+  const lastnameInitial = user.last_name?.[0].toUpperCase();
 
   return (
     <li className="flex items-center gap-3 rounded-lg bg-surface px-3 py-2.5 border border-border">
@@ -45,13 +46,13 @@ export default function AdminUserRow({ user, onEdit }: AdminUserRowProps) {
             fontSize: 16,
           }}
         >
-          {initial}
+          {nameInitial + lastnameInitial}
         </span>
       </div>
 
       {/* Name + username */}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[13px] font-semibold text-text">
+        <p className="truncate text-[13px] capitalize font-semibold text-text">
           {user.name} {user.last_name}
         </p>
         <p className="font-display text-[11px] font-medium text-text-dim">
