@@ -51,7 +51,60 @@
         "statistics": "Tabla",
         "versus": "Rivalidades",
         "history": "Historial",
+        "settings": "ajustes",
+        "admin": "administración",
         "logout": "levantarse de la mesa"
+    },
+    "settings": {
+        "account": {
+            "title": "cuenta",
+            "nickname": "Apodo",
+            "password": "Contraseña",
+            "google": "Cuenta Google"
+        },
+        "preferences": {
+            "title": "preferencias",
+            "language": "Idioma",
+            "haptics": "Vibración al sumar puntos",
+            "sound": "Sonido al ganar"
+        },
+        "danger": {
+            "title": "peligroso",
+            "logout": "Cerrar sesión",
+            "logoutHint": "te levantás de la mesa"
+        },
+        "change": "Cambiar",
+        "unlink": "Desvincular"
+    },
+    "nickname": {
+        "overline": {
+            "self": "cambiar apodo",
+            "admin": "editando @{{name}}"
+        },
+        "headline": {
+            "self": "¿cómo te llaman en la mesa?",
+            "admin": "el nuevo apodo"
+        },
+        "hint": "3-20 caracteres · sin espacios · minúsculas y números",
+        "taken": "ya hay alguien con ese apodo en el grupo"
+    },
+    "admin": {
+        "title": "jugadores del grupo",
+        "count": "{{count}} en la mesa",
+        "search": "buscar jugador...",
+        "new": "Nuevo"
+    },
+    "create": {
+        "overline": "nuevo jugador",
+        "headline": "sumá a alguien a la mesa",
+        "preview": "así se va a ver",
+        "firstName": "nombre",
+        "lastName": "apellido",
+        "username": "apodo (usuario)",
+        "passwordInfo": "Contraseña inicial",
+        "passwordHint": "se la das, y la cambia al primer ingreso",
+        "submit": "Crear jugador",
+        "savedToast": "@{{name}} sumado al grupo"
     },
     "matchHistory": {
         "title": "Historial de Partidas",

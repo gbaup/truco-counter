@@ -7,6 +7,15 @@ export interface User {
 
 export type PublicUser = Omit<User, "password"> & { isPlaying?: boolean };
 
+export interface AdminUser {
+  id: string;
+  name: string;
+  last_name: string;
+  username: string;
+  rating: number;
+  rating_deviation: number;
+  role: string;
+}
 
 export interface UserStats {
   user_id: string;

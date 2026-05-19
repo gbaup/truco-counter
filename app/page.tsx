@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
@@ -8,9 +9,20 @@ import SideDrawer from "@/components/SideDrawer";
 import WinnerModal from "@/components/WinnerModal";
 import ConfirmationExitModal from "@/components/ConfirmationExitModal";
 import { useMatch } from "@/hooks/useMatch";
+import { getMe } from "@/services/auth";
 import { PublicUser } from "@/types/database";
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    getMe().then((me) => {
+      if (me && !me.passwordChanged) {
+        router.replace("/change-password");
+      }
+    });
+  }, [router]);
+
   const {
     matchState,
     isLoaded,

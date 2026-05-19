@@ -6,7 +6,7 @@ import { withAuth } from "@/lib/withAuth";
 export const GET = withAuth(async (_request, session: Session) => {
     const user = await prisma.users.findUnique({
         where: { id: session.userId },
-        select: { google_id: true },
+        select: { google_id: true, password_changed: true },
     });
 
     return NextResponse.json({
@@ -14,5 +14,6 @@ export const GET = withAuth(async (_request, session: Session) => {
         username: session.username,
         role: session.role,
         googleLinked: !!user?.google_id,
+        passwordChanged: user?.password_changed ?? true,
     });
 });

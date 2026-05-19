@@ -1,6 +1,18 @@
 import { fetchJSON } from "@/lib/fetchJSON";
 import { PublicUser, UserStats, VersusStats } from "@/types/database";
 
+export async function updateMyUsername(
+  username: string,
+  targetUserId?: string
+): Promise<void> {
+  const url = targetUserId ? `/api/admin/users/${targetUserId}` : `/api/users/me`;
+  await fetchJSON(url, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username }),
+  });
+}
+
 export async function getUsers(): Promise<PublicUser[]> {
   try {
     return await fetchJSON<PublicUser[]>("/api/users");
