@@ -22,8 +22,8 @@ export const GET = withAdminAuth(async () => {
 
 export const POST = withAdminAuth(async (request) => {
   const body = await request.json();
-  const firstName = (body.firstName as string)?.trim();
-  const lastName = (body.lastName as string)?.trim();
+  const firstName = (body.firstName as string)?.toLowerCase().trim();
+  const lastName = (body.lastName as string)?.toLowerCase().trim();
   const username = (body.username as string)?.toLowerCase().trim();
 
   if (!firstName || !NAME_RE.test(firstName)) {

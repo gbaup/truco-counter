@@ -99,15 +99,15 @@ export default function CreatePlayerSheet({
         <FieldInput
           label={t("create.firstName")}
           value={firstName}
-          onChange={setFirstName}
-          placeholder="Martín"
+          onChange={(v) => setFirstName(v.toLowerCase())}
+          placeholder="martín"
           maxLength={30}
         />
         <FieldInput
           label={t("create.lastName")}
           value={lastName}
-          onChange={setLastName}
-          placeholder="Pérez"
+          onChange={(v) => setLastName(v.toLowerCase())}
+          placeholder="pérez"
           maxLength={30}
         />
         <FieldInput
