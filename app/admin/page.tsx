@@ -91,12 +91,14 @@ export default function AdminPage() {
       </main>
 
       <CreatePlayerSheet
+        key={creating ? "open" : "closed"}
         open={creating}
         onClose={() => setCreating(false)}
         onCreated={() => {}}
       />
 
       <ChangeNicknameSheet
+        key={editingUser?.id ?? "no-user"}
         open={!!editingUser}
         currentNickname={editingUser?.username ?? ""}
         targetUser={

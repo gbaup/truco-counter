@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import BottomSheet from "@/components/ui/BottomSheet";
 import Suit from "@/components/ui/Suit";
@@ -30,15 +30,6 @@ export default function CreatePlayerSheet({
   const canSubmit =
     NAME_RE.test(firstName) && NAME_RE.test(lastName) && USERNAME_RE.test(username);
   const saving = createPlayerMutation.isPending;
-
-  useEffect(() => {
-    if (open) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFirstName("");
-    setLastName("");
-    setUsername("");
-    setErrors({});
-  }, [open]);
 
   async function handleSubmit() {
     setErrors({});

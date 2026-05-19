@@ -243,6 +243,7 @@ export default function SettingsPage() {
 
       {/* Nickname sheet */}
       <ChangeNicknameSheet
+        key={nicknameSheetOpen ? "open" : "closed"}
         open={nicknameSheetOpen}
         currentNickname={username}
         onClose={() => setNicknameSheetOpen(false)}

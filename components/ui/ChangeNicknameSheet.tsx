@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import BottomSheet from "@/components/ui/BottomSheet";
 import { useUpdateMyUsername } from "@/hooks/useUpdateMyUsername";
@@ -34,13 +34,6 @@ export default function ChangeNicknameSheet({
   const isValid = USERNAME_RE.test(draft);
   const showError = !!error || (hasChanged && !isValid);
   const saving = updateMine.isPending || updateOther.isPending;
-
-  useEffect(() => {
-    if (!open) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDraft(currentNickname);
-    setError(null);
-  }, [open, currentNickname]);
 
   async function handleSubmit() {
     if (!isValid) {
