@@ -1,4 +1,14 @@
 {
+    "common": {
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "saving": "Guardando…",
+        "errorTryAgain": "Algo salió mal · probá de nuevo",
+        "comingSoon": "próximamente"
+    },
+    "roleBadge": {
+        "admin": "ADMIN"
+    },
     "login": {
         "title": "Iniciar sesión",
         "username": "Usuario",
@@ -71,10 +81,33 @@
         "danger": {
             "title": "Cuenta",
             "logout": "Cerrar sesión",
-            "logoutHint": "Termina tu sesión actual"
+            "logoutHint": "Termina tu sesión actual",
+            "logoutAction": "Salir"
         },
         "change": "Cambiar",
-        "unlink": "Desvincular"
+        "unlink": "Desvincular",
+        "googleUnlinkSuccess": "Cuenta de Google desvinculada",
+        "googleUnlinkError": "No se pudo desvincular",
+        "locale": {
+            "formal": "Español formal",
+            "coloquial": "Coloquial uruguayo"
+        },
+        "password": {
+            "overline": "seguridad",
+            "headline": "Cambiar contraseña",
+            "fields": {
+                "current": "Contraseña actual",
+                "new": "Nueva contraseña",
+                "confirm": "Confirmar contraseña"
+            },
+            "errors": {
+                "required": "Completá todos los campos",
+                "mismatch": "Las contraseñas no coinciden",
+                "tooShort": "Mínimo 6 caracteres",
+                "wrong": "Contraseña actual incorrecta"
+            },
+            "savedToast": "Contraseña actualizada"
+        }
     },
     "nickname": {
         "overline": {
@@ -86,13 +119,15 @@
             "admin": "Nuevo apodo"
         },
         "hint": "3-20 caracteres · sin espacios · minúsculas y números",
-        "taken": "Ya hay alguien con ese apodo"
+        "taken": "Ya hay alguien con ese apodo",
+        "savedToast": "ahora @{{name}}"
     },
     "admin": {
         "title": "Jugadores del grupo",
         "count": "{{count}} en el grupo",
         "search": "Buscar jugador...",
-        "new": "Nuevo"
+        "new": "Nuevo",
+        "loadError": "No se pudieron cargar los jugadores"
     },
     "create": {
         "overline": "Nuevo jugador",
@@ -104,7 +139,9 @@
         "passwordInfo": "Contraseña inicial",
         "passwordHint": "Avísale; la cambia al primer ingreso",
         "submit": "Crear jugador",
-        "savedToast": "@{{name}} agregado al grupo"
+        "savedToast": "@{{name}} agregado al grupo",
+        "errorCreating": "no se pudo crear · probá de nuevo",
+        "usernameTaken": "ya hay un @{{name}} en el grupo"
     },
     "matchHistory": {
         "title": "Historial de Partidas",

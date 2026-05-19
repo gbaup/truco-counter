@@ -68,24 +68,24 @@ export default function SettingsPage() {
     const result = await unlinkGoogle();
     if (result.success) {
       setGoogleLinked(false);
-      toast.success("Cuenta de Google desvinculada");
+      toast.success(t("settings.googleUnlinkSuccess"));
     } else {
-      toast.error("No se pudo desvincular");
+      toast.error(t("settings.googleUnlinkError"));
     }
     setUnlinking(false);
   }
 
   async function handleChangePassword() {
     if (!currentPwd || !newPwd || !confirmPwd) {
-      setPwdError("Completá todos los campos");
+      setPwdError(t("settings.password.errors.required"));
       return;
     }
     if (newPwd !== confirmPwd) {
-      setPwdError("Las contraseñas no coinciden");
+      setPwdError(t("settings.password.errors.mismatch"));
       return;
     }
     if (newPwd.length < 6) {
-      setPwdError("Mínimo 6 caracteres");
+      setPwdError(t("settings.password.errors.tooShort"));
       return;
     }
     setChangingPwd(true);
@@ -96,16 +96,16 @@ export default function SettingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ current: currentPwd, next: newPwd }),
       });
-      toast.success("Contraseña actualizada");
+      toast.success(t("settings.password.savedToast"));
       setPasswordSheetOpen(false);
       setCurrentPwd("");
       setNewPwd("");
       setConfirmPwd("");
     } catch (e: unknown) {
       if (e instanceof Error && e.message === "wrong_password") {
-        setPwdError("Contraseña actual incorrecta");
+        setPwdError(t("settings.password.errors.wrong"));
       } else {
-        setPwdError("Algo salió mal · probá de nuevo");
+        setPwdError(t("common.errorTryAgain"));
       }
     } finally {
       setChangingPwd(false);
@@ -114,8 +114,8 @@ export default function SettingsPage() {
 
   const localeLabel =
     process.env.NEXT_PUBLIC_APP_LANG === "es-coloquial"
-      ? "Coloquial uruguayo"
-      : "Español formal";
+      ? t("settings.locale.coloquial")
+      : t("settings.locale.formal");
 
   return (
     <div className="min-h-screen bg-background text-text">
@@ -206,7 +206,7 @@ export default function SettingsPage() {
             label={t("settings.preferences.language")}
             value={localeLabel}
             action="→"
-            onAction={() => toast.info("próximamente")}
+            onAction={() => toast.info(t("common.comingSoon"))}
           />
           <SettingsRow
             label={t("settings.preferences.haptics")}
@@ -234,7 +234,7 @@ export default function SettingsPage() {
           <SettingsRow
             label={t("settings.danger.logout")}
             value={t("settings.danger.logoutHint")}
-            action="Salir"
+            action={t("settings.danger.logoutAction")}
             danger
             onAction={async () => {
               await fetch("/api/auth/logout", { method: "POST" });
@@ -257,26 +257,26 @@ export default function SettingsPage() {
       <BottomSheet
         open={passwordSheetOpen}
         onClose={() => setPasswordSheetOpen(false)}
-        overline="seguridad"
-        headline="Cambiar contraseña"
-        submitLabel="Guardar"
+        overline={t("settings.password.overline")}
+        headline={t("settings.password.headline")}
+        submitLabel={t("common.save")}
         submitDisabled={!currentPwd || !newPwd || !confirmPwd}
         saving={changingPwd}
         onSubmit={handleChangePassword}
       >
         <div className="flex flex-col gap-2.5">
           <PasswordInput
-            label="Contraseña actual"
+            label={t("settings.password.fields.current")}
             value={currentPwd}
             onChange={setCurrentPwd}
           />
           <PasswordInput
-            label="Nueva contraseña"
+            label={t("settings.password.fields.new")}
             value={newPwd}
             onChange={setNewPwd}
           />
           <PasswordInput
-            label="Confirmar contraseña"
+            label={t("settings.password.fields.confirm")}
             value={confirmPwd}
             onChange={setConfirmPwd}
           />

@@ -1,3 +1,5 @@
+import type { UserRole } from "./auth";
+
 export interface User {
   id: string;
   name: string;
@@ -14,7 +16,7 @@ export interface AdminUser {
   username: string;
   rating: number;
   rating_deviation: number;
-  role: string;
+  role: UserRole;
 }
 
 export interface UserStats {

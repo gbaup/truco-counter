@@ -9,10 +9,16 @@ export function useAdminUsers() {
     const [query, setQuery] = useState("");
     const [creating, setCreating] = useState(false);
     const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+    const [error, setError] = useState<Error | null>(null);
 
     const fetchPlayers = useCallback(async () => {
-        const data = await listUsers();
-        setPlayers(data);
+        try {
+            const data = await listUsers();
+            setPlayers(data);
+            setError(null);
+        } catch (e) {
+            setError(e instanceof Error ? e : new Error("Failed to load users"));
+        }
     }, []);
 
     const filtered = players.filter(
@@ -38,5 +44,6 @@ export function useAdminUsers() {
         setEditingUser,
         fetchPlayers,
         updateUsername,
+        error,
     };
 }

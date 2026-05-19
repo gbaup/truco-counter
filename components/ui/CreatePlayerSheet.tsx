@@ -6,12 +6,8 @@ import BottomSheet from "@/components/ui/BottomSheet";
 import Suit from "@/components/ui/Suit";
 import { createPlayer } from "@/services/adminService";
 import { toast } from "sonner";
-
-const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
-const NAME_RE = /^[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]{1,30}$/;
-
-const INITIAL_PASSWORD =
-  process.env.NEXT_PUBLIC_INITIAL_USER_PASSWORD ?? "truco1234";
+import { USERNAME_RE, NAME_RE } from "@/lib/validators";
+import { INITIAL_USER_PASSWORD } from "@/lib/constants";
 
 interface CreatePlayerSheetProps {
   open: boolean;
@@ -54,9 +50,9 @@ export default function CreatePlayerSheet({
     } catch (e: unknown) {
       const err = e as Error & { field?: string };
       if (err.field === "username" && err.message === "taken") {
-        setErrors({ username: `ya hay un @${username} en el grupo` });
+        setErrors({ username: t("create.usernameTaken", { name: username }) });
       } else {
-        setErrors({ _: "no se pudo crear · probá de nuevo" });
+        setErrors({ _: t("create.errorCreating") });
       }
     } finally {
       setSaving(false);
@@ -139,7 +135,7 @@ export default function CreatePlayerSheet({
         <div>
           <p className="text-xs font-bold text-warning">
             {t("create.passwordInfo")}:{" "}
-            <span className="font-display">{INITIAL_PASSWORD}</span>
+            <span className="font-display">{INITIAL_USER_PASSWORD}</span>
           </p>
           <p className="mt-0.5 font-serif text-[11px] italic text-text-dim">
             {t("create.passwordHint")}

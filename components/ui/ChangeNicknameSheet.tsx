@@ -3,10 +3,9 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import BottomSheet from "@/components/ui/BottomSheet";
-import { updateMyUsername } from "@/services/userService";
+import { updateMyUsername, updateUserUsername } from "@/services/userService";
 import { toast } from "sonner";
-
-const NICKNAME_RE = /^[a-z0-9_]{3,20}$/;
+import { USERNAME_RE } from "@/lib/validators";
 
 interface ChangeNicknameSheetProps {
   open: boolean;
@@ -30,7 +29,7 @@ export default function ChangeNicknameSheet({
 
   const isAdminFlow = !!targetUser;
   const hasChanged = draft !== currentNickname;
-  const isValid = NICKNAME_RE.test(draft);
+  const isValid = USERNAME_RE.test(draft);
   const showError = !!error || (hasChanged && !isValid);
 
   useEffect(() => {
@@ -48,15 +47,19 @@ export default function ChangeNicknameSheet({
     setSaving(true);
     setError(null);
     try {
-      await updateMyUsername(draft, targetUser?.id);
-      toast.success(`ahora @${draft}`);
+      if (targetUser) {
+        await updateUserUsername(targetUser.id, draft);
+      } else {
+        await updateMyUsername(draft);
+      }
+      toast.success(t("nickname.savedToast", { name: draft }));
       onSaved(draft);
       onClose();
     } catch (e: unknown) {
       if (e instanceof Error && e.message === "taken") {
         setError(t("nickname.taken"));
       } else {
-        setError("algo salió mal · probá de nuevo");
+        setError(t("common.errorTryAgain"));
       }
     } finally {
       setSaving(false);
@@ -75,7 +78,7 @@ export default function ChangeNicknameSheet({
       headline={
         isAdminFlow ? t("nickname.headline.admin") : t("nickname.headline.self")
       }
-      submitLabel="Guardar"
+      submitLabel={t("common.save")}
       submitDisabled={!isValid || !hasChanged}
       saving={saving}
       onSubmit={handleSubmit}

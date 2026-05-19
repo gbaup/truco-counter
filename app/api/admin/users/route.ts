@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { withAdminAuth } from "@/lib/withAuth";
 import { USERNAME_RE, NAME_RE } from "@/lib/validators";
+import { INITIAL_USER_PASSWORD } from "@/lib/constants";
 
 export const GET = withAdminAuth(async () => {
   const users = await prisma.users.findMany({
@@ -43,10 +44,7 @@ export const POST = withAdminAuth(async (request) => {
     return NextResponse.json({ field: "username", error: "taken" }, { status: 409 });
   }
 
-  const passwordHash = await bcrypt.hash(
-    process.env.INITIAL_USER_PASSWORD ?? "truco1234",
-    10
-  );
+  const passwordHash = await bcrypt.hash(INITIAL_USER_PASSWORD, 10);
 
   await prisma.users.create({
     data: {

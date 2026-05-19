@@ -26,8 +26,8 @@ function PencilIcon() {
 }
 
 export default function AdminUserRow({ user, onEdit }: AdminUserRowProps) {
-  const nameInitial = (user.name?.[0] ?? user.username[0]).toUpperCase();
-  const lastnameInitial = user.last_name?.[0].toUpperCase();
+  const nameInitial = (user.name?.[0] ?? user.username?.[0] ?? "").toUpperCase();
+  const lastnameInitial = (user.last_name?.[0] ?? "").toUpperCase();
 
   return (
     <li className="flex items-center gap-3 rounded-lg bg-surface px-3 py-2.5 border border-border">

@@ -142,7 +142,9 @@ export default function SideDrawer({
                 >
                   {username ?? "—"}
                 </div>
-                {role === UserRole.admin && <RoleBadge>ADMIN</RoleBadge>}
+                {role === UserRole.admin && (
+                  <RoleBadge>{t("roleBadge.admin")}</RoleBadge>
+                )}
               </div>
               <div
                 className="text-caption-italic mt-0.5"
@@ -207,7 +209,7 @@ export default function SideDrawer({
               className="text-caption-italic text-text-mute mb-1.5"
               style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 10 }}
             >
-              admin
+              {t("sideDrawer.admin")}
             </p>
             <Link
               href="/admin"
@@ -220,7 +222,7 @@ export default function SideDrawer({
               )}
             >
               <span>{t("sideDrawer.admin")}</span>
-              <RoleBadge soft>ADMIN</RoleBadge>
+              <RoleBadge soft>{t("roleBadge.admin")}</RoleBadge>
             </Link>
           </div>
         )}

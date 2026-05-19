@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import SideDrawer from "@/components/SideDrawer";
 import Logo from "@/components/ui/Logo";
 import MenuIcon from "@/components/ui/MenuIcon";
@@ -32,7 +33,12 @@ export default function AdminPage() {
     setEditingUser,
     fetchPlayers,
     updateUsername,
+    error,
   } = useAdminUsers();
+
+  useEffect(() => {
+    if (error) toast.error(t("admin.loadError"));
+  }, [error, t]);
 
   useEffect(() => {
     async function init() {

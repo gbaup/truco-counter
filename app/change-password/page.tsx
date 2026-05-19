@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import Logo from "@/components/ui/Logo";
 import { getMe } from "@/services/auth";
 import { fetchJSON } from "@/lib/fetchJSON";
+import { INITIAL_USER_PASSWORD } from "@/lib/constants";
 
 export default function ChangePasswordPage() {
   const router = useRouter();
@@ -92,7 +93,7 @@ export default function ChangePasswordPage() {
         className="w-full max-w-sm flex flex-col gap-3"
       >
         <PasswordField
-          label="Contraseña inicial (truco1234)"
+          label={`Contraseña inicial (${INITIAL_USER_PASSWORD})`}
           value={currentPwd}
           onChange={setCurrentPwd}
         />

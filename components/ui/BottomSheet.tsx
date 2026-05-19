@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
+import { useTranslation } from "react-i18next";
 import { twMerge } from "tailwind-merge";
 
 interface BottomSheetProps {
@@ -11,6 +12,7 @@ interface BottomSheetProps {
   children: React.ReactNode;
   submitLabel: string;
   cancelLabel?: string;
+  savingLabel?: string;
   onSubmit: () => void;
   submitDisabled?: boolean;
   saving?: boolean;
@@ -23,11 +25,16 @@ export default function BottomSheet({
   headline,
   children,
   submitLabel,
-  cancelLabel = "Cancelar",
+  cancelLabel,
+  savingLabel,
   onSubmit,
   submitDisabled,
   saving,
 }: BottomSheetProps) {
+  const { t } = useTranslation();
+  const headlineId = useId();
+  const cancelText = cancelLabel ?? t("common.cancel");
+  const savingText = savingLabel ?? t("common.saving");
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -68,7 +75,7 @@ export default function BottomSheet({
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby="sheet-headline"
+        aria-labelledby={headlineId}
         className={twMerge(
           "absolute left-0 right-0 bottom-0",
           "bg-surface border-t border-border",
@@ -85,7 +92,7 @@ export default function BottomSheet({
             {overline}
           </p>
           <h2
-            id="sheet-headline"
+            id={headlineId}
             className="mt-0.5 font-serif text-[20px] font-bold leading-tight text-text"
           >
             {headline}
@@ -105,7 +112,7 @@ export default function BottomSheet({
               "disabled:opacity-50"
             )}
           >
-            {cancelLabel}
+            {cancelText}
           </button>
           <button
             type="button"
@@ -118,7 +125,7 @@ export default function BottomSheet({
               "active:scale-[0.98] transition-transform"
             )}
           >
-            {saving ? "Guardando…" : submitLabel}
+            {saving ? savingText : submitLabel}
           </button>
         </div>
       </div>

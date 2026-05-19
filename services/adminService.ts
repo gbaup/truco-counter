@@ -2,12 +2,7 @@ import { fetchJSON } from "@/lib/fetchJSON";
 import { AdminUser } from "@/types/database";
 
 export async function listUsers(): Promise<AdminUser[]> {
-  try {
-    return await fetchJSON<AdminUser[]>("/api/admin/users");
-  } catch (error) {
-    console.error("Error fetching admin users:", error);
-    return [];
-  }
+  return fetchJSON<AdminUser[]>("/api/admin/users");
 }
 
 export async function createPlayer(input: {
