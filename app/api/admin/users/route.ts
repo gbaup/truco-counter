@@ -2,9 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { withAdminAuth } from "@/lib/withAuth";
-
-const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
-const NAME_RE = /^[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]{1,30}$/;
+import { USERNAME_RE, NAME_RE } from "@/lib/validators";
 
 export const GET = withAdminAuth(async () => {
   const users = await prisma.users.findMany({

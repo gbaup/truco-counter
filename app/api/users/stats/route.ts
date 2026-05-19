@@ -1,30 +1,10 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-
-type UserStat = {
-    user_id: string;
-    username: string;
-    wins: number;
-    losses: number;
-    rating: number;
-    rating_deviation: number;
-    elo_rating: number;
-};
+import { getUserStats } from "@/lib/queries";
 
 export async function GET() {
     try {
-        const data = await prisma.$queryRaw<UserStat[]>`
-            SELECT user_id, username, wins, losses, rating, rating_deviation, elo_rating FROM user_stats
-        `;
-
-        const serializedData = JSON.parse(
-            JSON.stringify(data, (key, value) =>
-                typeof value === "bigint" ? Number(value) : value
-            )
-        );
-
-        return NextResponse.json(serializedData || []);
-
+        const data = await getUserStats();
+        return NextResponse.json(data);
     } catch (error) {
         console.error("Error in user stats API:", error);
         return NextResponse.json(

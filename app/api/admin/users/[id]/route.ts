@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withAdminAuth } from "@/lib/withAuth";
 import { Session } from "@/types/auth";
-
-const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
+import { USERNAME_RE } from "@/lib/validators";
 
 export const PATCH = withAdminAuth<{ params: Promise<{ id: string }> }>(
   async (request, _session: Session, { params }) => {

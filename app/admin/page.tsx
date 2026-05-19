@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import SideDrawer from "@/components/SideDrawer";
@@ -12,23 +12,25 @@ import AdminUserRow from "@/components/admin/AdminUserRow";
 import ChangeNicknameSheet from "@/components/ui/ChangeNicknameSheet";
 import CreatePlayerSheet from "@/components/ui/CreatePlayerSheet";
 import { getMe } from "@/services/auth";
-import { listUsers } from "@/services/adminService";
-import { AdminUser } from "@/types/database";
+import { useAdminUsers } from "@/hooks/useAdminUsers";
 
 export default function AdminPage() {
   const { t } = useTranslation();
   const router = useRouter();
-
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [players, setPlayers] = useState<AdminUser[]>([]);
-  const [query, setQuery] = useState("");
-  const [creating, setCreating] = useState(false);
-  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
 
-  const fetchPlayers = useCallback(async () => {
-    const data = await listUsers();
-    setPlayers(data);
-  }, []);
+  const {
+    players,
+    filtered,
+    query,
+    setQuery,
+    creating,
+    setCreating,
+    editingUser,
+    setEditingUser,
+    fetchPlayers,
+    updateUsername,
+  } = useAdminUsers();
 
   useEffect(() => {
     async function init() {
@@ -45,12 +47,6 @@ export default function AdminPage() {
     }
     init();
   }, [router, fetchPlayers]);
-
-  const filtered = players.filter(
-    (p) =>
-      p.username.toLowerCase().includes(query.toLowerCase()) ||
-      `${p.name} ${p.last_name}`.toLowerCase().includes(query.toLowerCase())
-  );
 
   return (
     <div className="min-h-screen bg-background text-text">
@@ -110,11 +106,7 @@ export default function AdminPage() {
         }
         onClose={() => setEditingUser(null)}
         onSaved={(newNickname) => {
-          setPlayers((prev) =>
-            prev.map((p) =>
-              p.id === editingUser?.id ? { ...p, username: newNickname } : p
-            )
-          );
+          if (editingUser) updateUsername(editingUser.id, newNickname);
           setEditingUser(null);
         }}
       />

@@ -3,8 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { withAuth } from "@/lib/withAuth";
 import { Session } from "@/types/auth";
 import { signToken } from "@/lib/auth";
-
-const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
+import { USERNAME_RE } from "@/lib/validators";
 
 export const PATCH = withAuth(async (request, session: Session) => {
   const body = await request.json();

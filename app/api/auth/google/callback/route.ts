@@ -2,30 +2,7 @@ import { NextResponse } from "next/server";
 import { signToken, getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
-
-async function exchangeCode(code: string): Promise<{ access_token: string }> {
-    const res = await fetch("https://oauth2.googleapis.com/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-            code,
-            client_id: process.env.GOOGLE_CLIENT_ID!,
-            client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-            redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/callback`,
-            grant_type: "authorization_code",
-        }),
-    });
-    if (!res.ok) throw new Error("Token exchange failed");
-    return res.json();
-}
-
-async function getGoogleUser(accessToken: string): Promise<{ id: string; email: string }> {
-    const res = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    if (!res.ok) throw new Error("Failed to fetch Google user info");
-    return res.json();
-}
+import { exchangeCode, fetchGoogleUser } from "@/lib/googleOAuth";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -60,8 +37,8 @@ export async function GET(request: Request) {
     }
 
     try {
-        const { access_token } = await exchangeCode(code);
-        const googleUser = await getGoogleUser(access_token);
+        const accessToken = await exchangeCode(code);
+        const googleUser = await fetchGoogleUser(accessToken);
 
         if (action === "link") {
             const session = await getSession();
