@@ -11,8 +11,9 @@ import BottomSheet from "@/components/ui/BottomSheet";
 import ChangeNicknameSheet from "@/components/ui/ChangeNicknameSheet";
 import SettingsSection from "@/components/settings/SettingsSection";
 import SettingsRow from "@/components/settings/SettingsRow";
-import { getMe, unlinkGoogle } from "@/services/auth";
 import { fetchJSON } from "@/lib/fetchJSON";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useUnlinkGoogle } from "@/hooks/useUnlinkGoogle";
 
 function getPref(key: string, defaultValue: boolean): boolean {
   if (typeof window === "undefined") return defaultValue;
@@ -28,10 +29,10 @@ export default function SettingsPage() {
   const { t } = useTranslation();
   const router = useRouter();
 
+  const { data: me, isPending: meLoading } = useCurrentUser();
+  const unlinkMutation = useUnlinkGoogle();
+
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [username, setUsername] = useState("");
-  const [googleLinked, setGoogleLinked] = useState(false);
-  const [unlinking, setUnlinking] = useState(false);
 
   // Sheets
   const [nicknameSheetOpen, setNicknameSheetOpen] = useState(false);
@@ -49,30 +50,25 @@ export default function SettingsPage() {
   const [sound, setSound] = useState(false);
 
   useEffect(() => {
-    async function load() {
-      const me = await getMe();
-      if (!me) {
-        router.replace("/login");
-        return;
-      }
-      setUsername(me.username);
-      setGoogleLinked(me.googleLinked ?? false);
-    }
-    load();
     setHaptics(getPref("haptics", true));
     setSound(getPref("sound", false));
-  }, [router]);
+  }, []);
+
+  useEffect(() => {
+    if (!meLoading && !me) router.replace("/login");
+  }, [me, meLoading, router]);
+
+  const username = me?.username ?? "";
+  const googleLinked = me?.googleLinked ?? false;
+  const unlinking = unlinkMutation.isPending;
 
   async function handleUnlink() {
-    setUnlinking(true);
-    const result = await unlinkGoogle();
+    const result = await unlinkMutation.mutateAsync();
     if (result.success) {
-      setGoogleLinked(false);
       toast.success(t("settings.googleUnlinkSuccess"));
     } else {
       toast.error(t("settings.googleUnlinkError"));
     }
-    setUnlinking(false);
   }
 
   async function handleChangePassword() {
@@ -247,10 +243,11 @@ export default function SettingsPage() {
 
       {/* Nickname sheet */}
       <ChangeNicknameSheet
+        key={nicknameSheetOpen ? "open" : "closed"}
         open={nicknameSheetOpen}
         currentNickname={username}
         onClose={() => setNicknameSheetOpen(false)}
-        onSaved={(newNickname) => setUsername(newNickname)}
+        onSaved={() => setNicknameSheetOpen(false)}
       />
 
       {/* Password change sheet */}

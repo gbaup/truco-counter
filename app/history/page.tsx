@@ -1,29 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import SideDrawer from "@/components/SideDrawer";
 import MatchList from "@/components/MatchList";
 import Logo from "@/components/ui/Logo";
-import { getMatches } from "@/services/matchService";
-import { MatchHistoryItem } from "@/types/match";
 import MenuIcon from "@/components/ui/MenuIcon";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import { useMatches } from "@/hooks/useMatches";
 
 export default function HistoryPage() {
   const { t } = useTranslation();
-  const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: matches = [], isPending } = useMatches();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  useEffect(() => {
-    getMatches().then((data) => {
-      setMatches(data);
-      setLoading(false);
-    });
-  }, []);
-
-  if (loading) return <LoadingScreen />;
+  if (isPending) return <LoadingScreen />;
 
   return (
     <div className="min-h-screen bg-background text-text">

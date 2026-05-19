@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { twMerge } from "tailwind-merge";
@@ -9,7 +9,7 @@ import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
 import PaperPanel from "@/components/ui/PaperPanel";
 import RoleBadge from "@/components/admin/RoleBadge";
-import { getMe } from "@/services/auth";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { UserRole } from "@/types/auth";
 
 interface SideDrawerProps {
@@ -24,9 +24,9 @@ export default function SideDrawer({
   onClose: externalClose,
 }: SideDrawerProps) {
   const [internalOpen, setInternalOpen] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
-  const [role, setRole] = useState<UserRole | null>(null);
-  const hasFetched = useRef(false);
+  const { data: me } = useCurrentUser();
+  const username = me?.username ?? null;
+  const role = (me?.role as UserRole) ?? null;
   const pathname = usePathname();
   const { t } = useTranslation();
 
@@ -34,17 +34,6 @@ export default function SideDrawer({
   const isOpen = isControlled ? externalOpen : internalOpen;
   const toggleMenu = onToggle ?? (() => setInternalOpen((v) => !v));
   const closeMenu = externalClose ?? (() => setInternalOpen(false));
-
-  useEffect(() => {
-    if (!isOpen || hasFetched.current) return;
-    hasFetched.current = true;
-    getMe().then((me) => {
-      if (me) {
-        setUsername(me.username);
-        setRole((me.role as UserRole) ?? null);
-      }
-    });
-  }, [isOpen]);
 
   const navItems = [
     { href: "/", label: t("sideDrawer.home") },

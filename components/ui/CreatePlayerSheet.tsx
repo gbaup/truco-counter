@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import BottomSheet from "@/components/ui/BottomSheet";
 import Suit from "@/components/ui/Suit";
-import { createPlayer } from "@/services/adminService";
+import { useCreatePlayer } from "@/hooks/useCreatePlayer";
 import { toast } from "sonner";
 import { USERNAME_RE, NAME_RE } from "@/lib/validators";
 import { INITIAL_USER_PASSWORD } from "@/lib/constants";
@@ -24,26 +24,17 @@ export default function CreatePlayerSheet({
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
-  const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const createPlayerMutation = useCreatePlayer();
 
   const canSubmit =
     NAME_RE.test(firstName) && NAME_RE.test(lastName) && USERNAME_RE.test(username);
-
-  useEffect(() => {
-    if (!open) {
-      setFirstName("");
-      setLastName("");
-      setUsername("");
-      setErrors({});
-    }
-  }, [open]);
+  const saving = createPlayerMutation.isPending;
 
   async function handleSubmit() {
-    setSaving(true);
     setErrors({});
     try {
-      await createPlayer({ firstName, lastName, username });
+      await createPlayerMutation.mutateAsync({ firstName, lastName, username });
       toast.success(t("create.savedToast", { name: username }));
       onCreated();
       onClose();
@@ -54,8 +45,6 @@ export default function CreatePlayerSheet({
       } else {
         setErrors({ _: t("create.errorCreating") });
       }
-    } finally {
-      setSaving(false);
     }
   }
 

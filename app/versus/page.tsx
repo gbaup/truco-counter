@@ -1,38 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { PublicUser, VersusStats } from "@/types/database";
-import { getUsers, getUsersVersus } from "@/services/userService";
+import { useState } from "react";
 import SideDrawer from "@/components/SideDrawer";
 import UserDropdown from "@/components/UserDropdown";
 import VersusResults from "@/components/VersusResults";
 import Logo from "@/components/ui/Logo";
 import MenuIcon from "@/components/ui/MenuIcon";
+import { useUsers } from "@/hooks/useUsers";
+import { useVersusStats } from "@/hooks/useVersusStats";
 
 export default function VersusPage() {
-  const [users, setUsers] = useState<PublicUser[]>([]);
+  const { data: users = [] } = useUsers();
   const [player1, setPlayer1] = useState<string>("");
   const [player2, setPlayer2] = useState<string>("");
-  const [stats, setStats] = useState<VersusStats | null>(null);
-  const [loading, setLoading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  useEffect(() => {
-    getUsers().then(setUsers);
-  }, []);
-
-  useEffect(() => {
-    if (player1 && player2 && player1 !== player2) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setLoading(true);
-      getUsersVersus(player1, player2)
-        .then((data) => setStats(data))
-        .catch(() => setStats(null))
-        .finally(() => setLoading(false));
-    } else {
-      setStats(null);
-    }
-  }, [player1, player2]);
+  const { data: stats = null, isLoading: loadingStats } = useVersusStats(player1, player2);
 
   return (
     <div className="min-h-screen bg-background text-text">
@@ -86,7 +69,7 @@ export default function VersusPage() {
         {/* Results */}
         <VersusResults
           stats={stats}
-          loading={loading}
+          loading={loadingStats}
           p1Name={users.find((u) => u.id === player1)?.username}
           p2Name={users.find((u) => u.id === player2)?.username}
         />

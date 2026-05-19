@@ -12,7 +12,7 @@ import AdminSearchBar from "@/components/admin/AdminSearchBar";
 import AdminUserRow from "@/components/admin/AdminUserRow";
 import ChangeNicknameSheet from "@/components/ui/ChangeNicknameSheet";
 import CreatePlayerSheet from "@/components/ui/CreatePlayerSheet";
-import { getMe } from "@/services/auth";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 
@@ -20,8 +20,8 @@ export default function AdminPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
 
+  const { data: me, isPending: meLoading } = useCurrentUser();
   const {
     players,
     filtered,
@@ -31,8 +31,7 @@ export default function AdminPage() {
     setCreating,
     editingUser,
     setEditingUser,
-    fetchPlayers,
-    updateUsername,
+    isLoading: playersLoading,
     error,
   } = useAdminUsers();
 
@@ -41,23 +40,12 @@ export default function AdminPage() {
   }, [error, t]);
 
   useEffect(() => {
-    async function init() {
-      const me = await getMe();
-      if (!me) {
-        router.replace("/login");
-        return;
-      }
-      if (me.role !== "admin") {
-        router.replace("/");
-        return;
-      }
-      await fetchPlayers();
-      setLoading(false);
-    }
-    init();
-  }, [router, fetchPlayers]);
+    if (meLoading) return;
+    if (!me) { router.replace("/login"); return; }
+    if (me.role !== "admin") { router.replace("/"); return; }
+  }, [me, meLoading, router]);
 
-  if (loading) return <LoadingScreen />;
+  if (meLoading || playersLoading) return <LoadingScreen />;
 
   return (
     <div className="min-h-screen bg-background text-text">
@@ -102,12 +90,14 @@ export default function AdminPage() {
       </main>
 
       <CreatePlayerSheet
+        key={creating ? "open" : "closed"}
         open={creating}
         onClose={() => setCreating(false)}
-        onCreated={fetchPlayers}
+        onCreated={() => {}}
       />
 
       <ChangeNicknameSheet
+        key={editingUser?.id ?? "no-user"}
         open={!!editingUser}
         currentNickname={editingUser?.username ?? ""}
         targetUser={
@@ -116,10 +106,7 @@ export default function AdminPage() {
             : undefined
         }
         onClose={() => setEditingUser(null)}
-        onSaved={(newNickname) => {
-          if (editingUser) updateUsername(editingUser.id, newNickname);
-          setEditingUser(null);
-        }}
+        onSaved={() => setEditingUser(null)}
       />
     </div>
   );

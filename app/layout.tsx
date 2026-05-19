@@ -3,6 +3,7 @@ import { Inter, Crimson_Pro, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import I18nProvider from "@/components/I18nProvider";
+import QueryProvider from "@/components/QueryProvider";
 import { twMerge } from "tailwind-merge";
 
 const inter = Inter({
@@ -44,9 +45,11 @@ export default function RootLayout({
           "antialiased font-sans"
         )}
       >
-        <I18nProvider>
-          {children}
-        </I18nProvider>
+        <QueryProvider>
+          <I18nProvider>
+            {children}
+          </I18nProvider>
+        </QueryProvider>
         <Toaster richColors position="top-right" />
       </body>
     </html>
