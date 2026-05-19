@@ -9,17 +9,22 @@ export const useLogin = () => {
   });
 
   const handleLogin = async (username: string, password: string): Promise<boolean> => {
-    const result = await mutation.mutateAsync({ username, password });
-    if (!result.success || result.error) {
-      toast.error(result.error || "Invalid credentials");
+    try {
+      const result = await mutation.mutateAsync({ username, password });
+      if (!result.success || result.error) {
+        toast.error(result.error || "Invalid credentials");
+        return false;
+      }
+      return true;
+    } catch {
+      toast.error("Something went wrong");
       return false;
     }
-    return true;
   };
 
   return {
     isLoading: mutation.isPending,
-    error: null as string | null,
+    error: mutation.error?.message ?? null,
     handleLogin,
   };
 };
