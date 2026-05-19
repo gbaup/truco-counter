@@ -15,7 +15,7 @@ export default function VersusPage() {
   const [player2, setPlayer2] = useState<string>("");
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const { data: stats = null, isPending: loadingStats } = useVersusStats(player1, player2);
+  const { data: stats = null, isLoading: loadingStats } = useVersusStats(player1, player2);
 
   return (
     <div className="min-h-screen bg-background text-text">
