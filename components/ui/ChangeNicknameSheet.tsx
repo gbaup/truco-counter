@@ -31,6 +31,7 @@ export default function ChangeNicknameSheet({
   const isAdminFlow = !!targetUser;
   const hasChanged = draft !== currentNickname;
   const isValid = NICKNAME_RE.test(draft);
+  const showError = !!error || (hasChanged && !isValid);
 
   useEffect(() => {
     if (open) {
@@ -81,8 +82,8 @@ export default function ChangeNicknameSheet({
     >
       <div
         className={[
-          "flex items-center gap-2.5 rounded-md border bg-background px-4 py-3.5",
-          error ? "border-danger" : "border-us/40",
+          "flex items-center gap-2.5 rounded-md border bg-background px-4 py-3.5 transition-colors",
+          showError ? "border-danger" : "border-us/40",
         ].join(" ")}
       >
         <span className="text-base font-semibold text-text-mute">@</span>
@@ -110,7 +111,7 @@ export default function ChangeNicknameSheet({
       <p
         className={[
           "mt-2 font-serif text-[11px] italic",
-          error ? "text-danger" : "text-text-mute",
+          showError ? "text-danger" : "text-text-mute",
         ].join(" ")}
       >
         {error ?? t("nickname.hint")}
