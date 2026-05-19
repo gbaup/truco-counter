@@ -46,3 +46,10 @@ export function teamAggregate(members: PlayerRating[]): PlayerRating {
     RD: members.reduce((sum, m) => sum + m.RD, 0) / members.length,
   };
 }
+
+export function missedMatchesWhere(since: Date, before?: Date) {
+  return {
+    status: "finished" as const,
+    created_at: before ? { gt: since, lt: before } : { gt: since },
+  };
+}

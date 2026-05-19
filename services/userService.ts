@@ -1,14 +1,9 @@
-
-import { PublicUser, UserStats } from "@/types/database";
+import { fetchJSON } from "@/lib/fetchJSON";
+import { PublicUser, UserStats, VersusStats } from "@/types/database";
 
 export async function getUsers(): Promise<PublicUser[]> {
   try {
-    const response = await fetch("/api/users");
-    if (!response.ok) {
-      throw new Error("Failed to fetch users");
-    }
-    const data = await response.json();
-    return data || [];
+    return await fetchJSON<PublicUser[]>("/api/users");
   } catch (error) {
     console.error("Error fetching users:", error);
     return [];
@@ -17,26 +12,18 @@ export async function getUsers(): Promise<PublicUser[]> {
 
 export async function getUserStats(): Promise<UserStats[]> {
   try {
-    const response = await fetch("/api/users/stats");
-    if (!response.ok) {
-      throw new Error("Failed to fetch user stats");
-    }
-    const data = await response.json();
-    return data || [];
+    return await fetchJSON<UserStats[]>("/api/users/stats");
   } catch (error) {
     console.error("Error fetching user stats:", error);
     return [];
   }
 }
 
-export async function getUsersVersus(p1Id: string, p2Id: string) {
+export async function getUsersVersus(p1Id: string, p2Id: string): Promise<VersusStats | null> {
   try {
-    const response = await fetch(`/api/users/versus?p1=${p1Id}&p2=${p2Id}`);
-    if (!response.ok) throw new Error("Failed to fetch users versus");
-    return await response.json();
+    return await fetchJSON<VersusStats>(`/api/users/versus?p1=${p1Id}&p2=${p2Id}`);
   } catch (error) {
     console.error(error);
     return null;
   }
 }
-

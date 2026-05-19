@@ -1,20 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PublicUser } from "@/types/database";
+import { PublicUser, VersusStats } from "@/types/database";
 import { getUsers, getUsersVersus } from "@/services/userService";
 import SideDrawer from "@/components/SideDrawer";
 import UserDropdown from "@/components/UserDropdown";
 import VersusResults from "@/components/VersusResults";
 import Logo from "@/components/ui/Logo";
 import MenuIcon from "@/components/ui/MenuIcon";
-
-interface VersusStats {
-  total_matches: number;
-  p1_wins: number;
-  p2_wins: number;
-  draws: number;
-}
 
 export default function VersusPage() {
   const [users, setUsers] = useState<PublicUser[]>([]);

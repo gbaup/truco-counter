@@ -99,6 +99,8 @@ export function useMatch() {
                 }
             } catch (error) {
                 console.error("Failed to save match:", error);
+                setIsSaving(false);
+                return;
             }
         }
 

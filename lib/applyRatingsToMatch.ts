@@ -1,8 +1,17 @@
 import type { Prisma } from "@/lib/generated/prisma/client";
-import { applyDecay, teamAggregate, updateRating } from "@/lib/glicko";
+import { applyDecay, teamAggregate, updateRating, missedMatchesWhere } from "@/lib/glicko";
 import { teamAvgElo, updateElo } from "@/lib/elo";
 
-export async function applyGlickoToMatch(
+export function extractTeamIds(
+  participants: { team: number | null; user_id: string | null }[]
+) {
+  return {
+    team1Ids: participants.filter((p) => p.team === 1 && p.user_id).map((p) => p.user_id!),
+    team2Ids: participants.filter((p) => p.team === 2 && p.user_id).map((p) => p.user_id!),
+  };
+}
+
+export async function applyRatingsToMatch(
   tx: Prisma.TransactionClient,
   team1UserIds: string[],
   team2UserIds: string[],
@@ -18,7 +27,6 @@ export async function applyGlickoToMatch(
   });
 
   const byId = new Map(participants.map((p) => [p.id, p]));
-
   const decayed = new Map<string, { r: number; RD: number }>();
 
   for (const id of allIds) {
@@ -27,10 +35,7 @@ export async function applyGlickoToMatch(
     let missedMatches = 0;
     if (p.last_decay_at !== null) {
       missedMatches = await tx.matches.count({
-        where: {
-          status: "finished",
-          created_at: { gt: p.last_decay_at, lt: matchCreatedAt },
-        },
+        where: missedMatchesWhere(p.last_decay_at, matchCreatedAt),
       });
     }
     decayed.set(id, {

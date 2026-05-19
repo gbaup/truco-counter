@@ -1,28 +1,10 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
-import { Session } from "@/types/auth";
 import { prisma } from "@/lib/prisma";
-import { UserRole } from "@/types/auth";
-import { applyDecay } from "@/lib/glicko";
+import { applyDecay, missedMatchesWhere } from "@/lib/glicko";
+import { withAdminAuth } from "@/lib/withAuth";
 
-export async function POST() {
+export const POST = withAdminAuth(async () => {
     try {
-        const session = await getSession() as Session | null;
-
-        if (!session?.userId) {
-            return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
-        }
-
-        // Re-read role from DB so stale/missing JWT claims don't affect access control
-        const caller = await prisma.users.findUnique({
-            where: { id: session.userId },
-            select: { role: true },
-        });
-
-        if (caller?.role !== UserRole.admin) {
-            return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
-        }
-
         const latestMatch = await prisma.matches.findFirst({
             where: { status: "finished", created_at: { not: null } },
             orderBy: { created_at: "desc" },
@@ -43,7 +25,7 @@ export async function POST() {
             allUsers.map(async (u) => {
                 if (u.last_decay_at === null) return;
                 const missedMatches = await prisma.matches.count({
-                    where: { status: "finished", created_at: { gt: u.last_decay_at } },
+                    where: missedMatchesWhere(u.last_decay_at),
                 });
                 if (missedMatches === 0) return;
                 const newRD = Math.round(applyDecay(u.rating_deviation, missedMatches) * 100) / 100;
@@ -60,4 +42,4 @@ export async function POST() {
         console.error("sync-ratings error:", err);
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
-}
+});

@@ -4,7 +4,15 @@
         "username": "Usuario",
         "password": "Contraseña",
         "button": "Entrar",
-        "tagline": "Contador · Ranking · Historial"
+        "tagline": "Contador · Ranking · Historial",
+        "orContinueWith": "O continuar con",
+        "googleButton": "Continuar con Google",
+        "errors": {
+            "not_linked": "Esa cuenta de Google no está vinculada a ningún usuario",
+            "oauth_error": "Error al conectar con Google",
+            "oauth_state_mismatch": "Error de seguridad. Intentá de nuevo.",
+            "google_already_linked": "Esa cuenta de Google ya está vinculada a otro usuario"
+        }
     },
     "matchSetup": {
         "team1": "Nosotros",
@@ -58,7 +66,17 @@
         "noMatches": "Todavía no jugaste ningún partido",
         "label": "El jugador",
         "recent": "Últimas partidas",
-        "viewAll": "Ver todas"
+        "viewAll": "Ver todas",
+        "google": {
+            "title": "Cuenta de Google",
+            "linked": "Vinculada",
+            "notLinked": "Sin vincular",
+            "link": "Vincular con Google",
+            "unlink": "Desvincular",
+            "linkedSuccess": "Cuenta de Google vinculada correctamente",
+            "alreadyLinked": "Esa cuenta de Google ya está vinculada a otro usuario",
+            "unlinkError": "Error al desvincular"
+        }
     },
     "statistics": {
         "glickoDescription": "Ajusta por incertidumbre e inactividad",
