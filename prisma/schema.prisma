@@ -47,6 +47,7 @@ model users {
   elo_rating         Float                @default(1200)
   last_decay_at      DateTime?            @db.Timestamptz(6)
   role               String               @default("user")
+  password_changed   Boolean              @default(true)
   google_id          String?              @unique
   match_participants match_participants[]
   matches            matches[]

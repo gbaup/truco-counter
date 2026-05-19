@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { applyRatingsToMatch, extractTeamIds } from "@/lib/applyRatingsToMatch";
+import { isTransitioningToFinished } from "@/lib/domain/match";
 import { Session } from "@/types/auth";
 import { UpdateMatchDto } from "@/types/match";
 import { withAuth } from "@/lib/withAuth";
@@ -32,8 +33,10 @@ export const PATCH = withAuth<{ params: Promise<{ id: string }> }>(
                 );
             }
 
-            const isFinishing =
-                status === "finished" && matchValue.status !== "finished";
+            const isFinishing = isTransitioningToFinished(
+                matchValue.status,
+                status ?? ""
+            );
 
             const updatedMatch = await (isFinishing && winner_team != null
                 ? prisma.$transaction(async (tx) => {

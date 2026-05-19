@@ -1,3 +1,12 @@
+"use client";
+
+function triggerHaptic() {
+  if (localStorage.getItem("prefs.haptics") === "false") return;
+  if (typeof navigator !== "undefined" && navigator.vibrate) {
+    navigator.vibrate(10);
+  }
+}
+
 interface ControlsProps {
   onIncrement: (team: 1 | 2) => void;
   onDecrement: (team: 1 | 2) => void;
@@ -52,7 +61,7 @@ export default function Controls({
           {score1}
         </div>
         <button
-          onClick={() => onIncrement(1)}
+          onClick={() => { onIncrement(1); triggerHaptic(); }}
           className="w-[42px] h-[42px] min-w-[42px] rounded-md bg-us text-white flex items-center justify-center active:scale-95 transition-transform"
           aria-label="Sumar punto Nosotros"
         >
@@ -82,7 +91,7 @@ export default function Controls({
           {score2}
         </div>
         <button
-          onClick={() => onIncrement(2)}
+          onClick={() => { onIncrement(2); triggerHaptic(); }}
           className="w-[42px] h-[42px] min-w-[42px] rounded-md bg-them text-paper-ink flex items-center justify-center active:scale-95 transition-transform"
           aria-label="Sumar punto Ellos"
         >

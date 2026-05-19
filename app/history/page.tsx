@@ -8,6 +8,7 @@ import Logo from "@/components/ui/Logo";
 import { getMatches } from "@/services/matchService";
 import { MatchHistoryItem } from "@/types/match";
 import MenuIcon from "@/components/ui/MenuIcon";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function HistoryPage() {
   const { t } = useTranslation();
@@ -22,13 +23,7 @@ export default function HistoryPage() {
     });
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-us border-t-transparent" />
-      </div>
-    );
-  }
+  if (loading) return <LoadingScreen />;
 
   return (
     <div className="min-h-screen bg-background text-text">

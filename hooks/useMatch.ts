@@ -2,8 +2,12 @@ import { useState, useEffect } from "react";
 import { PublicUser } from "@/types/database";
 import { MatchState } from "@/types/game";
 import { createMatch, updateMatch, saveMatch } from "@/services/matchService";
-
-const STORAGE_KEY = "truco-match-state";
+import { determineWinner } from "@/lib/domain/match";
+import {
+    loadMatch,
+    saveMatch as persistMatch,
+    clearMatch,
+} from "@/lib/persistence/matchStorage";
 
 export function useMatch() {
     const [matchState, setMatchState] = useState<MatchState>({
@@ -20,21 +24,13 @@ export function useMatch() {
     const [isStarting, setIsStarting] = useState(false);
 
     useEffect(() => {
-        const savedState = localStorage.getItem(STORAGE_KEY);
-        if (savedState) {
-            try {
-                setMatchState(JSON.parse(savedState));
-            } catch (error) {
-                console.error("Failed to parse saved match state", error);
-            }
-        }
+        const saved = loadMatch();
+        if (saved) setMatchState(saved);
         setIsLoaded(true);
     }, []);
 
     useEffect(() => {
-        if (isLoaded) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(matchState));
-        }
+        if (isLoaded) persistMatch(matchState);
     }, [matchState, isLoaded]);
 
     const startMatch = async (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => {
@@ -82,7 +78,7 @@ export function useMatch() {
         if (isSaving) return;
         setIsSaving(true);
 
-        const winner_team = result.score1 >= matchState.maxPoints ? 1 : result.score2 >= matchState.maxPoints ? 2 : null;
+        const winner_team = determineWinner(result.score1, result.score2, matchState.maxPoints);
 
         if (winner_team || result.status === "cancelled") {
             try {
@@ -109,7 +105,7 @@ export function useMatch() {
             view: "setup",
             team1: [], team2: [], maxPoints: 30, score1: 0, score2: 0,
         });
-        localStorage.removeItem(STORAGE_KEY);
+        clearMatch();
     };
 
     return {

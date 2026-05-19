@@ -28,7 +28,13 @@ export async function logout() {
   // cookie clearing is handled server-side via the logout route
 }
 
-export async function getMe(): Promise<{ userId: string; username: string; role?: UserRole; googleLinked?: boolean } | null> {
+export async function getMe(): Promise<{
+  userId: string;
+  username: string;
+  role?: UserRole;
+  googleLinked?: boolean;
+  passwordChanged?: boolean;
+} | null> {
   try {
     return await fetchJSON("/api/auth/me");
   } catch {

@@ -1,0 +1,126 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import SideDrawer from "@/components/SideDrawer";
+import Logo from "@/components/ui/Logo";
+import MenuIcon from "@/components/ui/MenuIcon";
+import AdminSubHeader from "@/components/admin/AdminSubHeader";
+import AdminSearchBar from "@/components/admin/AdminSearchBar";
+import AdminUserRow from "@/components/admin/AdminUserRow";
+import ChangeNicknameSheet from "@/components/ui/ChangeNicknameSheet";
+import CreatePlayerSheet from "@/components/ui/CreatePlayerSheet";
+import { getMe } from "@/services/auth";
+import { useAdminUsers } from "@/hooks/useAdminUsers";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+
+export default function AdminPage() {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const {
+    players,
+    filtered,
+    query,
+    setQuery,
+    creating,
+    setCreating,
+    editingUser,
+    setEditingUser,
+    fetchPlayers,
+    updateUsername,
+    error,
+  } = useAdminUsers();
+
+  useEffect(() => {
+    if (error) toast.error(t("admin.loadError"));
+  }, [error, t]);
+
+  useEffect(() => {
+    async function init() {
+      const me = await getMe();
+      if (!me) {
+        router.replace("/login");
+        return;
+      }
+      if (me.role !== "admin") {
+        router.replace("/");
+        return;
+      }
+      await fetchPlayers();
+      setLoading(false);
+    }
+    init();
+  }, [router, fetchPlayers]);
+
+  if (loading) return <LoadingScreen />;
+
+  return (
+    <div className="min-h-screen bg-background text-text">
+      <SideDrawer
+        isOpen={drawerOpen}
+        onToggle={() => setDrawerOpen((v) => !v)}
+        onClose={() => setDrawerOpen(false)}
+      />
+
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 pt-14 pb-3">
+        <Logo size={18} />
+        <span
+          className="text-caption-italic text-text"
+          style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+        >
+          {t("sideDrawer.admin")}
+        </span>
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
+          aria-label="Menú"
+        >
+          <MenuIcon />
+        </button>
+      </div>
+
+      <main className="flex flex-col pb-5">
+        <AdminSubHeader count={players.length} onCreate={() => setCreating(true)} />
+        <AdminSearchBar value={query} onChange={setQuery} />
+
+        <ul className="px-5 flex flex-col gap-1.5">
+          {filtered.map((p) => (
+            <AdminUserRow key={p.id} user={p} onEdit={setEditingUser} />
+          ))}
+          {filtered.length === 0 && query && (
+            <p className="py-8 text-center font-serif text-sm italic text-text-mute">
+              Sin resultados para &quot;{query}&quot;
+            </p>
+          )}
+        </ul>
+      </main>
+
+      <CreatePlayerSheet
+        open={creating}
+        onClose={() => setCreating(false)}
+        onCreated={fetchPlayers}
+      />
+
+      <ChangeNicknameSheet
+        open={!!editingUser}
+        currentNickname={editingUser?.username ?? ""}
+        targetUser={
+          editingUser
+            ? { id: editingUser.id, displayName: editingUser.username }
+            : undefined
+        }
+        onClose={() => setEditingUser(null)}
+        onSaved={(newNickname) => {
+          if (editingUser) updateUsername(editingUser.id, newNickname);
+          setEditingUser(null);
+        }}
+      />
+    </div>
+  );
+}

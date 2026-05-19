@@ -8,10 +8,11 @@ import { useTranslation } from "react-i18next";
 import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
 import PaperPanel from "@/components/ui/PaperPanel";
+import RoleBadge from "@/components/admin/RoleBadge";
 import { getMe } from "@/services/auth";
+import { UserRole } from "@/types/auth";
 
 interface SideDrawerProps {
-  /** When provided, activates controlled mode — the built-in toggle button is hidden. */
   isOpen?: boolean;
   onToggle?: () => void;
   onClose?: () => void;
@@ -24,6 +25,7 @@ export default function SideDrawer({
 }: SideDrawerProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const [role, setRole] = useState<UserRole | null>(null);
   const hasFetched = useRef(false);
   const pathname = usePathname();
   const { t } = useTranslation();
@@ -37,7 +39,10 @@ export default function SideDrawer({
     if (!isOpen || hasFetched.current) return;
     hasFetched.current = true;
     getMe().then((me) => {
-      if (me) setUsername(me.username);
+      if (me) {
+        setUsername(me.username);
+        setRole((me.role as UserRole) ?? null);
+      }
     });
   }, [isOpen]);
 
@@ -47,11 +52,11 @@ export default function SideDrawer({
     { href: "/statistics", label: t("sideDrawer.statistics") },
     { href: "/versus", label: t("sideDrawer.versus") },
     { href: "/history", label: t("sideDrawer.history") },
+    { href: "/settings", label: t("sideDrawer.settings") },
   ];
 
   return (
     <>
-      {/* Built-in toggle button — only shown in uncontrolled (self-managed) mode */}
       {!isControlled && (
         <button
           onClick={toggleMenu}
@@ -74,7 +79,6 @@ export default function SideDrawer({
         </button>
       )}
 
-      {/* Backdrop */}
       {isOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
@@ -82,7 +86,6 @@ export default function SideDrawer({
         />
       )}
 
-      {/* Drawer panel */}
       <div
         className={twMerge(
           "fixed top-0 right-0 z-50 h-screen flex flex-col border-l border-border shadow-2xl transition-transform duration-300",
@@ -94,7 +97,7 @@ export default function SideDrawer({
           padding: "60px 20px 28px",
         }}
       >
-        {/* Header: logo + close button */}
+        {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <Logo size={18} />
           <button
@@ -119,7 +122,6 @@ export default function SideDrawer({
         {/* Player card */}
         <PaperPanel lines={false} className="mb-5">
           <div className="flex items-center gap-2.5">
-            {/* Mini "1 de espada" card */}
             <div
               className="w-[38px] h-[50px] bg-paper-ink rounded-[6px] flex items-center justify-center shrink-0"
               style={{
@@ -132,13 +134,17 @@ export default function SideDrawer({
               1
             </div>
 
-            {/* Username + tagline */}
             <div className="flex-1 min-w-0">
-              <div
-                className="text-paper-ink font-bold truncate"
-                style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 15 }}
-              >
-                {username ?? "—"}
+              <div className="flex items-center gap-1.5 min-w-0">
+                <div
+                  className="text-paper-ink font-bold truncate"
+                  style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 15 }}
+                >
+                  {username ?? "—"}
+                </div>
+                {role === UserRole.admin && (
+                  <RoleBadge>{t("roleBadge.admin")}</RoleBadge>
+                )}
               </div>
               <div
                 className="text-caption-italic mt-0.5"
@@ -148,7 +154,6 @@ export default function SideDrawer({
               </div>
             </div>
 
-            {/* Espada pip */}
             <Suit kind="espada" size={20} color="#1A1410" className="shrink-0" />
           </div>
         </PaperPanel>
@@ -196,6 +201,31 @@ export default function SideDrawer({
             );
           })}
         </nav>
+
+        {/* Admin section */}
+        {role === UserRole.admin && (
+          <div className="mt-4">
+            <p
+              className="text-caption-italic text-text-mute mb-1.5"
+              style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 10 }}
+            >
+              {t("sideDrawer.admin")}
+            </p>
+            <Link
+              href="/admin"
+              onClick={closeMenu}
+              className={twMerge(
+                "flex items-center justify-between px-3.5 py-3 rounded-md text-sm transition-colors",
+                pathname === "/admin"
+                  ? "bg-us/20 border border-us/40 text-us font-bold"
+                  : "border border-transparent text-text font-medium hover:bg-surface"
+              )}
+            >
+              <span>{t("sideDrawer.admin")}</span>
+              <RoleBadge soft>{t("roleBadge.admin")}</RoleBadge>
+            </Link>
+          </div>
+        )}
 
         <div className="flex-1" />
 

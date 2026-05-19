@@ -10,6 +10,7 @@ import { UserStats } from "@/types/database";
 import { getUserStats } from "@/services/userService";
 import { getMe } from "@/services/auth";
 import MenuIcon from "@/components/ui/MenuIcon";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 import { UserRole } from "@/types/auth";
 
 type Tab = "glicko" | "elo" | "classic";
@@ -38,13 +39,7 @@ export default function StatisticsPage() {
     fetchData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-us border-t-transparent" />
-      </div>
-    );
-  }
+  if (loading) return <LoadingScreen />;
 
   const glickoScore = (s: { rating: number; rating_deviation: number }) =>
     s.rating - s.rating_deviation;
