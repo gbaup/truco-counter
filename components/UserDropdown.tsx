@@ -1,3 +1,4 @@
+import { twMerge } from "tailwind-merge";
 import { PublicUser } from "@/types/database";
 
 interface UserDropdownProps {
@@ -23,9 +24,9 @@ export default function UserDropdown({
   const accentText = variant === "us" ? "text-us" : "text-them";
 
   return (
-    <div className={`bg-surface rounded-xl border ${accentBorder} p-3`}>
+    <div className={twMerge("bg-surface rounded-xl border p-3", accentBorder)}>
       <p
-        className={`text-caption-italic mb-2 ${accentText}`}
+        className={twMerge("text-caption-italic mb-2", accentText)}
         style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11, letterSpacing: "0.12em" }}
       >
         {label}

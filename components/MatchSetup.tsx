@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { twMerge } from "tailwind-merge";
 import { PublicUser } from "@/types/database";
 import { useUsers } from "@/hooks/useUsers";
 import { useTranslation } from "react-i18next";
@@ -142,14 +143,14 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
             return (
               <div
                 key={team}
-                className={`${isActive ? panelActive : panelResting} rounded-xl p-3 transition-all duration-200`}
+                className={twMerge(isActive ? panelActive : panelResting, "rounded-xl p-3 transition-all duration-200")}
               >
                 {/* Panel header */}
                 <div className="flex items-center justify-between mb-2.5">
                   <div className="flex items-center gap-1.5">
                     <Suit kind={suitKind} size={12} color={color} />
                     <span
-                      className={`text-heading-sm ${colorClass}`}
+                      className={twMerge("text-heading-sm", colorClass)}
                       style={{ fontFamily: "var(--font-crimson-pro), serif" }}
                     >
                       {label}
@@ -169,7 +170,7 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
                     <button
                       key={user.id}
                       onClick={() => removeFromTeam(user, team)}
-                      className={`flex items-center justify-between px-2.5 py-1.5 rounded-sm text-xs font-semibold capitalize text-left transition-colors ${chipClass}`}
+                      className={twMerge("flex items-center justify-between px-2.5 py-1.5 rounded-sm text-xs font-semibold capitalize text-left transition-colors", chipClass)}
                     >
                       <span>{user.username}</span>
                       <span className="opacity-50 ml-1 text-[10px]">×</span>
@@ -182,7 +183,7 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
                       onClick={(e) => { e.stopPropagation(); toggleSumar(team); }}
                       aria-pressed={isActive}
                       aria-label={`Sumar a ${label}`}
-                      className={`px-2.5 py-1.5 rounded-sm text-[11px] italic text-center transition-all duration-200 ${isActive ? sumarActive : sumarResting}`}
+                      className={twMerge("px-2.5 py-1.5 rounded-sm text-[11px] italic text-center transition-all duration-200", isActive ? sumarActive : sumarResting)}
                     >
                       {isActive ? "↓ tocá un jugador" : "+ sumar"}
                     </button>
@@ -219,7 +220,7 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
                     key={user.id}
                     onClick={() => addToActiveTeam(user)}
                     aria-disabled={!activeTeam}
-                    className={`px-2.5 py-1.5 rounded-sm text-xs capitalize transition-all duration-200 ${chipClass}`}
+                    className={twMerge("px-2.5 py-1.5 rounded-sm text-xs capitalize transition-all duration-200", chipClass)}
                   >
                     {user.username}
                   </button>
@@ -242,12 +243,12 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
               <button
                 key={points}
                 onClick={() => setMaxPoints(points)}
-                className={[
+                className={twMerge(
                   "flex-1 py-3 rounded-lg text-center font-extrabold text-base transition-colors",
                   maxPoints === points
                     ? "bg-us text-white"
                     : "border border-border text-text hover:bg-surface-elevated",
-                ].join(" ")}
+                )}
                 style={{ fontFamily: "var(--font-crimson-pro), serif" }}
               >
                 {points}
@@ -267,12 +268,12 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
         <button
           onClick={() => canStart && onStartMatch(team1, team2, maxPoints)}
           disabled={!canStart || isStarting}
-          className={[
+          className={twMerge(
             "mt-auto w-full bg-us text-white rounded-lg py-4 text-base font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98]",
             canStart
               ? "shadow-[0_8px_20px_-10px_#8B5CF6] opacity-100"
               : "opacity-40 cursor-not-allowed",
-          ].join(" ")}
+          )}
         >
           {isStarting ? (
             <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">

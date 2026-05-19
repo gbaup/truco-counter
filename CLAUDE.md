@@ -70,6 +70,19 @@ The language is selected at runtime via `NEXT_PUBLIC_APP_LANG`. `I18nProvider.ts
 
 Tailwind CSS v4. Shared variants and class merging use `tailwind-variants` + `tailwind-merge` + `clsx`. Reusable primitives live under `components/ui/`.
 
+**Class merging standard:** always use `twMerge` (from `tailwind-merge`) to compose conditional or dynamic `className` values. Never use template literals (`className={\`...\`}`) or array `.join(" ")` for this — they silently produce duplicate/conflicting Tailwind classes that don't resolve correctly. Import directly from the package:
+
+```ts
+import { twMerge } from "tailwind-merge";
+
+// correct
+className={twMerge("base-classes", condition ? "variant-a" : "variant-b")}
+
+// wrong — do not use
+className={`base-classes ${dynamic}`}
+className={["base", condition ? "a" : "b"].join(" ")}
+```
+
 ---
 
 ## Game rules
