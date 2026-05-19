@@ -1,31 +1,25 @@
-import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { login } from "@/services/auth";
 import { toast } from "sonner";
 
 export const useLogin = () => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+  const mutation = useMutation({
+    mutationFn: ({ username, password }: { username: string; password: string }) =>
+      login(username, password),
+  });
 
-    const handleLogin = async (username: string, password: string) => {
-        setIsLoading(true);
-        try {
-            const { success, error } = await login(username, password);
-            if (!success || error) {
-                toast.error(error || "Invalid credentials");
-                setError(error || "Invalid credentials");
-                return false;
-            }
-            setIsLoading(false);
-            return true;
-        } catch (err) {
-            console.error(err);
-            toast.error("Something went wrong");
-            setError("Something went wrong");
-            return false;
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  const handleLogin = async (username: string, password: string): Promise<boolean> => {
+    const result = await mutation.mutateAsync({ username, password });
+    if (!result.success || result.error) {
+      toast.error(result.error || "Invalid credentials");
+      return false;
+    }
+    return true;
+  };
 
-    return { isLoading, error, handleLogin };
+  return {
+    isLoading: mutation.isPending,
+    error: null as string | null,
+    handleLogin,
+  };
 };

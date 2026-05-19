@@ -1,49 +1,31 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { AdminUser } from "@/types/database";
-import { listUsers } from "@/services/adminService";
+import { useAdminUsersList } from "./useAdminUsersList";
 
 export function useAdminUsers() {
-    const [players, setPlayers] = useState<AdminUser[]>([]);
-    const [query, setQuery] = useState("");
-    const [creating, setCreating] = useState(false);
-    const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
-    const [error, setError] = useState<Error | null>(null);
+  const { data: players = [], error, isPending: isLoading } = useAdminUsersList();
+  const [query, setQuery] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
 
-    const fetchPlayers = useCallback(async () => {
-        try {
-            const data = await listUsers();
-            setPlayers(data);
-            setError(null);
-        } catch (e) {
-            setError(e instanceof Error ? e : new Error("Failed to load users"));
-        }
-    }, []);
+  const filtered = players.filter(
+    (p) =>
+      p.username.toLowerCase().includes(query.toLowerCase()) ||
+      `${p.name} ${p.last_name}`.toLowerCase().includes(query.toLowerCase())
+  );
 
-    const filtered = players.filter(
-        (p) =>
-            p.username.toLowerCase().includes(query.toLowerCase()) ||
-            `${p.name} ${p.last_name}`.toLowerCase().includes(query.toLowerCase())
-    );
-
-    const updateUsername = (id: string, username: string) => {
-        setPlayers((prev) =>
-            prev.map((p) => (p.id === id ? { ...p, username } : p))
-        );
-    };
-
-    return {
-        players,
-        filtered,
-        query,
-        setQuery,
-        creating,
-        setCreating,
-        editingUser,
-        setEditingUser,
-        fetchPlayers,
-        updateUsername,
-        error,
-    };
+  return {
+    players,
+    filtered,
+    query,
+    setQuery,
+    creating,
+    setCreating,
+    editingUser,
+    setEditingUser,
+    isLoading,
+    error,
+  };
 }

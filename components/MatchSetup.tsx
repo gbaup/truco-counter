@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PublicUser } from "@/types/database";
-import { getUsers } from "@/services/userService";
+import { useUsers } from "@/hooks/useUsers";
 import { useTranslation } from "react-i18next";
 import Logo from "@/components/ui/Logo";
 import MenuIcon from "@/components/ui/MenuIcon";
@@ -59,17 +59,12 @@ const TEAM_CONFIGS: Omit<TeamConfig, "label" | "list">[] = [
 ];
 
 export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: MatchSetupProps) {
-  const [users, setUsers] = useState<PublicUser[]>([]);
+  const { data: users = [], isPending: loading } = useUsers();
   const [team1, setTeam1] = useState<PublicUser[]>([]);
   const [team2, setTeam2] = useState<PublicUser[]>([]);
   const [maxPoints, setMaxPoints] = useState<number>(40);
-  const [loading, setLoading] = useState(true);
   const [activeTeam, setActiveTeam] = useState<1 | 2 | null>(null);
   const { t } = useTranslation();
-
-  useEffect(() => {
-    getUsers().then((data) => { setUsers(data); setLoading(false); });
-  }, []);
 
   const getList = (team: 1 | 2) => (team === 1 ? team1 : team2);
   const setList = (team: 1 | 2, list: PublicUser[]) =>

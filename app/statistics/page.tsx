@@ -1,45 +1,36 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 import SideDrawer from "@/components/SideDrawer";
 import PaperPanel from "@/components/ui/PaperPanel";
 import Suit from "@/components/ui/Suit";
 import Logo from "@/components/ui/Logo";
 import { UserStats } from "@/types/database";
-import { getUserStats } from "@/services/userService";
-import { getMe } from "@/services/auth";
 import MenuIcon from "@/components/ui/MenuIcon";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { UserRole } from "@/types/auth";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useUserStats } from "@/hooks/useUserStats";
+import { queryKeys } from "@/hooks/queryKeys";
 
 type Tab = "glicko" | "elo" | "classic";
 
 export default function StatisticsPage() {
   const { t } = useTranslation();
-  const [userStats, setUserStats] = useState<UserStats[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: userStats = [], isPending: statsLoading } = useUserStats();
+  const { data: me, isPending: meLoading } = useCurrentUser();
   const [tab, setTab] = useState<Tab>("glicko");
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [currentUserRole, setCurrentUserRole] = useState<UserRole | undefined>(undefined);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<"idle" | "success" | "error">("idle");
 
-  useEffect(() => {
-    async function fetchData() {
-      const [stats, me] = await Promise.all([getUserStats(), getMe()]);
-      setUserStats(stats);
-      if (me) {
-        setCurrentUserId(me.userId);
-        setCurrentUserRole(me.role);
-      }
-      setLoading(false);
-    }
-    fetchData();
-  }, []);
+  if (statsLoading || meLoading) return <LoadingScreen />;
 
-  if (loading) return <LoadingScreen />;
+  const currentUserId = me?.userId ?? null;
+  const currentUserRole = me?.role as UserRole | undefined;
 
   const glickoScore = (s: { rating: number; rating_deviation: number }) =>
     s.rating - s.rating_deviation;
@@ -77,8 +68,7 @@ export default function StatisticsPage() {
     try {
       const res = await fetch("/api/admin/sync-ratings", { method: "POST" });
       if (!res.ok) throw new Error("Failed");
-      const [stats] = await Promise.all([getUserStats()]);
-      setUserStats(stats);
+      queryClient.invalidateQueries({ queryKey: queryKeys.userStats });
       setSyncStatus("success");
     } catch {
       setSyncStatus("error");

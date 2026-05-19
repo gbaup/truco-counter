@@ -9,19 +9,18 @@ import SideDrawer from "@/components/SideDrawer";
 import WinnerModal from "@/components/WinnerModal";
 import ConfirmationExitModal from "@/components/ConfirmationExitModal";
 import { useMatch } from "@/hooks/useMatch";
-import { getMe } from "@/services/auth";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { PublicUser } from "@/types/database";
 
 export default function Home() {
   const router = useRouter();
+  const { data: me } = useCurrentUser();
 
   useEffect(() => {
-    getMe().then((me) => {
-      if (me && !me.passwordChanged) {
-        router.replace("/change-password");
-      }
-    });
-  }, [router]);
+    if (me && !me.passwordChanged) {
+      router.replace("/change-password");
+    }
+  }, [me, router]);
 
   const {
     matchState,

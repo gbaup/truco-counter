@@ -5,49 +5,33 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import SideDrawer from "@/components/SideDrawer";
-import { getMe } from "@/services/auth";
-import { getUserStats } from "@/services/userService";
-import { getMatches } from "@/services/matchService";
-import { UserStats } from "@/types/database";
-import { MatchHistoryItem } from "@/types/match";
 import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
 import MenuIcon from "@/components/ui/MenuIcon";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useUserStats } from "@/hooks/useUserStats";
+import { useMatches } from "@/hooks/useMatches";
+
 export default function ProfilePage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<UserStats | null>(null);
-  const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
-  const [username, setUsername] = useState("");
-  const [userId, setUserId] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const { data: me, isPending: meLoading } = useCurrentUser();
+  const { data: allStats = [], isPending: statsLoading } = useUserStats();
+  const { data: matches = [], isPending: matchesLoading } = useMatches(me?.userId);
+
   useEffect(() => {
-    async function fetchData() {
-      const me = await getMe();
-      if (!me) {
-        router.replace("/login");
-        return;
-      }
-      setUsername(me.username);
-      setUserId(me.userId);
+    if (!meLoading && !me) router.replace("/login");
+  }, [me, meLoading, router]);
 
-      const [allStats, userMatches] = await Promise.all([
-        getUserStats(),
-        getMatches(me.userId),
-      ]);
+  if (meLoading || statsLoading || matchesLoading) return <LoadingScreen />;
+  if (!me) return null;
 
-      const myStats = allStats.find((s) => s.user_id === me.userId) ?? null;
-      setStats(myStats);
-      setMatches(userMatches);
-      setLoading(false);
-    }
-    fetchData();
-  }, [router, t]);
-
-  if (loading) return <LoadingScreen />;
+  const userId = me.userId;
+  const username = me.username;
+  const stats = allStats.find((s) => s.user_id === userId) ?? null;
 
   const winRate =
     stats && stats.wins + stats.losses > 0

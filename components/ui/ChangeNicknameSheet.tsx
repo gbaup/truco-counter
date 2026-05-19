@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import BottomSheet from "@/components/ui/BottomSheet";
-import { updateMyUsername, updateUserUsername } from "@/services/userService";
+import { useUpdateMyUsername } from "@/hooks/useUpdateMyUsername";
+import { useUpdateUserUsername } from "@/hooks/useUpdateUserUsername";
 import { toast } from "sonner";
 import { USERNAME_RE } from "@/lib/validators";
 
@@ -24,19 +25,21 @@ export default function ChangeNicknameSheet({
 }: ChangeNicknameSheetProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState(currentNickname);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const updateMine = useUpdateMyUsername();
+  const updateOther = useUpdateUserUsername();
 
   const isAdminFlow = !!targetUser;
   const hasChanged = draft !== currentNickname;
   const isValid = USERNAME_RE.test(draft);
   const showError = !!error || (hasChanged && !isValid);
+  const saving = updateMine.isPending || updateOther.isPending;
 
   useEffect(() => {
-    if (open) {
-      setDraft(currentNickname);
-      setError(null);
-    }
+    if (!open) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDraft(currentNickname);
+    setError(null);
   }, [open, currentNickname]);
 
   async function handleSubmit() {
@@ -44,13 +47,12 @@ export default function ChangeNicknameSheet({
       setError(t("nickname.hint"));
       return;
     }
-    setSaving(true);
     setError(null);
     try {
       if (targetUser) {
-        await updateUserUsername(targetUser.id, draft);
+        await updateOther.mutateAsync({ userId: targetUser.id, username: draft });
       } else {
-        await updateMyUsername(draft);
+        await updateMine.mutateAsync(draft);
       }
       toast.success(t("nickname.savedToast", { name: draft }));
       onSaved(draft);
@@ -61,8 +63,6 @@ export default function ChangeNicknameSheet({
       } else {
         setError(t("common.errorTryAgain"));
       }
-    } finally {
-      setSaving(false);
     }
   }
 
