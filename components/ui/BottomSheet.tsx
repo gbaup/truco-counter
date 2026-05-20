@@ -107,7 +107,10 @@ export default function BottomSheet({
           </h2>
         </div>
 
-        <div className={twMerge(scrollable ? "overflow-y-auto flex-1" : "", onSubmit ? "mb-3.5" : "pb-4")}>
+        <div
+          className={twMerge(scrollable ? "overflow-y-auto flex-1 [&::-webkit-scrollbar]:hidden" : "", onSubmit ? "mb-3.5" : "pb-4")}
+          style={scrollable ? { scrollbarWidth: "none" } : undefined}
+        >
           {children}
         </div>
 
