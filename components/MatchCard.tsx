@@ -5,7 +5,36 @@ import { twMerge } from "tailwind-merge";
 import { MatchHistoryItem } from "@/types/match";
 import { formatTeamNames } from "@/lib/domain/match";
 
-export default function MatchCard({ match }: { match: MatchHistoryItem }) {
+function HighlightedNames({
+  names,
+  highlight,
+  className,
+}: {
+  names: string;
+  highlight?: string | null;
+  className?: string;
+}) {
+  if (!highlight || !names) return <span className={className}>{names || "—"}</span>;
+  const parts = names.split(" · ");
+  return (
+    <span className={className}>
+      {parts.map((name, i) => (
+        <span key={i}>
+          {i > 0 && " · "}
+          <span className={name === highlight ? "text-us" : undefined}>{name}</span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+export default function MatchCard({
+  match,
+  highlightPlayer,
+}: {
+  match: MatchHistoryItem;
+  highlightPlayer?: string | null;
+}) {
   const [expanded, setExpanded] = useState(false);
 
   const won = match.winner_team === 1;
@@ -24,12 +53,17 @@ export default function MatchCard({ match }: { match: MatchHistoryItem }) {
     >
       {/* Team names */}
       <div className="flex-1 min-w-0 flex flex-col gap-1 py-0.5">
-        <p className="text-text font-semibold text-[13px] capitalize truncate">{team1Names || "—"}</p>
+        <HighlightedNames
+          names={team1Names}
+          highlight={highlightPlayer}
+          className="text-text font-semibold text-[13px] capitalize truncate block"
+        />
         <p
           className="text-caption-italic text-text-dim capitalize truncate"
           style={{ fontSize: 12 }}
         >
-          VS {team2Names || "—"}
+          VS{" "}
+          <HighlightedNames names={team2Names} highlight={highlightPlayer} />
         </p>
 
         {/* Rating deltas (expanded) */}

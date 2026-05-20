@@ -85,6 +85,7 @@ function HistoryPageContent() {
       <main className="px-5 pb-8">
         <MatchList
           matches={filteredMatches}
+          highlightPlayer={filter}
           emptyMessage={
             filter
               ? t("matchHistory.noFilteredMatches")
