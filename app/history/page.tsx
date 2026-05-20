@@ -2,7 +2,7 @@
 
 import { useMemo, useState, Suspense } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import SideDrawer from "@/components/SideDrawer";
 import MatchList from "@/components/MatchList";
 import PlayerFilterPicker, { RosterEntry } from "@/components/ui/PlayerFilterPicker";
@@ -21,12 +21,21 @@ export default function HistoryPage() {
 
 function HistoryPageContent() {
   const { t } = useTranslation();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { data: matches = [], isPending } = useMatches();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [filter, setFilter] = useState<string | null>(
-    searchParams.get("player") ?? null
-  );
+  const filter = searchParams.get("player");
+
+  function handleFilterChange(player: string | null) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (player) {
+      params.set("player", player);
+    } else {
+      params.delete("player");
+    }
+    router.replace(`/history${params.size > 0 ? `?${params}` : ""}`);
+  }
 
   const roster = useMemo<RosterEntry[]>(() => {
     const counts = new Map<string, number>();
@@ -79,7 +88,7 @@ function HistoryPageContent() {
         filter={filter}
         matchCount={filteredMatches.length}
         totalMatches={matches.length}
-        onFilterChange={setFilter}
+        onFilterChange={handleFilterChange}
       />
 
       <main className="px-5 pb-8">

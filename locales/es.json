@@ -151,7 +151,11 @@
         "filterPickerTitle": "elegir jugador",
         "filterApply": "Aplicar",
         "filterStats": "{{count}} partidas · {{players}} jugadores",
-        "noFilteredMatches": "No hay partidas con ese jugador"
+        "noFilteredMatches": "No hay partidas con ese jugador",
+        "matchCount_one": "{{count}} partida",
+        "matchCount_other": "{{count}} partidas",
+        "removeFilter": "Quitar filtro",
+        "changeFilter": "cambiar"
     },
     "profile": {
         "rating": "Rating",
