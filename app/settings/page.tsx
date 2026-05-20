@@ -14,6 +14,7 @@ import SettingsRow from "@/components/settings/SettingsRow";
 import { fetchJSON } from "@/lib/fetchJSON";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useUnlinkGoogle } from "@/hooks/useUnlinkGoogle";
+import { useUpdateMyUsername } from "@/hooks/useUpdateMyUsername";
 
 function getPref(key: string, defaultValue: boolean): boolean {
   if (typeof window === "undefined") return defaultValue;
@@ -31,6 +32,7 @@ export default function SettingsPage() {
 
   const { data: me, isPending: meLoading } = useCurrentUser();
   const unlinkMutation = useUnlinkGoogle();
+  const updateMine = useUpdateMyUsername();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -246,6 +248,9 @@ export default function SettingsPage() {
         key={nicknameSheetOpen ? "open" : "closed"}
         open={nicknameSheetOpen}
         currentNickname={username}
+        overline={t("nickname.overline.self")}
+        headline={t("nickname.headline.self")}
+        onSave={(draft) => updateMine.mutateAsync(draft)}
         onClose={() => setNicknameSheetOpen(false)}
         onSaved={() => setNicknameSheetOpen(false)}
       />
@@ -256,10 +261,12 @@ export default function SettingsPage() {
         onClose={() => setPasswordSheetOpen(false)}
         overline={t("settings.password.overline")}
         headline={t("settings.password.headline")}
-        submitLabel={t("common.save")}
-        submitDisabled={!currentPwd || !newPwd || !confirmPwd}
-        saving={changingPwd}
-        onSubmit={handleChangePassword}
+        submit={{
+          label: t("common.save"),
+          onSubmit: handleChangePassword,
+          disabled: !currentPwd || !newPwd || !confirmPwd,
+          saving: changingPwd,
+        }}
       >
         <div className="flex flex-col gap-2.5">
           <PasswordInput

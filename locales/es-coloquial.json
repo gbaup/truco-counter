@@ -145,7 +145,13 @@
     },
     "matchHistory": {
         "title": "Historial de Partidas",
-        "noMatches": "Todavía no hay historial, rompan el hielo"
+        "noMatches": "Todavía no hay historial, rompan el hielo",
+        "filterOverline": "filtrar",
+        "filterHeadline": "por jugador",
+        "filterPickerTitle": "elegir jugador",
+        "filterApply": "Dale",
+        "filterStats": "{{count}} partidas · {{players}} jugadores",
+        "noFilteredMatches": "Ese jugador no tiene partidas registradas"
     },
     "profile": {
         "rating": "Rating",

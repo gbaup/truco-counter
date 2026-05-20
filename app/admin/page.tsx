@@ -14,6 +14,7 @@ import ChangeNicknameSheet from "@/components/ui/ChangeNicknameSheet";
 import CreatePlayerSheet from "@/components/ui/CreatePlayerSheet";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
+import { useUpdateUserUsername } from "@/hooks/useUpdateUserUsername";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function AdminPage() {
@@ -22,6 +23,7 @@ export default function AdminPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { data: me, isPending: meLoading } = useCurrentUser();
+  const updateOther = useUpdateUserUsername();
   const {
     players,
     filtered,
@@ -100,11 +102,9 @@ export default function AdminPage() {
         key={editingUser?.id ?? "no-user"}
         open={!!editingUser}
         currentNickname={editingUser?.username ?? ""}
-        targetUser={
-          editingUser
-            ? { id: editingUser.id, displayName: editingUser.username }
-            : undefined
-        }
+        overline={t("nickname.overline.admin", { name: editingUser?.username ?? "" })}
+        headline={t("nickname.headline.admin")}
+        onSave={(draft) => updateOther.mutateAsync({ userId: editingUser!.id, username: draft })}
         onClose={() => setEditingUser(null)}
         onSaved={() => setEditingUser(null)}
       />

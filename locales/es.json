@@ -145,7 +145,13 @@
     },
     "matchHistory": {
         "title": "Historial de Partidas",
-        "noMatches": "No hay partidas registradas todavía"
+        "noMatches": "No hay partidas registradas todavía",
+        "filterOverline": "filtrar",
+        "filterHeadline": "por jugador",
+        "filterPickerTitle": "elegir jugador",
+        "filterApply": "Aplicar",
+        "filterStats": "{{count}} partidas · {{players}} jugadores",
+        "noFilteredMatches": "No hay partidas con ese jugador"
     },
     "profile": {
         "rating": "Rating",

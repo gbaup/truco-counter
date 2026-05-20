@@ -1,20 +1,47 @@
 "use client";
 
 import { useState } from "react";
+import { twMerge } from "tailwind-merge";
 import { MatchHistoryItem } from "@/types/match";
-import Suit from "@/components/ui/Suit";
+import { formatTeamNames } from "@/lib/domain/match";
 
-export default function MatchCard({ match }: { match: MatchHistoryItem }) {
+function HighlightedNames({
+  names,
+  highlight,
+  className,
+}: {
+  names: string;
+  highlight?: string | null;
+  className?: string;
+}) {
+  if (!highlight || !names) return <span className={className}>{names || "—"}</span>;
+  const parts = names.split(" · ");
+  return (
+    <span className={className}>
+      {parts.map((name, i) => (
+        <span key={i}>
+          {i > 0 && " · "}
+          <span className={name === highlight ? "text-us" : undefined}>{name}</span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+export default function MatchCard({
+  match,
+  highlightPlayer,
+}: {
+  match: MatchHistoryItem;
+  highlightPlayer?: string | null;
+}) {
   const [expanded, setExpanded] = useState(false);
 
   const won = match.winner_team === 1;
   const decided = match.winner_team !== null;
 
-  const team1 = match.match_participants.filter((p) => p.team === 1);
-  const team2 = match.match_participants.filter((p) => p.team === 2);
-
-  const team1Names = team1.map((p) => p.users?.username).filter(Boolean).join(" · ");
-  const team2Names = team2.map((p) => p.users?.username).filter(Boolean).join(" · ");
+  const team1Names = formatTeamNames(match.match_participants, 1);
+  const team2Names = formatTeamNames(match.match_participants, 2);
 
   const winScore = won ? match.score_team_1 : match.score_team_2;
   const loseScore = won ? match.score_team_2 : match.score_team_1;
@@ -24,54 +51,19 @@ export default function MatchCard({ match }: { match: MatchHistoryItem }) {
       className="bg-surface rounded-lg border border-border shadow-card p-3 flex items-start gap-3 cursor-pointer active:bg-surface-elevated transition-colors"
       onClick={() => setExpanded((v) => !v)}
     >
-      {/* Mini Spanish card */}
-      <div
-        className="shrink-0 flex flex-col items-center justify-between py-1 px-0.5"
-        style={{
-          width: 32,
-          height: 40,
-          background: "var(--color-paper-ink)",
-          borderRadius: "var(--radius-xs)",
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "var(--font-crimson-pro), serif",
-            fontWeight: 800,
-            fontSize: 13,
-            color: "var(--color-paper)",
-            lineHeight: 1,
-          }}
-        >
-          {decided ? (won ? "G" : "P") : "—"}
-        </span>
-        <Suit
-          kind={decided ? (won ? "espada" : "basto") : "copa"}
-          size={12}
-          color="var(--color-paper)"
-        />
-        <span
-          className="rotate-180"
-          style={{
-            fontFamily: "var(--font-crimson-pro), serif",
-            fontWeight: 800,
-            fontSize: 13,
-            color: "var(--color-paper)",
-            lineHeight: 1,
-          }}
-        >
-          {decided ? (won ? "G" : "P") : "—"}
-        </span>
-      </div>
-
       {/* Team names */}
-      <div className="flex-1 min-w-0 py-0.5">
-        <p className="text-text font-semibold text-[13px] truncate">{team1Names || "—"}</p>
+      <div className="flex-1 min-w-0 flex flex-col gap-1 py-0.5">
+        <HighlightedNames
+          names={team1Names}
+          highlight={highlightPlayer}
+          className="text-text font-semibold text-[13px] capitalize truncate block"
+        />
         <p
-          className="text-caption-italic text-text-dim truncate"
+          className="text-caption-italic text-text-dim capitalize truncate"
           style={{ fontSize: 12 }}
         >
-          vs {team2Names || "—"}
+          VS{" "}
+          <HighlightedNames names={team2Names} highlight={highlightPlayer} />
         </p>
 
         {/* Rating deltas (expanded) */}
@@ -86,20 +78,20 @@ export default function MatchCard({ match }: { match: MatchHistoryItem }) {
                   </span>
                   {p.rating_change != null && (
                     <span
-                      className={[
+                      className={twMerge(
                         "text-[11px] font-bold",
                         p.rating_change >= 0 ? "text-them" : "text-danger",
-                      ].join(" ")}
+                      )}
                     >
                       {p.rating_change >= 0 ? `+${Math.round(p.rating_change)}` : Math.round(p.rating_change)}
                     </span>
                   )}
                   {p.elo_rating_change != null && (
                     <span
-                      className={[
+                      className={twMerge(
                         "text-[11px]",
                         p.elo_rating_change >= 0 ? "text-them/70" : "text-danger/70",
-                      ].join(" ")}
+                      )}
                     >
                       elo {p.elo_rating_change >= 0 ? `+${Math.round(p.elo_rating_change)}` : Math.round(p.elo_rating_change)}
                     </span>
@@ -112,12 +104,12 @@ export default function MatchCard({ match }: { match: MatchHistoryItem }) {
       </div>
 
       {/* Score */}
-      <div className="shrink-0 text-right py-0.5">
+      <div className="shrink-0 text-right flex flex-col gap-1 py-0.5">
         <p
-          className={[
+          className={twMerge(
             "font-extrabold text-[17px] leading-none",
-            decided ? (won ? "text-them" : "text-danger") : "text-text",
-          ].join(" ")}
+            decided ? "text-them" : "text-text",
+          )}
           style={{ fontFamily: "var(--font-space-grotesk), system-ui" }}
         >
           {decided ? winScore : match.score_team_1}

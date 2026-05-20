@@ -1,3 +1,14 @@
+export function formatTeamNames(
+  participants: Array<{ team: number; users: { username: string } | null }>,
+  team: number
+): string {
+  return participants
+    .filter((p) => p.team === team)
+    .map((p) => p.users?.username)
+    .filter((u): u is string => !!u)
+    .join(" · ");
+}
+
 export function determineWinner(
     score1: number,
     score2: number,

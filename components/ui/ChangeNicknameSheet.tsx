@@ -3,37 +3,37 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import BottomSheet from "@/components/ui/BottomSheet";
-import { useUpdateMyUsername } from "@/hooks/useUpdateMyUsername";
-import { useUpdateUserUsername } from "@/hooks/useUpdateUserUsername";
 import { toast } from "sonner";
 import { USERNAME_RE } from "@/lib/validators";
+import { twMerge } from "tailwind-merge";
 
 interface ChangeNicknameSheetProps {
   open: boolean;
   currentNickname: string;
+  overline: string;
+  headline: string;
   onClose: () => void;
   onSaved: (newNickname: string) => void;
-  targetUser?: { id: string; displayName: string };
+  onSave: (draft: string) => Promise<unknown>;
 }
 
 export default function ChangeNicknameSheet({
   open,
   currentNickname,
+  overline,
+  headline,
   onClose,
   onSaved,
-  targetUser,
+  onSave,
 }: ChangeNicknameSheetProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState(currentNickname);
   const [error, setError] = useState<string | null>(null);
-  const updateMine = useUpdateMyUsername();
-  const updateOther = useUpdateUserUsername();
+  const [saving, setSaving] = useState(false);
 
-  const isAdminFlow = !!targetUser;
   const hasChanged = draft !== currentNickname;
   const isValid = USERNAME_RE.test(draft);
   const showError = !!error || (hasChanged && !isValid);
-  const saving = updateMine.isPending || updateOther.isPending;
 
   async function handleSubmit() {
     if (!isValid) {
@@ -41,12 +41,9 @@ export default function ChangeNicknameSheet({
       return;
     }
     setError(null);
+    setSaving(true);
     try {
-      if (targetUser) {
-        await updateOther.mutateAsync({ userId: targetUser.id, username: draft });
-      } else {
-        await updateMine.mutateAsync(draft);
-      }
+      await onSave(draft);
       toast.success(t("nickname.savedToast", { name: draft }));
       onSaved(draft);
       onClose();
@@ -56,6 +53,8 @@ export default function ChangeNicknameSheet({
       } else {
         setError(t("common.errorTryAgain"));
       }
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -63,24 +62,20 @@ export default function ChangeNicknameSheet({
     <BottomSheet
       open={open}
       onClose={onClose}
-      overline={
-        isAdminFlow
-          ? t("nickname.overline.admin", { name: targetUser!.displayName })
-          : t("nickname.overline.self")
-      }
-      headline={
-        isAdminFlow ? t("nickname.headline.admin") : t("nickname.headline.self")
-      }
-      submitLabel={t("common.save")}
-      submitDisabled={!isValid || !hasChanged}
-      saving={saving}
-      onSubmit={handleSubmit}
+      overline={overline}
+      headline={headline}
+      submit={{
+        label: t("common.save"),
+        onSubmit: handleSubmit,
+        disabled: !isValid || !hasChanged,
+        saving,
+      }}
     >
       <div
-        className={[
+        className={twMerge(
           "flex items-center gap-2.5 rounded-md border bg-background px-4 py-3.5 transition-colors",
           showError ? "border-danger" : "border-us/40",
-        ].join(" ")}
+        )}
       >
         <span className="text-base font-semibold text-text-mute">@</span>
         <input
@@ -95,20 +90,20 @@ export default function ChangeNicknameSheet({
           placeholder="tu apodo"
         />
         <span
-          className={[
+          className={twMerge(
             "font-display text-[11px] font-semibold",
             draft.length > 18 ? "text-warning" : "text-text-mute",
-          ].join(" ")}
+          )}
         >
           {draft.length}/20
         </span>
       </div>
 
       <p
-        className={[
+        className={twMerge(
           "mt-2 font-serif text-[11px] italic",
           showError ? "text-danger" : "text-text-mute",
-        ].join(" ")}
+        )}
       >
         {error ?? t("nickname.hint")}
       </p>

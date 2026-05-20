@@ -35,9 +35,11 @@ function groupBySessions(matches: MatchHistoryItem[]): { label: string; matches:
 export default function MatchList({
   matches,
   emptyMessage,
+  highlightPlayer,
 }: {
   matches: MatchHistoryItem[];
   emptyMessage: string;
+  highlightPlayer?: string | null;
 }) {
   if (matches.length === 0) {
     return (
@@ -69,7 +71,7 @@ export default function MatchList({
 
           <div className="flex flex-col gap-2">
             {session.matches.map((match) => (
-              <MatchCard key={match.id} match={match} />
+              <MatchCard key={match.id} match={match} highlightPlayer={highlightPlayer} />
             ))}
           </div>
         </div>

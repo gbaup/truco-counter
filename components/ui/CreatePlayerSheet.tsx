@@ -8,6 +8,7 @@ import { useCreatePlayer } from "@/hooks/useCreatePlayer";
 import { toast } from "sonner";
 import { USERNAME_RE, NAME_RE } from "@/lib/validators";
 import { INITIAL_USER_PASSWORD } from "@/lib/constants";
+import { twMerge } from "tailwind-merge";
 
 interface CreatePlayerSheetProps {
   open: boolean;
@@ -54,10 +55,12 @@ export default function CreatePlayerSheet({
       onClose={onClose}
       overline={t("create.overline")}
       headline={t("create.headline")}
-      submitLabel={t("create.submit")}
-      submitDisabled={!canSubmit}
-      saving={saving}
-      onSubmit={handleSubmit}
+      submit={{
+        label: t("create.submit"),
+        onSubmit: handleSubmit,
+        disabled: !canSubmit,
+        saving,
+      }}
     >
       {/* Live preview */}
       <div className="mb-4 flex items-center gap-3 rounded-lg bg-gradient-to-br from-paper to-paper-shade px-3.5 py-3 shadow-card">
@@ -159,12 +162,12 @@ function FieldInput({
   return (
     <div>
       <div
-        className={[
+        className={twMerge(
           "rounded-md border bg-background px-4 py-2.5",
           error
             ? "border-danger"
             : "border-border focus-within:border-us/60",
-        ].join(" ")}
+        )}
       >
         <label className="block font-serif text-[10px] italic tracking-[0.1em] text-text-mute">
           {label}
