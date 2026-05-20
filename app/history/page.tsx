@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SideDrawer from "@/components/SideDrawer";
 import MatchList from "@/components/MatchList";
+import PlayerFilterPicker, { RosterEntry } from "@/components/ui/PlayerFilterPicker";
 import Logo from "@/components/ui/Logo";
 import MenuIcon from "@/components/ui/MenuIcon";
 import LoadingScreen from "@/components/ui/LoadingScreen";
@@ -13,6 +14,27 @@ export default function HistoryPage() {
   const { t } = useTranslation();
   const { data: matches = [], isPending } = useMatches();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [filter, setFilter] = useState<string | null>(null);
+
+  const roster = useMemo<RosterEntry[]>(() => {
+    const counts = new Map<string, number>();
+    for (const m of matches) {
+      for (const p of m.match_participants) {
+        const name = p.users?.username;
+        if (name) counts.set(name, (counts.get(name) ?? 0) + 1);
+      }
+    }
+    return Array.from(counts.entries())
+      .map(([username, matchCount]) => ({ username, matchCount }))
+      .sort((a, b) => a.username.localeCompare(b.username));
+  }, [matches]);
+
+  const filteredMatches = useMemo(() => {
+    if (!filter) return matches;
+    return matches.filter((m) =>
+      m.match_participants.some((p) => p.users?.username === filter)
+    );
+  }, [matches, filter]);
 
   if (isPending) return <LoadingScreen />;
 
@@ -40,8 +62,23 @@ export default function HistoryPage() {
         </button>
       </div>
 
+      <PlayerFilterPicker
+        roster={roster}
+        filter={filter}
+        matchCount={filteredMatches.length}
+        totalMatches={matches.length}
+        onFilterChange={setFilter}
+      />
+
       <main className="px-5 pb-8">
-        <MatchList matches={matches} emptyMessage={t("matchHistory.noMatches")} />
+        <MatchList
+          matches={filteredMatches}
+          emptyMessage={
+            filter
+              ? t("matchHistory.noFilteredMatches")
+              : t("matchHistory.noMatches")
+          }
+        />
       </main>
     </div>
   );
