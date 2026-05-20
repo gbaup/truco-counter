@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { MatchHistoryItem } from "@/types/match";
+import { formatTeamNames } from "@/lib/domain/match";
 
 export default function MatchCard({ match }: { match: MatchHistoryItem }) {
   const [expanded, setExpanded] = useState(false);
@@ -10,11 +11,8 @@ export default function MatchCard({ match }: { match: MatchHistoryItem }) {
   const won = match.winner_team === 1;
   const decided = match.winner_team !== null;
 
-  const team1 = match.match_participants.filter((p) => p.team === 1);
-  const team2 = match.match_participants.filter((p) => p.team === 2);
-
-  const team1Names = team1.map((p) => p.users?.username).filter(Boolean).join(" · ");
-  const team2Names = team2.map((p) => p.users?.username).filter(Boolean).join(" · ");
+  const team1Names = formatTeamNames(match.match_participants, 1);
+  const team2Names = formatTeamNames(match.match_participants, 2);
 
   const winScore = won ? match.score_team_1 : match.score_team_2;
   const loseScore = won ? match.score_team_2 : match.score_team_1;

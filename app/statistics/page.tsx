@@ -14,6 +14,7 @@ import { UserRole } from "@/types/auth";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useUserStats } from "@/hooks/useUserStats";
 import { queryKeys } from "@/hooks/queryKeys";
+import { glickoScore, classicScore } from "@/lib/domain/ratings";
 import { twMerge } from "tailwind-merge";
 
 type Tab = "glicko" | "elo" | "classic";
@@ -33,18 +34,12 @@ export default function StatisticsPage() {
   const currentUserId = me?.userId ?? null;
   const currentUserRole = me?.role as UserRole | undefined;
 
-  const glickoScore = (s: { rating: number; rating_deviation: number }) =>
-    s.rating - s.rating_deviation;
-
-  const classicScore = (s: { wins: number; losses: number }) =>
-    s.wins * 2 + s.losses;
-
   const sorted =
     tab === "glicko"
-      ? [...userStats].sort((a, b) => glickoScore(b) - glickoScore(a))
+      ? [...userStats].sort((a, b) => glickoScore(b.rating, b.rating_deviation) - glickoScore(a.rating, a.rating_deviation))
       : tab === "elo"
         ? [...userStats].sort((a, b) => b.elo_rating - a.elo_rating)
-        : [...userStats].sort((a, b) => classicScore(b) - classicScore(a));
+        : [...userStats].sort((a, b) => classicScore(b.wins, b.losses) - classicScore(a.wins, a.losses));
 
   const top = sorted[0] ?? null;
 
@@ -56,9 +51,9 @@ export default function StatisticsPage() {
         : t("statistics.classicDescription");
 
   const displayScore = (s: UserStats) => {
-    if (tab === "glicko") return Math.round(glickoScore(s));
+    if (tab === "glicko") return Math.round(glickoScore(s.rating, s.rating_deviation));
     if (tab === "elo") return Math.round(s.elo_rating);
-    return classicScore(s);
+    return classicScore(s.wins, s.losses);
   };
 
   const ratingLabel = tab === "classic" ? "Pts" : "Rating";

@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import BottomSheet from "@/components/ui/BottomSheet";
 
+function formatMatchCount(n: number): string {
+  return `${n} ${n === 1 ? "partida" : "partidas"}`;
+}
+
 function initialsOf(name: string) {
   const parts = name.trim().split(/\s+/);
   return parts
@@ -86,7 +90,7 @@ export default function PlayerFilterPicker({
                 className="text-[11px] text-text-dim italic leading-tight mt-0.5"
                 style={{ fontFamily: "var(--font-crimson-pro), serif" }}
               >
-                {matchCount} {matchCount === 1 ? "partida" : "partidas"}
+                {formatMatchCount(matchCount)}
               </p>
             </div>
             <button
@@ -141,8 +145,7 @@ export default function PlayerFilterPicker({
                   className="text-text-dim text-[12px] italic shrink-0"
                   style={{ fontFamily: "var(--font-crimson-pro), serif" }}
                 >
-                  {entry.matchCount}{" "}
-                  {entry.matchCount === 1 ? "partida" : "partidas"}
+                  {formatMatchCount(entry.matchCount)}
                 </span>
               </button>
             </li>

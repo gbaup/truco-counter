@@ -55,10 +55,12 @@ export default function CreatePlayerSheet({
       onClose={onClose}
       overline={t("create.overline")}
       headline={t("create.headline")}
-      submitLabel={t("create.submit")}
-      submitDisabled={!canSubmit}
-      saving={saving}
-      onSubmit={handleSubmit}
+      submit={{
+        label: t("create.submit"),
+        onSubmit: handleSubmit,
+        disabled: !canSubmit,
+        saving,
+      }}
     >
       {/* Live preview */}
       <div className="mb-4 flex items-center gap-3 rounded-lg bg-gradient-to-br from-paper to-paper-shade px-3.5 py-3 shadow-card">

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import SideDrawer from "@/components/SideDrawer";
@@ -9,47 +8,20 @@ import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
 import MenuIcon from "@/components/ui/MenuIcon";
 import LoadingScreen from "@/components/ui/LoadingScreen";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useUserStats } from "@/hooks/useUserStats";
-import { useMatches } from "@/hooks/useMatches";
+import { useProfileData } from "@/hooks/useProfileData";
+import { formatTeamNames } from "@/lib/domain/match";
 import { twMerge } from "tailwind-merge";
 
 export default function ProfilePage() {
   const { t } = useTranslation();
-  const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const profile = useProfileData();
 
-  const { data: me, isPending: meLoading } = useCurrentUser();
-  const { data: allStats = [], isPending: statsLoading } = useUserStats();
-  const { data: matches = [], isPending: matchesLoading } = useMatches(me?.userId);
+  if (profile.isLoading) return <LoadingScreen />;
+  if (!profile.me) return null;
 
-  useEffect(() => {
-    if (!meLoading && !me) router.replace("/login");
-  }, [me, meLoading, router]);
-
-  if (meLoading || statsLoading || matchesLoading) return <LoadingScreen />;
-  if (!me) return null;
-
-  const userId = me.userId;
-  const username = me.username;
-  const stats = allStats.find((s) => s.user_id === userId) ?? null;
-
-  const winRate =
-    stats && stats.wins + stats.losses > 0
-      ? Math.round((stats.wins / (stats.wins + stats.losses)) * 100)
-      : 0;
-
-  // Current winning streak
-  let streak = 0;
-  for (const m of matches) {
-    const userTeam = m.match_participants.find((p) => p.user_id === userId)?.team;
-    if (m.winner_team !== null && m.winner_team === userTeam) {
-      streak++;
-    } else {
-      break;
-    }
-  }
-
+  const { me, stats, matches, winRate, streak } = profile;
+  const { userId, username } = me;
   const recentMatches = matches.slice(0, 3);
 
   return (
@@ -259,16 +231,9 @@ export default function ProfilePage() {
               )?.team;
               const won =
                 match.winner_team !== null && match.winner_team === userTeam;
-              const teamNames = (team: number) =>
-                match.match_participants
-                  .filter((p) => p.team === team)
-                  .map((p) => p.users?.username)
-                  .filter(Boolean)
-                  .join(" · ");
-
               const opponentTeam = userTeam === 1 ? 2 : 1;
-              const myTeamNames = userTeam ? teamNames(userTeam) : teamNames(1);
-              const theirTeamNames = userTeam ? teamNames(opponentTeam) : teamNames(2);
+              const myTeamNames = formatTeamNames(match.match_participants, userTeam ?? 1);
+              const theirTeamNames = formatTeamNames(match.match_participants, userTeam ? opponentTeam : 2);
               const myScore = userTeam === 2 ? match.score_team_2 : match.score_team_1;
               const theirScore = userTeam === 2 ? match.score_team_1 : match.score_team_2;
 

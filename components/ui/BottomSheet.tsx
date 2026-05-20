@@ -4,19 +4,23 @@ import { useEffect, useId } from "react";
 import { useTranslation } from "react-i18next";
 import { twMerge } from "tailwind-merge";
 
+export interface BottomSheetSubmit {
+  label: string;
+  onSubmit: () => void;
+  disabled?: boolean;
+  saving?: boolean;
+  savingLabel?: string;
+  cancelLabel?: string;
+}
+
 interface BottomSheetProps {
   open: boolean;
   onClose: () => void;
   overline?: string;
   headline: string;
   children: React.ReactNode;
-  submitLabel?: string;
-  cancelLabel?: string;
-  savingLabel?: string;
-  onSubmit?: () => void;
-  submitDisabled?: boolean;
-  saving?: boolean;
   scrollable?: boolean;
+  submit?: BottomSheetSubmit;
 }
 
 export default function BottomSheet({
@@ -25,18 +29,14 @@ export default function BottomSheet({
   overline,
   headline,
   children,
-  submitLabel,
-  cancelLabel,
-  savingLabel,
-  onSubmit,
-  submitDisabled,
-  saving,
   scrollable,
+  submit,
 }: BottomSheetProps) {
   const { t } = useTranslation();
   const headlineId = useId();
-  const cancelText = cancelLabel ?? t("common.cancel");
-  const savingText = savingLabel ?? t("common.saving");
+  const cancelText = submit?.cancelLabel ?? t("common.cancel");
+  const savingText = submit?.savingLabel ?? t("common.saving");
+
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -49,11 +49,11 @@ export default function BottomSheet({
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !saving) onClose();
+      if (e.key === "Escape" && !submit?.saving) onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, saving, onClose]);
+  }, [open, submit?.saving, onClose]);
 
   return (
     <div
@@ -65,7 +65,7 @@ export default function BottomSheet({
     >
       {/* Backdrop */}
       <div
-        onClick={saving ? undefined : onClose}
+        onClick={submit?.saving ? undefined : onClose}
         className={twMerge(
           "absolute inset-0 transition-opacity duration-200",
           "bg-[rgba(13,16,14,0.65)] backdrop-blur-[6px]",
@@ -90,7 +90,7 @@ export default function BottomSheet({
       >
         <div className="mx-auto mb-4 h-1 w-9 rounded-full bg-border" aria-hidden />
 
-        <div className={twMerge(onSubmit ? "mb-3.5 text-center" : "mb-2")}>
+        <div className={twMerge(submit ? "mb-3.5 text-center" : "mb-2")}>
           {overline && (
             <p className="font-serif text-[11px] italic tracking-[0.18em] text-text-mute">
               {overline}
@@ -108,18 +108,18 @@ export default function BottomSheet({
         </div>
 
         <div
-          className={twMerge(scrollable ? "overflow-y-auto flex-1 [&::-webkit-scrollbar]:hidden" : "", onSubmit ? "mb-3.5" : "pb-4")}
+          className={twMerge(scrollable ? "overflow-y-auto flex-1 [&::-webkit-scrollbar]:hidden" : "", submit ? "mb-3.5" : "pb-4")}
           style={scrollable ? { scrollbarWidth: "none" } : undefined}
         >
           {children}
         </div>
 
-        {onSubmit && (
+        {submit && (
           <div className="flex gap-2 pb-[30px]">
             <button
               type="button"
               onClick={onClose}
-              disabled={saving}
+              disabled={submit.saving}
               className={twMerge(
                 "flex-1 rounded-2xl border border-border bg-transparent",
                 "py-3.5 text-sm font-semibold text-text",
@@ -130,8 +130,8 @@ export default function BottomSheet({
             </button>
             <button
               type="button"
-              onClick={onSubmit}
-              disabled={submitDisabled || saving}
+              onClick={submit.onSubmit}
+              disabled={submit.disabled || submit.saving}
               className={twMerge(
                 "flex-[1.5] rounded-2xl bg-us py-3.5 text-sm font-bold text-white",
                 "shadow-[0_8px_20px_-10px_theme(colors.us)]",
@@ -139,7 +139,7 @@ export default function BottomSheet({
                 "active:scale-[0.98] transition-transform"
               )}
             >
-              {saving ? savingText : submitLabel}
+              {submit.saving ? savingText : submit.label}
             </button>
           </div>
         )}
