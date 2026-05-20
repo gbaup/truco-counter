@@ -4,10 +4,6 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import BottomSheet from "@/components/ui/BottomSheet";
 
-function formatMatchCount(n: number): string {
-  return `${n} ${n === 1 ? "partida" : "partidas"}`;
-}
-
 function initialsOf(name: string) {
   const parts = name.trim().split(/\s+/);
   return parts
@@ -90,18 +86,18 @@ export default function PlayerFilterPicker({
                 className="text-[11px] text-text-dim italic leading-tight mt-0.5"
                 style={{ fontFamily: "var(--font-crimson-pro), serif" }}
               >
-                {formatMatchCount(matchCount)}
+                {t("matchHistory.matchCount", { count: matchCount })}
               </p>
             </div>
             <button
               onClick={() => setSheetOpen(true)}
               className="text-us border border-us/40 text-[11px] font-semibold px-3 py-1 rounded-full"
             >
-              {t("settings.change").toLowerCase()}
+              {t("matchHistory.changeFilter")}
             </button>
             <button
               onClick={() => onFilterChange(null)}
-              aria-label="Quitar filtro"
+              aria-label={t("matchHistory.removeFilter")}
               className="text-text-dim p-1 flex items-center"
             >
               <svg
@@ -145,7 +141,7 @@ export default function PlayerFilterPicker({
                   className="text-text-dim text-[12px] italic shrink-0"
                   style={{ fontFamily: "var(--font-crimson-pro), serif" }}
                 >
-                  {formatMatchCount(entry.matchCount)}
+                  {t("matchHistory.matchCount", { count: entry.matchCount })}
                 </span>
               </button>
             </li>

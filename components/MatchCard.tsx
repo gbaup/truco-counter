@@ -45,6 +45,8 @@ export default function MatchCard({
 
   const winScore = won ? match.score_team_1 : match.score_team_2;
   const loseScore = won ? match.score_team_2 : match.score_team_1;
+  const topTeamNames = decided && !won ? team2Names : team1Names;
+  const bottomTeamNames = decided && !won ? team1Names : team2Names;
 
   return (
     <div
@@ -54,7 +56,7 @@ export default function MatchCard({
       {/* Team names */}
       <div className="flex-1 min-w-0 flex flex-col gap-1 py-0.5">
         <HighlightedNames
-          names={team1Names}
+          names={topTeamNames}
           highlight={highlightPlayer}
           className="text-text font-semibold text-[13px] capitalize truncate block"
         />
@@ -63,7 +65,7 @@ export default function MatchCard({
           style={{ fontSize: 12 }}
         >
           VS{" "}
-          <HighlightedNames names={team2Names} highlight={highlightPlayer} />
+          <HighlightedNames names={bottomTeamNames} highlight={highlightPlayer} />
         </p>
 
         {/* Rating deltas (expanded) */}

@@ -20,7 +20,7 @@ export function useProfileData(): ProfileData {
   const router = useRouter();
   const { data: me, isPending: meLoading } = useCurrentUser();
   const { data: allStats = [], isPending: statsLoading } = useUserStats();
-  const { data: matches = [], isPending: matchesLoading } = useMatches(me?.userId);
+  const { data: matches = [], isPending: matchesLoading } = useMatches(me?.userId, { enabled: !!me?.userId });
 
   useEffect(() => {
     if (!meLoading && !me) router.replace("/login");

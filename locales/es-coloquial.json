@@ -151,7 +151,11 @@
         "filterPickerTitle": "elegir jugador",
         "filterApply": "Dale",
         "filterStats": "{{count}} partidas · {{players}} jugadores",
-        "noFilteredMatches": "Ese jugador no tiene partidas registradas"
+        "noFilteredMatches": "Ese jugador no tiene partidas registradas",
+        "matchCount_one": "{{count}} partida",
+        "matchCount_other": "{{count}} partidas",
+        "removeFilter": "Quitar filtro",
+        "changeFilter": "cambiar"
     },
     "profile": {
         "rating": "Rating",
