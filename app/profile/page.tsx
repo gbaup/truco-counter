@@ -259,16 +259,18 @@ export default function ProfilePage() {
               )?.team;
               const won =
                 match.winner_team !== null && match.winner_team === userTeam;
-              const team1Names = match.match_participants
-                .filter((p) => p.team === 1)
-                .map((p) => p.users?.username)
-                .filter(Boolean)
-                .join(" · ");
-              const team2Names = match.match_participants
-                .filter((p) => p.team === 2)
-                .map((p) => p.users?.username)
-                .filter(Boolean)
-                .join(" · ");
+              const teamNames = (team: number) =>
+                match.match_participants
+                  .filter((p) => p.team === team)
+                  .map((p) => p.users?.username)
+                  .filter(Boolean)
+                  .join(" · ");
+
+              const opponentTeam = userTeam === 1 ? 2 : 1;
+              const myTeamNames = userTeam ? teamNames(userTeam) : teamNames(1);
+              const theirTeamNames = userTeam ? teamNames(opponentTeam) : teamNames(2);
+              const myScore = userTeam === 2 ? match.score_team_2 : match.score_team_1;
+              const theirScore = userTeam === 2 ? match.score_team_1 : match.score_team_2;
 
               return (
                 <div
@@ -296,10 +298,10 @@ export default function ProfilePage() {
                   {/* Team names */}
                   <div className="flex-1 min-w-0">
                     <p className="capitalize text-text font-semibold text-xs truncate">
-                      {team1Names}
+                      {myTeamNames}
                     </p>
                     <p className="capitalize text-caption-italic text-text-dim truncate" style={{ fontSize: 11 }}>
-                      VS {team2Names}
+                      VS {theirTeamNames}
                     </p>
                   </div>
 
@@ -310,7 +312,7 @@ export default function ProfilePage() {
                       won ? "text-them" : "text-danger",
                     )}
                   >
-                    {match.score_team_1}–{match.score_team_2}
+                    {myScore}–{theirScore}
                   </p>
                 </div>
               );
