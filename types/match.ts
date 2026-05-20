@@ -5,7 +5,7 @@ export interface MatchParticipantWithUser {
     team: number;
     rating_change: number | null;
     elo_rating_change: number | null;
-    users: { username: string } | null;
+    users: { username: string; name: string; last_name: string } | null;
 }
 
 export interface MatchHistoryItem {

@@ -3,17 +3,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import BottomSheet from "@/components/ui/BottomSheet";
-
-function initialsOf(name: string) {
-  const parts = name.trim().split(/\s+/);
-  return parts
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? "")
-    .join("");
-}
+import PlayerAvatar from "@/components/ui/PlayerAvatar";
 
 export interface RosterEntry {
   username: string;
+  name: string;
+  last_name: string;
   matchCount: number;
 }
 
@@ -75,9 +70,15 @@ export default function PlayerFilterPicker({
           </button>
         ) : (
           <div className="flex items-center gap-2.5 bg-us/10 border border-us/40 rounded-xl px-2 py-1.5">
-            <div className="w-8 h-8 rounded-full bg-us text-white flex items-center justify-center font-extrabold text-[11px] shrink-0">
-              {initialsOf(filter)}
-            </div>
+            {(() => {
+              const entry = roster.find((e) => e.username === filter);
+              return (
+                <PlayerAvatar
+                  name={entry?.name ?? filter}
+                  lastName={entry?.last_name}
+                />
+              );
+            })()}
             <div className="flex-1 min-w-0">
               <p className="text-[13px] font-bold text-text capitalize leading-none">
                 {filter}
@@ -131,9 +132,15 @@ export default function PlayerFilterPicker({
                 onClick={() => handleSelect(entry.username)}
                 className="w-full flex items-center gap-3.5 py-3.5 text-left active:opacity-70 transition-opacity"
               >
-                <div className="w-9 h-9 rounded-full bg-surface-elevated border border-border flex items-center justify-center font-bold text-[12px] text-text-dim shrink-0">
-                  {initialsOf(entry.username)}
-                </div>
+                <PlayerAvatar
+                  name={entry.name}
+                  lastName={entry.last_name}
+                  style={{
+                    border: "1px solid transparent",
+                    background:
+                      "linear-gradient(var(--color-surface-elevated), var(--color-surface-elevated)) padding-box, linear-gradient(135deg, var(--color-us), var(--color-them)) border-box",
+                  }}
+                />
                 <span className="flex-1 min-w-0 text-[16px] font-semibold text-text capitalize">
                   {entry.username}
                 </span>

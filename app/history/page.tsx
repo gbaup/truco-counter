@@ -38,16 +38,27 @@ function HistoryPageContent() {
   }
 
   const roster = useMemo<RosterEntry[]>(() => {
-    const counts = new Map<string, number>();
+    const map = new Map<string, RosterEntry>();
     for (const m of matches) {
       for (const p of m.match_participants) {
-        const name = p.users?.username;
-        if (name) counts.set(name, (counts.get(name) ?? 0) + 1);
+        const u = p.users;
+        if (!u) continue;
+        const entry = map.get(u.username);
+        if (entry) {
+          entry.matchCount += 1;
+        } else {
+          map.set(u.username, {
+            username: u.username,
+            name: u.name,
+            last_name: u.last_name,
+            matchCount: 1,
+          });
+        }
       }
     }
-    return Array.from(counts.entries())
-      .map(([username, matchCount]) => ({ username, matchCount }))
-      .sort((a, b) => a.username.localeCompare(b.username));
+    return Array.from(map.values()).sort((a, b) =>
+      a.username.localeCompare(b.username)
+    );
   }, [matches]);
 
   const filteredMatches = useMemo(() => {
