@@ -25,12 +25,15 @@ function HistoryPageContent() {
   const searchParams = useSearchParams();
   const { data: matches = [], isPending } = useMatches();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const filter = searchParams.get("player");
+  const filterParam = searchParams.get("player");
+  const selectedPlayers = useMemo(() => {
+    return filterParam ? filterParam.split(",").filter(Boolean) : [];
+  }, [filterParam]);
 
-  function handleFilterChange(player: string | null) {
+  function handleFilterChange(players: string[]) {
     const params = new URLSearchParams(searchParams.toString());
-    if (player) {
-      params.set("player", player);
+    if (players.length > 0) {
+      params.set("player", players.join(","));
     } else {
       params.delete("player");
     }
@@ -62,11 +65,19 @@ function HistoryPageContent() {
   }, [matches]);
 
   const filteredMatches = useMemo(() => {
-    if (!filter) return matches;
-    return matches.filter((m) =>
-      m.match_participants.some((p) => p.users?.username === filter)
-    );
-  }, [matches, filter]);
+    if (selectedPlayers.length === 0) return matches;
+    return matches.filter((m) => {
+      const participants = selectedPlayers.map((username) =>
+        m.match_participants.find((p) => p.users?.username === username)
+      );
+
+      if (participants.some((p) => !p)) return false;
+      if (selectedPlayers.length === 1) return true;
+
+      const firstTeam = participants[0]!.team;
+      return participants.every((p) => p!.team === firstTeam);
+    });
+  }, [matches, selectedPlayers]);
 
   if (isPending) return <LoadingScreen />;
 
@@ -96,7 +107,7 @@ function HistoryPageContent() {
 
       <PlayerFilterPicker
         roster={roster}
-        filter={filter}
+        selectedPlayers={selectedPlayers}
         matchCount={filteredMatches.length}
         totalMatches={matches.length}
         onFilterChange={handleFilterChange}
@@ -105,9 +116,9 @@ function HistoryPageContent() {
       <main className="px-5 pb-8">
         <MatchList
           matches={filteredMatches}
-          highlightPlayer={filter}
+          highlightPlayer={selectedPlayers}
           emptyMessage={
-            filter
+            selectedPlayers.length > 0
               ? t("matchHistory.noFilteredMatches")
               : t("matchHistory.noMatches")
           }

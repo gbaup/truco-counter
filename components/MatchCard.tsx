@@ -11,17 +11,18 @@ function HighlightedNames({
   className,
 }: {
   names: string;
-  highlight?: string | null;
+  highlight?: string | string[] | null;
   className?: string;
 }) {
   if (!highlight || !names) return <span className={className}>{names || "—"}</span>;
   const parts = names.split(" · ");
+  const highlightList = Array.isArray(highlight) ? highlight : [highlight];
   return (
     <span className={className}>
       {parts.map((name, i) => (
         <span key={i}>
           {i > 0 && " · "}
-          <span className={name === highlight ? "text-us" : undefined}>{name}</span>
+          <span className={highlightList.includes(name) ? "text-us" : undefined}>{name}</span>
         </span>
       ))}
     </span>
@@ -33,7 +34,7 @@ export default function MatchCard({
   highlightPlayer,
 }: {
   match: MatchHistoryItem;
-  highlightPlayer?: string | null;
+  highlightPlayer?: string | string[] | null;
 }) {
   const [expanded, setExpanded] = useState(false);
 

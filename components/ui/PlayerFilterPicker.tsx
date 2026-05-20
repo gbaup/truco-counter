@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { twMerge } from "tailwind-merge";
 import BottomSheet from "@/components/ui/BottomSheet";
 import PlayerAvatar from "@/components/ui/PlayerAvatar";
 
@@ -14,33 +15,45 @@ export interface RosterEntry {
 
 interface PlayerFilterPickerProps {
   roster: RosterEntry[];
-  filter: string | null;
+  selectedPlayers: string[];
   matchCount: number;
   totalMatches: number;
-  onFilterChange: (player: string | null) => void;
+  onFilterChange: (players: string[]) => void;
 }
 
 export default function PlayerFilterPicker({
   roster,
-  filter,
+  selectedPlayers,
   matchCount,
   totalMatches,
   onFilterChange,
 }: PlayerFilterPickerProps) {
   const { t } = useTranslation();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [tempSelected, setTempSelected] = useState<string[]>([]);
 
-  function handleSelect(username: string) {
-    onFilterChange(username);
-    setSheetOpen(false);
+  function handleOpenSheet() {
+    setTempSelected(selectedPlayers);
+    setSheetOpen(true);
+  }
+
+  function handleToggle(username: string) {
+    setTempSelected((prev) => {
+      if (prev.includes(username)) {
+        return prev.filter((p) => p !== username);
+      } else {
+        if (prev.length >= 3) return prev;
+        return [...prev, username];
+      }
+    });
   }
 
   return (
     <>
       <div className="px-5 pb-3">
-        {!filter ? (
+        {selectedPlayers.length === 0 ? (
           <button
-            onClick={() => setSheetOpen(true)}
+            onClick={handleOpenSheet}
             className="w-full flex items-center justify-between bg-surface border border-border rounded-xl px-3.5 py-2.5 text-text"
           >
             <span className="flex items-center gap-2 text-[13px] font-semibold">
@@ -69,19 +82,23 @@ export default function PlayerFilterPicker({
             </span>
           </button>
         ) : (
-          <div className="flex items-center gap-2.5 bg-us/10 border border-us/40 rounded-xl px-2 py-1.5">
-            {(() => {
-              const entry = roster.find((e) => e.username === filter);
-              return (
-                <PlayerAvatar
-                  name={entry?.name ?? filter}
-                  lastName={entry?.last_name}
-                />
-              );
-            })()}
+          <div className="flex items-center gap-2.5 bg-us/10 border border-us/40 rounded-xl px-2.5 py-1.5">
+            <div className="flex -space-x-2 shrink-0 pr-1">
+              {selectedPlayers.map((player) => {
+                const entry = roster.find((e) => e.username === player);
+                return (
+                  <PlayerAvatar
+                    key={player}
+                    name={entry?.name ?? player}
+                    lastName={entry?.last_name}
+                    className="border-2 border-background w-8 h-8 text-[11px]"
+                  />
+                );
+              })}
+            </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-bold text-text capitalize leading-none">
-                {filter}
+              <p className="text-[13px] font-bold text-text capitalize leading-none truncate">
+                {selectedPlayers.join(" + ")}
               </p>
               <p
                 className="text-[11px] text-text-dim italic leading-tight mt-0.5"
@@ -91,15 +108,15 @@ export default function PlayerFilterPicker({
               </p>
             </div>
             <button
-              onClick={() => setSheetOpen(true)}
-              className="text-us border border-us/40 text-[11px] font-semibold px-3 py-1 rounded-full"
+              onClick={handleOpenSheet}
+              className="text-us border border-us/40 text-[11px] font-semibold px-3 py-1 rounded-full shrink-0"
             >
               {t("matchHistory.changeFilter")}
             </button>
             <button
-              onClick={() => onFilterChange(null)}
+              onClick={() => onFilterChange([])}
               aria-label={t("matchHistory.removeFilter")}
-              className="text-text-dim p-1 flex items-center"
+              className="text-text-dim p-1 flex items-center shrink-0"
             >
               <svg
                 width="14"
@@ -123,36 +140,73 @@ export default function PlayerFilterPicker({
         onClose={() => setSheetOpen(false)}
         headline={t("matchHistory.filterPickerTitle")}
         scrollable
+        submit={{
+          label: t("matchHistory.filterApply"),
+          onSubmit: () => {
+            onFilterChange(tempSelected);
+            setSheetOpen(false);
+          },
+        }}
       >
         <ul>
-          {roster.map((entry, i) => (
-            <li key={entry.username}>
-              {i > 0 && <div className="h-px bg-border/50" />}
-              <button
-                onClick={() => handleSelect(entry.username)}
-                className="w-full flex items-center gap-3.5 py-3.5 text-left active:opacity-70 transition-opacity"
-              >
-                <PlayerAvatar
-                  name={entry.name}
-                  lastName={entry.last_name}
-                  style={{
-                    border: "1px solid transparent",
-                    background:
-                      "linear-gradient(var(--color-surface-elevated), var(--color-surface-elevated)) padding-box, linear-gradient(135deg, var(--color-us), var(--color-them)) border-box",
-                  }}
-                />
-                <span className="flex-1 min-w-0 text-[16px] font-semibold text-text capitalize">
-                  {entry.username}
-                </span>
-                <span
-                  className="text-text-dim text-[12px] italic shrink-0"
-                  style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+          {roster.map((entry, i) => {
+            const isSelected = tempSelected.includes(entry.username);
+            const isDisabled = tempSelected.length >= 3 && !isSelected;
+
+            return (
+              <li key={entry.username}>
+                {i > 0 && <div className="h-px bg-border/50" />}
+                <button
+                  onClick={() => handleToggle(entry.username)}
+                  disabled={isDisabled}
+                  className={twMerge(
+                    "w-full flex items-center gap-3.5 py-3.5 text-left transition-all",
+                    isDisabled ? "opacity-30 cursor-not-allowed" : "active:opacity-70"
+                  )}
                 >
-                  {t("matchHistory.matchCount", { count: entry.matchCount })}
-                </span>
-              </button>
-            </li>
-          ))}
+                  <PlayerAvatar
+                    name={entry.name}
+                    lastName={entry.last_name}
+                    style={{
+                      border: "1px solid transparent",
+                      background:
+                        "linear-gradient(var(--color-surface-elevated), var(--color-surface-elevated)) padding-box, linear-gradient(135deg, var(--color-us), var(--color-them)) border-box",
+                    }}
+                  />
+                  <span className="flex-1 min-w-0 text-[16px] font-semibold text-text capitalize">
+                    {entry.username}
+                  </span>
+                  <span
+                    className="text-text-dim text-[12px] italic shrink-0 mr-1.5"
+                    style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+                  >
+                    {t("matchHistory.matchCount", { count: entry.matchCount })}
+                  </span>
+                  <div
+                    className={twMerge(
+                      "w-5 h-5 rounded-full border flex items-center justify-center transition-all shrink-0",
+                      isSelected
+                        ? "bg-us border-us text-white"
+                        : "border-border bg-surface-elevated text-transparent"
+                    )}
+                  >
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                  </div>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </BottomSheet>
     </>
