@@ -7,6 +7,7 @@ import { useUpdateMyUsername } from "@/hooks/useUpdateMyUsername";
 import { useUpdateUserUsername } from "@/hooks/useUpdateUserUsername";
 import { toast } from "sonner";
 import { USERNAME_RE } from "@/lib/validators";
+import { twMerge } from "tailwind-merge";
 
 interface ChangeNicknameSheetProps {
   open: boolean;
@@ -77,10 +78,10 @@ export default function ChangeNicknameSheet({
       onSubmit={handleSubmit}
     >
       <div
-        className={[
+        className={twMerge(
           "flex items-center gap-2.5 rounded-md border bg-background px-4 py-3.5 transition-colors",
           showError ? "border-danger" : "border-us/40",
-        ].join(" ")}
+        )}
       >
         <span className="text-base font-semibold text-text-mute">@</span>
         <input
@@ -95,20 +96,20 @@ export default function ChangeNicknameSheet({
           placeholder="tu apodo"
         />
         <span
-          className={[
+          className={twMerge(
             "font-display text-[11px] font-semibold",
             draft.length > 18 ? "text-warning" : "text-text-mute",
-          ].join(" ")}
+          )}
         >
           {draft.length}/20
         </span>
       </div>
 
       <p
-        className={[
+        className={twMerge(
           "mt-2 font-serif text-[11px] italic",
           showError ? "text-danger" : "text-text-mute",
-        ].join(" ")}
+        )}
       >
         {error ?? t("nickname.hint")}
       </p>

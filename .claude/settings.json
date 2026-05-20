@@ -1,4 +1,13 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(gh pr view *)",
+      "Bash(gh repo view *)",
+      "Bash(gh api repos/*)",
+      "Bash(gh pr list --base main --state merged *)",
+      "Bash(find prisma/migrations -name \"migration.sql\" *)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {

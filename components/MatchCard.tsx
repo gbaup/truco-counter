@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { twMerge } from "tailwind-merge";
 import { MatchHistoryItem } from "@/types/match";
 import Suit from "@/components/ui/Suit";
 
@@ -66,12 +67,12 @@ export default function MatchCard({ match }: { match: MatchHistoryItem }) {
 
       {/* Team names */}
       <div className="flex-1 min-w-0 py-0.5">
-        <p className="text-text font-semibold text-[13px] truncate">{team1Names || "—"}</p>
+        <p className="text-text font-semibold text-[13px] capitalize truncate">{team1Names || "—"}</p>
         <p
-          className="text-caption-italic text-text-dim truncate"
+          className="text-caption-italic text-text-dim capitalize truncate"
           style={{ fontSize: 12 }}
         >
-          vs {team2Names || "—"}
+          VS {team2Names || "—"}
         </p>
 
         {/* Rating deltas (expanded) */}
@@ -86,20 +87,20 @@ export default function MatchCard({ match }: { match: MatchHistoryItem }) {
                   </span>
                   {p.rating_change != null && (
                     <span
-                      className={[
+                      className={twMerge(
                         "text-[11px] font-bold",
                         p.rating_change >= 0 ? "text-them" : "text-danger",
-                      ].join(" ")}
+                      )}
                     >
                       {p.rating_change >= 0 ? `+${Math.round(p.rating_change)}` : Math.round(p.rating_change)}
                     </span>
                   )}
                   {p.elo_rating_change != null && (
                     <span
-                      className={[
+                      className={twMerge(
                         "text-[11px]",
                         p.elo_rating_change >= 0 ? "text-them/70" : "text-danger/70",
-                      ].join(" ")}
+                      )}
                     >
                       elo {p.elo_rating_change >= 0 ? `+${Math.round(p.elo_rating_change)}` : Math.round(p.elo_rating_change)}
                     </span>
@@ -114,10 +115,10 @@ export default function MatchCard({ match }: { match: MatchHistoryItem }) {
       {/* Score */}
       <div className="shrink-0 text-right py-0.5">
         <p
-          className={[
+          className={twMerge(
             "font-extrabold text-[17px] leading-none",
-            decided ? (won ? "text-them" : "text-danger") : "text-text",
-          ].join(" ")}
+            decided ? "text-them" : "text-text",
+          )}
           style={{ fontFamily: "var(--font-space-grotesk), system-ui" }}
         >
           {decided ? winScore : match.score_team_1}

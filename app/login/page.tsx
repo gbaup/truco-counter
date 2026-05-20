@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import Suit from "@/components/ui/Suit";
 import Logo from "@/components/ui/Logo";
 import { toast } from "sonner";
+import { twMerge } from "tailwind-merge";
 
 function OAuthErrorToast() {
   const { t } = useTranslation();
@@ -127,10 +128,10 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="mt-10 w-full flex flex-col gap-2.5">
           <div
-            className={[
+            className={twMerge(
               "bg-surface rounded-lg px-4 py-3 border transition-colors",
               focused === "username" ? "border-us/50" : "border-border",
-            ].join(" ")}
+            )}
           >
             <label
               htmlFor="username"
@@ -153,10 +154,10 @@ export default function LoginPage() {
           </div>
 
           <div
-            className={[
+            className={twMerge(
               "bg-surface rounded-lg px-4 py-3 border transition-colors",
               focused === "password" ? "border-us/50" : "border-border",
-            ].join(" ")}
+            )}
           >
             <label
               htmlFor="password"

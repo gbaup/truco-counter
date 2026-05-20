@@ -8,6 +8,7 @@ import { useCreatePlayer } from "@/hooks/useCreatePlayer";
 import { toast } from "sonner";
 import { USERNAME_RE, NAME_RE } from "@/lib/validators";
 import { INITIAL_USER_PASSWORD } from "@/lib/constants";
+import { twMerge } from "tailwind-merge";
 
 interface CreatePlayerSheetProps {
   open: boolean;
@@ -159,12 +160,12 @@ function FieldInput({
   return (
     <div>
       <div
-        className={[
+        className={twMerge(
           "rounded-md border bg-background px-4 py-2.5",
           error
             ? "border-danger"
             : "border-border focus-within:border-us/60",
-        ].join(" ")}
+        )}
       >
         <label className="block font-serif text-[10px] italic tracking-[0.1em] text-text-mute">
           {label}

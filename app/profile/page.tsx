@@ -12,6 +12,7 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useUserStats } from "@/hooks/useUserStats";
 import { useMatches } from "@/hooks/useMatches";
+import { twMerge } from "tailwind-merge";
 
 export default function ProfilePage() {
   const { t } = useTranslation();
@@ -272,17 +273,17 @@ export default function ProfilePage() {
               return (
                 <div
                   key={match.id}
-                  className={[
+                  className={twMerge(
                     "flex items-center gap-2.5 px-3.5 py-2.5",
                     i < recentMatches.length - 1 ? "border-b border-border" : "",
-                  ].join(" ")}
+                  )}
                 >
                   {/* G / P mini card */}
                   <div
-                    className={[
+                    className={twMerge(
                       "w-8 h-8 rounded-[7px] flex items-center justify-center shrink-0",
                       won ? "bg-them/20 text-them" : "bg-danger/20 text-danger",
-                    ].join(" ")}
+                    )}
                     style={{
                       fontFamily: "var(--font-crimson-pro), serif",
                       fontWeight: 800,
@@ -304,10 +305,10 @@ export default function ProfilePage() {
 
                   {/* Score */}
                   <p
-                    className={[
+                    className={twMerge(
                       "font-display font-extrabold text-[17px] shrink-0",
                       won ? "text-them" : "text-danger",
-                    ].join(" ")}
+                    )}
                   >
                     {match.score_team_1}–{match.score_team_2}
                   </p>

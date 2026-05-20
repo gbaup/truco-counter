@@ -1,3 +1,5 @@
+import { twMerge } from "tailwind-merge";
+
 interface SettingsSectionProps {
   title: string;
   danger?: boolean;
@@ -13,10 +15,10 @@ export default function SettingsSection({ title, danger, children }: SettingsSec
         {title}
       </p>
       <div
-        className={[
+        className={twMerge(
           "overflow-hidden rounded-xl border",
           danger ? "border-danger/30" : "border-border",
-        ].join(" ")}
+        )}
       >
         {children}
       </div>

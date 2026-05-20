@@ -14,6 +14,7 @@ import { UserRole } from "@/types/auth";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useUserStats } from "@/hooks/useUserStats";
 import { queryKeys } from "@/hooks/queryKeys";
+import { twMerge } from "tailwind-merge";
 
 type Tab = "glicko" | "elo" | "classic";
 
@@ -111,12 +112,12 @@ export default function StatisticsPage() {
             <button
               key={t_}
               onClick={() => setTab(t_)}
-              className={[
+              className={twMerge(
                 "flex-1 py-2 rounded-sm text-sm font-semibold transition-colors",
                 tab === t_
                   ? "bg-us text-white"
                   : "text-text-dim hover:text-text",
-              ].join(" ")}
+              )}
               style={{ fontFamily: "var(--font-space-grotesk), system-ui" }}
             >
               {t_ === "glicko" ? "Glicko" : t_ === "elo" ? "Elo" : "Clásico"}
@@ -242,10 +243,10 @@ export default function StatisticsPage() {
           {sorted.map((s, i) => (
             <div
               key={s.user_id}
-              className={[
+              className={twMerge(
                 "grid items-center px-3.5 py-2.5 border-b border-border last:border-0",
                 s.user_id === currentUserId ? "bg-us/5" : "",
-              ].join(" ")}
+              )}
               style={{ gridTemplateColumns: "28px 1fr 32px 32px 60px" }}
             >
               <span className="text-text-mute text-[13px]">{i + 1}</span>
