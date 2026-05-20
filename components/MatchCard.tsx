@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { MatchHistoryItem } from "@/types/match";
-import Suit from "@/components/ui/Suit";
 
 export default function MatchCard({ match }: { match: MatchHistoryItem }) {
   const [expanded, setExpanded] = useState(false);
