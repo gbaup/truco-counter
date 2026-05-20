@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "next/navigation";
 import SideDrawer from "@/components/SideDrawer";
@@ -12,6 +12,14 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import { useMatches } from "@/hooks/useMatches";
 
 export default function HistoryPage() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <HistoryPageContent />
+    </Suspense>
+  );
+}
+
+function HistoryPageContent() {
   const { t } = useTranslation();
   const searchParams = useSearchParams();
   const { data: matches = [], isPending } = useMatches();
