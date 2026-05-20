@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "next/navigation";
 import SideDrawer from "@/components/SideDrawer";
 import MatchList from "@/components/MatchList";
 import PlayerFilterPicker, { RosterEntry } from "@/components/ui/PlayerFilterPicker";
@@ -12,9 +13,12 @@ import { useMatches } from "@/hooks/useMatches";
 
 export default function HistoryPage() {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
   const { data: matches = [], isPending } = useMatches();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [filter, setFilter] = useState<string | null>(null);
+  const [filter, setFilter] = useState<string | null>(
+    searchParams.get("player") ?? null
+  );
 
   const roster = useMemo<RosterEntry[]>(() => {
     const counts = new Map<string, number>();

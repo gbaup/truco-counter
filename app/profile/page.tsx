@@ -243,7 +243,7 @@ export default function ProfilePage() {
             >
               {t("profile.recent")}
             </h3>
-            <Link href="/history" className="text-us font-semibold text-[11px]">
+            <Link href={`/history?player=${encodeURIComponent(username)}`} className="text-us font-semibold text-[11px]">
               {t("profile.viewAll")} →
             </Link>
           </div>
@@ -295,11 +295,11 @@ export default function ProfilePage() {
 
                   {/* Team names */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-text font-semibold text-xs truncate">
+                    <p className="capitalize text-text font-semibold text-xs truncate">
                       {team1Names}
                     </p>
-                    <p className="text-caption-italic text-text-dim truncate" style={{ fontSize: 11 }}>
-                      vs {team2Names}
+                    <p className="capitalize text-caption-italic text-text-dim truncate" style={{ fontSize: 11 }}>
+                      VS {team2Names}
                     </p>
                   </div>
 
