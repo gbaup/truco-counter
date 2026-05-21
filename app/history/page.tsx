@@ -7,6 +7,7 @@ import SideDrawer from "@/components/SideDrawer";
 import MatchList from "@/components/MatchList";
 import PlayerFilterPicker from "@/components/ui/PlayerFilterPicker";
 import type { RosterEntry } from "@/types/match";
+import { USERNAME_RE } from "@/lib/validators";
 import Logo from "@/components/ui/Logo";
 import MenuIcon from "@/components/ui/MenuIcon";
 import LoadingScreen from "@/components/ui/LoadingScreen";
@@ -28,7 +29,15 @@ function HistoryPageContent() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const filterParam = searchParams.get("player");
   const selectedPlayers = useMemo(() => {
-    return filterParam ? filterParam.split(",").filter(Boolean).slice(0, 3) : [];
+    if (!filterParam) return [];
+    return [
+      ...new Set(
+        filterParam
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => USERNAME_RE.test(s))
+      ),
+    ].slice(0, 3);
   }, [filterParam]);
 
   function handleFilterChange(players: string[]) {
