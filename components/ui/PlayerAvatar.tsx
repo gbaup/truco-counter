@@ -8,7 +8,7 @@ interface PlayerAvatarProps {
 }
 
 export default function PlayerAvatar({ name, lastName, className, style }: PlayerAvatarProps) {
-  const initials = (name[0]?.toLowerCase() ?? "") + (lastName?.[0]?.toLowerCase() ?? "");
+  const initials = (name[0] ?? "") + (lastName?.[0] ?? "");
   return (
     <div
       className={twMerge(

@@ -38,7 +38,7 @@ function HistoryPageContent() {
     } else {
       params.delete("player");
     }
-    router.replace(`/history${params.size > 0 ? `?${params}` : ""}`);
+    router.replace(`/history${params.toString() !== "" ? `?${params}` : ""}`);
   }
 
   const roster = useMemo<RosterEntry[]>(() => {
@@ -119,7 +119,9 @@ function HistoryPageContent() {
           matches={filteredMatches}
           highlightPlayer={selectedPlayers}
           emptyMessage={
-            selectedPlayers.length > 0
+            selectedPlayers.length > 1
+              ? t("matchHistory.noFilteredMatchesTogether")
+              : selectedPlayers.length === 1
               ? t("matchHistory.noFilteredMatches")
               : t("matchHistory.noMatches")
           }

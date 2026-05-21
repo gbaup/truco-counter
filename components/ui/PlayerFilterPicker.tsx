@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { twMerge } from "tailwind-merge";
 import BottomSheet from "@/components/ui/BottomSheet";
@@ -26,8 +26,11 @@ export default function PlayerFilterPicker({
   const [sheetOpen, setSheetOpen] = useState(false);
   const [tempSelected, setTempSelected] = useState<string[]>([]);
 
+  useEffect(() => {
+    if (sheetOpen) setTempSelected(selectedPlayers);
+  }, [sheetOpen, selectedPlayers]);
+
   function handleOpenSheet() {
-    setTempSelected(selectedPlayers);
     setSheetOpen(true);
   }
 

@@ -152,6 +152,7 @@
         "filterApply": "Dale",
         "filterStats": "{{count}} partidas · {{players}} jugadores",
         "noFilteredMatches": "Ese jugador no tiene partidas registradas",
+        "noFilteredMatchesTogether": "No jugaron juntos",
         "matchCount_one": "{{count}} partida",
         "matchCount_other": "{{count}} partidas",
         "removeFilter": "Quitar filtro",
