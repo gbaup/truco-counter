@@ -30,7 +30,7 @@ export default function AdminUserRow({ user, onEdit }: AdminUserRowProps) {
   return (
     <li className="flex items-center gap-3 rounded-lg bg-surface px-3 py-2.5 border border-border">
       <PlayerAvatar
-        name={user.name}
+        name={user.name || user.username}
         lastName={user.last_name}
         style={{
           border: "1px solid transparent",

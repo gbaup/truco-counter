@@ -14,7 +14,7 @@ function HighlightedNames({
   highlight?: string | string[] | null;
   className?: string;
 }) {
-  if (!highlight || !names) return <span className={className}>{names || "—"}</span>;
+  if (!highlight || !names || (Array.isArray(highlight) && highlight.length === 0)) return <span className={className}>{names || "—"}</span>;
   const parts = names.split(" · ");
   const highlightList = Array.isArray(highlight) ? highlight : [highlight];
   return (

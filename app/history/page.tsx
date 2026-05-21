@@ -28,7 +28,7 @@ function HistoryPageContent() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const filterParam = searchParams.get("player");
   const selectedPlayers = useMemo(() => {
-    return filterParam ? filterParam.split(",").filter(Boolean) : [];
+    return filterParam ? filterParam.split(",").filter(Boolean).slice(0, 3) : [];
   }, [filterParam]);
 
   function handleFilterChange(players: string[]) {
@@ -122,8 +122,8 @@ function HistoryPageContent() {
             selectedPlayers.length > 1
               ? t("matchHistory.noFilteredMatchesTogether")
               : selectedPlayers.length === 1
-              ? t("matchHistory.noFilteredMatches")
-              : t("matchHistory.noMatches")
+                ? t("matchHistory.noFilteredMatches")
+                : t("matchHistory.noMatches")
           }
         />
       </main>
