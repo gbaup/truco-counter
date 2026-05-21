@@ -1,3 +1,5 @@
+import type { UserRole } from "./auth";
+
 export interface User {
   id: string;
   name: string;
@@ -7,6 +9,15 @@ export interface User {
 
 export type PublicUser = Omit<User, "password"> & { isPlaying?: boolean };
 
+export interface AdminUser {
+  id: string;
+  name: string;
+  last_name: string;
+  username: string;
+  rating: number;
+  rating_deviation: number;
+  role: UserRole;
+}
 
 export interface UserStats {
   user_id: string;
@@ -16,4 +27,11 @@ export interface UserStats {
   rating: number;
   rating_deviation: number;
   elo_rating: number;
+}
+
+export interface VersusStats {
+  total_matches: number;
+  p1_wins: number;
+  p2_wins: number;
+  draws: number;
 }

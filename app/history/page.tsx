@@ -1,34 +1,95 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, useState, Suspense } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams, useRouter } from "next/navigation";
 import SideDrawer from "@/components/SideDrawer";
 import MatchList from "@/components/MatchList";
+import PlayerFilterPicker from "@/components/ui/PlayerFilterPicker";
+import type { RosterEntry } from "@/types/match";
+import { USERNAME_RE } from "@/lib/validators";
 import Logo from "@/components/ui/Logo";
-import { getMatches } from "@/services/matchService";
-import { MatchHistoryItem } from "@/types/match";
 import MenuIcon from "@/components/ui/MenuIcon";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import { useMatches } from "@/hooks/useMatches";
 
 export default function HistoryPage() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <HistoryPageContent />
+    </Suspense>
+  );
+}
+
+function HistoryPageContent() {
   const { t } = useTranslation();
-  const [matches, setMatches] = useState<MatchHistoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { data: matches = [], isPending } = useMatches();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const filterParam = searchParams.get("player");
+  const selectedPlayers = useMemo(() => {
+    if (!filterParam) return [];
+    return [
+      ...new Set(
+        filterParam
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => USERNAME_RE.test(s))
+      ),
+    ].slice(0, 3);
+  }, [filterParam]);
 
-  useEffect(() => {
-    getMatches().then((data) => {
-      setMatches(data);
-      setLoading(false);
-    });
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-us border-t-transparent" />
-      </div>
-    );
+  function handleFilterChange(players: string[]) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (players.length > 0) {
+      params.set("player", players.join(","));
+    } else {
+      params.delete("player");
+    }
+    router.replace(`/history${params.toString() !== "" ? `?${params}` : ""}`);
   }
+
+  const roster = useMemo<RosterEntry[]>(() => {
+    const map = new Map<string, RosterEntry>();
+    for (const m of matches) {
+      for (const p of m.match_participants) {
+        const u = p.users;
+        if (!u) continue;
+        const entry = map.get(u.username);
+        if (entry) {
+          entry.matchCount += 1;
+        } else {
+          map.set(u.username, {
+            username: u.username,
+            name: u.name,
+            last_name: u.last_name,
+            matchCount: 1,
+          });
+        }
+      }
+    }
+    return Array.from(map.values()).sort((a, b) =>
+      a.username.localeCompare(b.username)
+    );
+  }, [matches]);
+
+  const filteredMatches = useMemo(() => {
+    if (selectedPlayers.length === 0) return matches;
+    return matches.filter((m) => {
+      const participants = selectedPlayers.map((username) =>
+        m.match_participants.find((p) => p.users?.username === username)
+      );
+
+      if (participants.some((p) => !p)) return false;
+      if (selectedPlayers.length === 1) return true;
+
+      const firstTeam = participants[0]!.team;
+      return participants.every((p) => p!.team === firstTeam);
+    });
+  }, [matches, selectedPlayers]);
+
+  if (isPending) return <LoadingScreen />;
 
   return (
     <div className="min-h-screen bg-background text-text">
@@ -54,8 +115,26 @@ export default function HistoryPage() {
         </button>
       </div>
 
+      <PlayerFilterPicker
+        roster={roster}
+        selectedPlayers={selectedPlayers}
+        matchCount={filteredMatches.length}
+        totalMatches={matches.length}
+        onFilterChange={handleFilterChange}
+      />
+
       <main className="px-5 pb-8">
-        <MatchList matches={matches} emptyMessage={t("matchHistory.noMatches")} />
+        <MatchList
+          matches={filteredMatches}
+          highlightPlayer={selectedPlayers}
+          emptyMessage={
+            selectedPlayers.length > 1
+              ? t("matchHistory.noFilteredMatchesTogether")
+              : selectedPlayers.length === 1
+                ? t("matchHistory.noFilteredMatches")
+                : t("matchHistory.noMatches")
+          }
+        />
       </main>
     </div>
   );

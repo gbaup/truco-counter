@@ -1,63 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 import SideDrawer from "@/components/SideDrawer";
 import PaperPanel from "@/components/ui/PaperPanel";
 import Suit from "@/components/ui/Suit";
 import Logo from "@/components/ui/Logo";
 import { UserStats } from "@/types/database";
-import { getUserStats } from "@/services/userService";
-import { getMe } from "@/services/auth";
 import MenuIcon from "@/components/ui/MenuIcon";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 import { UserRole } from "@/types/auth";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useUserStats } from "@/hooks/useUserStats";
+import { queryKeys } from "@/hooks/queryKeys";
+import { glickoScore, classicScore } from "@/lib/domain/ratings";
+import { twMerge } from "tailwind-merge";
 
 type Tab = "glicko" | "elo" | "classic";
 
 export default function StatisticsPage() {
   const { t } = useTranslation();
-  const [userStats, setUserStats] = useState<UserStats[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: userStats = [], isPending: statsLoading } = useUserStats();
+  const { data: me, isPending: meLoading } = useCurrentUser();
   const [tab, setTab] = useState<Tab>("glicko");
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [currentUserRole, setCurrentUserRole] = useState<UserRole | undefined>(undefined);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<"idle" | "success" | "error">("idle");
 
-  useEffect(() => {
-    async function fetchData() {
-      const [stats, me] = await Promise.all([getUserStats(), getMe()]);
-      setUserStats(stats);
-      if (me) {
-        setCurrentUserId(me.userId);
-        setCurrentUserRole(me.role);
-      }
-      setLoading(false);
-    }
-    fetchData();
-  }, []);
+  if (statsLoading || meLoading) return <LoadingScreen />;
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-us border-t-transparent" />
-      </div>
-    );
-  }
-
-  const glickoScore = (s: { rating: number; rating_deviation: number }) =>
-    s.rating - s.rating_deviation;
-
-  const classicScore = (s: { wins: number; losses: number }) =>
-    s.wins * 2 + s.losses;
+  const currentUserId = me?.userId ?? null;
+  const currentUserRole = me?.role as UserRole | undefined;
 
   const sorted =
     tab === "glicko"
-      ? [...userStats].sort((a, b) => glickoScore(b) - glickoScore(a))
+      ? [...userStats].sort((a, b) => glickoScore(b.rating, b.rating_deviation) - glickoScore(a.rating, a.rating_deviation))
       : tab === "elo"
         ? [...userStats].sort((a, b) => b.elo_rating - a.elo_rating)
-        : [...userStats].sort((a, b) => classicScore(b) - classicScore(a));
+        : [...userStats].sort((a, b) => classicScore(b.wins, b.losses) - classicScore(a.wins, a.losses));
 
   const top = sorted[0] ?? null;
 
@@ -69,9 +51,9 @@ export default function StatisticsPage() {
         : t("statistics.classicDescription");
 
   const displayScore = (s: UserStats) => {
-    if (tab === "glicko") return Math.round(glickoScore(s));
+    if (tab === "glicko") return Math.round(glickoScore(s.rating, s.rating_deviation));
     if (tab === "elo") return Math.round(s.elo_rating);
-    return classicScore(s);
+    return classicScore(s.wins, s.losses);
   };
 
   const ratingLabel = tab === "classic" ? "Pts" : "Rating";
@@ -82,8 +64,7 @@ export default function StatisticsPage() {
     try {
       const res = await fetch("/api/admin/sync-ratings", { method: "POST" });
       if (!res.ok) throw new Error("Failed");
-      const [stats] = await Promise.all([getUserStats()]);
-      setUserStats(stats);
+      queryClient.invalidateQueries({ queryKey: queryKeys.userStats });
       setSyncStatus("success");
     } catch {
       setSyncStatus("error");
@@ -126,12 +107,12 @@ export default function StatisticsPage() {
             <button
               key={t_}
               onClick={() => setTab(t_)}
-              className={[
+              className={twMerge(
                 "flex-1 py-2 rounded-sm text-sm font-semibold transition-colors",
                 tab === t_
                   ? "bg-us text-white"
                   : "text-text-dim hover:text-text",
-              ].join(" ")}
+              )}
               style={{ fontFamily: "var(--font-space-grotesk), system-ui" }}
             >
               {t_ === "glicko" ? "Glicko" : t_ === "elo" ? "Elo" : "Clásico"}
@@ -257,10 +238,10 @@ export default function StatisticsPage() {
           {sorted.map((s, i) => (
             <div
               key={s.user_id}
-              className={[
+              className={twMerge(
                 "grid items-center px-3.5 py-2.5 border-b border-border last:border-0",
                 s.user_id === currentUserId ? "bg-us/5" : "",
-              ].join(" ")}
+              )}
               style={{ gridTemplateColumns: "28px 1fr 32px 32px 60px" }}
             >
               <span className="text-text-mute text-[13px]">{i + 1}</span>

@@ -1,5 +1,6 @@
 "use client";
 
+import { twMerge } from "tailwind-merge";
 import { PublicUser } from "@/types/database";
 import Suit, { SuitKind } from "@/components/ui/Suit";
 import PaperPanel from "@/components/ui/PaperPanel";
@@ -34,14 +35,14 @@ export default function TeamCounter({
         <div className="flex items-center gap-1.5">
           <Suit kind={suitKind} size={10} color={color} />
           <span
-            className={`text-heading-sm ${colorClass}`}
+            className={twMerge("text-heading-sm", colorClass)}
             style={{ fontFamily: "var(--font-crimson-pro), serif" }}
           >
             {title}
           </span>
         </div>
         <span
-          className={`text-display-lg font-display ${colorClass}`}
+          className={twMerge("text-display-lg font-display", colorClass)}
         >
           {totalScore}
         </span>

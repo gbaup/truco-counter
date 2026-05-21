@@ -1,18 +1,6 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-
-type VersusStats = {
-    total_matches: number;
-    p1_wins: number;
-    p2_wins: number;
-    draws: number;
-};
-
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-function isValidUUID(uuid: string): boolean {
-    return UUID_REGEX.test(uuid);
-}
+import { isValidUUID } from "@/lib/validators";
+import { getUsersVersus } from "@/lib/queries";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -28,29 +16,13 @@ export async function GET(request: Request) {
     }
 
     try {
-        const result = await prisma.$queryRaw<VersusStats[]>`
-            SELECT * FROM get_users_versus(${p1}::uuid, ${p2}::uuid)
-        `;
-
-        const stats = result[0] || {
-            total_matches: 0,
-            p1_wins: 0,
-            p2_wins: 0,
-            draws: 0
-        };
-
-        const serializedStats = JSON.parse(JSON.stringify(stats, (key, value) =>
-            typeof value === 'bigint'
-                ? Number(value)
-                : value
-        ));
-
-        return NextResponse.json(serializedStats);
-
+        const stats = await getUsersVersus(p1, p2);
+        return NextResponse.json(stats);
     } catch (error) {
         console.error("Error in versus API:", error);
-        return NextResponse.json({
-            error: error instanceof Error ? error.message : "An unknown error occurred"
-        }, { status: 500 });
+        return NextResponse.json(
+            { error: error instanceof Error ? error.message : "An unknown error occurred" },
+            { status: 500 }
+        );
     }
 }

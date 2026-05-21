@@ -1,10 +1,28 @@
 {
+    "common": {
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "saving": "Guardando…",
+        "errorTryAgain": "Algo salió mal · probá de nuevo",
+        "comingSoon": "próximamente"
+    },
+    "roleBadge": {
+        "admin": "ADMIN"
+    },
     "login": {
         "title": "Iniciar sesión",
         "username": "Usuario",
         "password": "Contraseña",
         "button": "Entrar",
-        "tagline": "Contador · Ranking · Historial"
+        "tagline": "Contador · Ranking · Historial",
+        "orContinueWith": "O continuar con",
+        "googleButton": "Continuar con Google",
+        "errors": {
+            "not_linked": "Esa cuenta de Google no está vinculada a ningún usuario",
+            "oauth_error": "Error al conectar con Google",
+            "oauth_state_mismatch": "Error de seguridad. Intentá de nuevo.",
+            "google_already_linked": "Esa cuenta de Google ya está vinculada a otro usuario"
+        }
     },
     "matchSetup": {
         "team1": "Nosotros",
@@ -43,11 +61,102 @@
         "statistics": "Estadísticas",
         "versus": "Versus",
         "history": "Historial",
+        "settings": "Ajustes",
+        "admin": "Administración",
         "logout": "Cerrar sesión"
+    },
+    "settings": {
+        "account": {
+            "title": "Cuenta",
+            "nickname": "Apodo",
+            "password": "Contraseña",
+            "google": "Cuenta Google"
+        },
+        "preferences": {
+            "title": "Preferencias",
+            "language": "Idioma",
+            "haptics": "Vibración al sumar puntos",
+            "sound": "Sonido al ganar"
+        },
+        "danger": {
+            "title": "Cuenta",
+            "logout": "Cerrar sesión",
+            "logoutHint": "Termina tu sesión actual",
+            "logoutAction": "Salir"
+        },
+        "change": "Cambiar",
+        "unlink": "Desvincular",
+        "googleUnlinkSuccess": "Cuenta de Google desvinculada",
+        "googleUnlinkError": "No se pudo desvincular",
+        "locale": {
+            "formal": "Español formal",
+            "coloquial": "Coloquial uruguayo"
+        },
+        "password": {
+            "overline": "seguridad",
+            "headline": "Cambiar contraseña",
+            "fields": {
+                "current": "Contraseña actual",
+                "new": "Nueva contraseña",
+                "confirm": "Confirmar contraseña"
+            },
+            "errors": {
+                "required": "Completá todos los campos",
+                "mismatch": "Las contraseñas no coinciden",
+                "tooShort": "Mínimo 6 caracteres",
+                "wrong": "Contraseña actual incorrecta"
+            },
+            "savedToast": "Contraseña actualizada"
+        }
+    },
+    "nickname": {
+        "overline": {
+            "self": "Cambiar apodo",
+            "admin": "Editando @{{name}}"
+        },
+        "headline": {
+            "self": "¿Cómo querés que te muestren?",
+            "admin": "Nuevo apodo"
+        },
+        "hint": "3-20 caracteres · sin espacios · minúsculas y números",
+        "taken": "Ya hay alguien con ese apodo",
+        "savedToast": "ahora @{{name}}"
+    },
+    "admin": {
+        "title": "Jugadores del grupo",
+        "count": "{{count}} en el grupo",
+        "search": "Buscar jugador...",
+        "new": "Nuevo",
+        "loadError": "No se pudieron cargar los jugadores"
+    },
+    "create": {
+        "overline": "Nuevo jugador",
+        "headline": "Sumá a alguien",
+        "preview": "Así se va a ver",
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "username": "Apodo (usuario)",
+        "passwordInfo": "Contraseña inicial",
+        "passwordHint": "Avísale; la cambia al primer ingreso",
+        "submit": "Crear jugador",
+        "savedToast": "@{{name}} agregado al grupo",
+        "errorCreating": "no se pudo crear · probá de nuevo",
+        "usernameTaken": "ya hay un @{{name}} en el grupo"
     },
     "matchHistory": {
         "title": "Historial de Partidas",
-        "noMatches": "No hay partidas registradas todavía"
+        "noMatches": "No hay partidas registradas todavía",
+        "filterOverline": "filtrar",
+        "filterHeadline": "por jugador",
+        "filterPickerTitle": "elegir jugador",
+        "filterApply": "Aplicar",
+        "filterStats": "{{count}} partidas · {{players}} jugadores",
+        "noFilteredMatches": "No hay partidas con ese jugador",
+        "noFilteredMatchesTogether": "No jugaron juntos",
+        "matchCount_one": "{{count}} partida",
+        "matchCount_other": "{{count}} partidas",
+        "removeFilter": "Quitar filtro",
+        "changeFilter": "cambiar"
     },
     "profile": {
         "rating": "Rating",
@@ -58,7 +167,17 @@
         "noMatches": "Todavía no jugaste ningún partido",
         "label": "El jugador",
         "recent": "Últimas partidas",
-        "viewAll": "Ver todas"
+        "viewAll": "Ver todas",
+        "google": {
+            "title": "Cuenta de Google",
+            "linked": "Vinculada",
+            "notLinked": "Sin vincular",
+            "link": "Vincular con Google",
+            "unlink": "Desvincular",
+            "linkedSuccess": "Cuenta de Google vinculada correctamente",
+            "alreadyLinked": "Esa cuenta de Google ya está vinculada a otro usuario",
+            "unlinkError": "Error al desvincular"
+        }
     },
     "statistics": {
         "glickoDescription": "Ajusta por incertidumbre e inactividad",

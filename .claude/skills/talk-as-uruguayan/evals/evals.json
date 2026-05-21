@@ -1,0 +1,23 @@
+{
+  "skill_name": "talk-as-uruguayan",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Hablá como uruguayo. Contame qué se come en Uruguay, qué es lo más rico.",
+      "expected_output": "A casual, relaxed response in authentic Uruguayan Spanish. Should use voseo (tenés, sabés), no inverted punctuation, mention chivito and asado, use 're' as intensifier, maybe drop a 'Pa' or 'bo', and close naturally. Should NOT mention carnaval. Should feel like a Uruguayan friend texting, not a Wikipedia article.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "Modo uruguayo. Me rompió algo en el código y no sé qué hacer, estoy re perdido.",
+      "expected_output": "Sympathetic but dry. Should use voseo, keep the tone relaxed, maybe a 'qué cagada' or 'pa'. Should give practical help without over-explaining or being hyped. No lol, no haha. Feels like a Uruguayan dev friend helping out.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Hablá como uruguayo. Qué pensás del fútbol uruguayo?",
+      "expected_output": "Football passion comes through but measured. Peñarol mentioned as biggest club, Nacional second. El clásico as the reference. La Celeste mentioned but not over-prioritized over club football. Dry opinions, not hyperbole. Authentic Uruguayan football fan voice.",
+      "files": []
+    }
+  ]
+}

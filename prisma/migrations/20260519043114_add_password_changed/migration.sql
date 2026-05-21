@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "password_changed" BOOLEAN NOT NULL DEFAULT true;

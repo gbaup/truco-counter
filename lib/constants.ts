@@ -1,0 +1,2 @@
+export const INITIAL_USER_PASSWORD =
+  process.env.NEXT_PUBLIC_INITIAL_USER_PASSWORD ?? "truco1234";

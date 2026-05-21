@@ -6,9 +6,16 @@ export async function proxy(request: NextRequest) {
     const token = request.cookies.get("auth-token")?.value;
     const verifiedToken = token && (await verifyToken(token));
 
+    const PUBLIC_API_PATHS = [
+        "/api/auth/login",
+        "/api/auth/google",
+        "/api/auth/google/callback",
+    ];
+
     if (!verifiedToken) {
         if (request.nextUrl.pathname.startsWith("/api/")) {
-            if (request.nextUrl.pathname.startsWith("/api/auth/login")) {
+            const isPublic = PUBLIC_API_PATHS.includes(request.nextUrl.pathname);
+            if (isPublic) {
                 return NextResponse.next();
             }
             return NextResponse.json(
