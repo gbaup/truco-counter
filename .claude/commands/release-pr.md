@@ -95,3 +95,37 @@ Rules:
 After presenting the title and body, ask: _"Want me to open this PR now with `gh pr create`?"_
 
 Do not push or create the PR without explicit confirmation.
+
+## Step 7 — Release notes para el grupo
+
+After Step 6 (whether or not the PR was opened), generate informal release notes in Uruguayan Spanish to share with the friend group.
+
+**Use the `talk-as-uruguayan` skill for the voice and tone of this section.** Read `.claude/skills/talk-as-uruguayan/SKILL.md` before writing — voseo, sin signos de apertura, sin em dash, vocabulario uruguayo auténtico.
+
+### Voice rules
+
+- **No metáforas de truco**: nada de "tiramos flor" o "envido ganado" — sonar natural es más importante que forzar el chiste
+- **Pensado para el grupo**: tiene que entenderlo alguien que no sabe nada de código; cero términos técnicos
+
+### Format
+
+```
+🆕 *Truco Counter vX.Y[.Z]*
+
+<Una oración de intro contando de qué va la actualización, en tono de mensaje al grupo.>
+
+- <Cambio principal — si no es obvio, terminá la línea con "— <para qué sirve en una frase>">
+- <Segundo cambio — ídem>
+- <Tercer cambio si corresponde>
+```
+
+Rules:
+- Intro: una sola oración, tono de "che pibes, actualicé la app"
+- Bullets: 2–4 ítems, solo los cambios que le importan al usuario final; ignorar refactors, tooling y fixes internos
+- Bullets obvios van en una línea; los que necesitan contexto llevan " — <beneficio>" al final
+- No bullets técnicos: nada de "migración de base de datos", "nueva variable de entorno", etc.
+- Emojis permitidos pero sin exagerar — uno por bullet máximo, solo si suma
+
+### Output
+
+Present the release notes block as a fenced markdown block, ready to copy-paste into WhatsApp.
