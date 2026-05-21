@@ -5,7 +5,9 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams, useRouter } from "next/navigation";
 import SideDrawer from "@/components/SideDrawer";
 import MatchList from "@/components/MatchList";
-import PlayerFilterPicker, { RosterEntry } from "@/components/ui/PlayerFilterPicker";
+import PlayerFilterPicker from "@/components/ui/PlayerFilterPicker";
+import type { RosterEntry } from "@/types/match";
+import { USERNAME_RE } from "@/lib/validators";
 import Logo from "@/components/ui/Logo";
 import MenuIcon from "@/components/ui/MenuIcon";
 import LoadingScreen from "@/components/ui/LoadingScreen";
@@ -25,37 +27,67 @@ function HistoryPageContent() {
   const searchParams = useSearchParams();
   const { data: matches = [], isPending } = useMatches();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const filter = searchParams.get("player");
+  const filterParam = searchParams.get("player");
+  const selectedPlayers = useMemo(() => {
+    if (!filterParam) return [];
+    return [
+      ...new Set(
+        filterParam
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => USERNAME_RE.test(s))
+      ),
+    ].slice(0, 3);
+  }, [filterParam]);
 
-  function handleFilterChange(player: string | null) {
+  function handleFilterChange(players: string[]) {
     const params = new URLSearchParams(searchParams.toString());
-    if (player) {
-      params.set("player", player);
+    if (players.length > 0) {
+      params.set("player", players.join(","));
     } else {
       params.delete("player");
     }
-    router.replace(`/history${params.size > 0 ? `?${params}` : ""}`);
+    router.replace(`/history${params.toString() !== "" ? `?${params}` : ""}`);
   }
 
   const roster = useMemo<RosterEntry[]>(() => {
-    const counts = new Map<string, number>();
+    const map = new Map<string, RosterEntry>();
     for (const m of matches) {
       for (const p of m.match_participants) {
-        const name = p.users?.username;
-        if (name) counts.set(name, (counts.get(name) ?? 0) + 1);
+        const u = p.users;
+        if (!u) continue;
+        const entry = map.get(u.username);
+        if (entry) {
+          entry.matchCount += 1;
+        } else {
+          map.set(u.username, {
+            username: u.username,
+            name: u.name,
+            last_name: u.last_name,
+            matchCount: 1,
+          });
+        }
       }
     }
-    return Array.from(counts.entries())
-      .map(([username, matchCount]) => ({ username, matchCount }))
-      .sort((a, b) => a.username.localeCompare(b.username));
+    return Array.from(map.values()).sort((a, b) =>
+      a.username.localeCompare(b.username)
+    );
   }, [matches]);
 
   const filteredMatches = useMemo(() => {
-    if (!filter) return matches;
-    return matches.filter((m) =>
-      m.match_participants.some((p) => p.users?.username === filter)
-    );
-  }, [matches, filter]);
+    if (selectedPlayers.length === 0) return matches;
+    return matches.filter((m) => {
+      const participants = selectedPlayers.map((username) =>
+        m.match_participants.find((p) => p.users?.username === username)
+      );
+
+      if (participants.some((p) => !p)) return false;
+      if (selectedPlayers.length === 1) return true;
+
+      const firstTeam = participants[0]!.team;
+      return participants.every((p) => p!.team === firstTeam);
+    });
+  }, [matches, selectedPlayers]);
 
   if (isPending) return <LoadingScreen />;
 
@@ -85,7 +117,7 @@ function HistoryPageContent() {
 
       <PlayerFilterPicker
         roster={roster}
-        filter={filter}
+        selectedPlayers={selectedPlayers}
         matchCount={filteredMatches.length}
         totalMatches={matches.length}
         onFilterChange={handleFilterChange}
@@ -94,11 +126,13 @@ function HistoryPageContent() {
       <main className="px-5 pb-8">
         <MatchList
           matches={filteredMatches}
-          highlightPlayer={filter}
+          highlightPlayer={selectedPlayers}
           emptyMessage={
-            filter
-              ? t("matchHistory.noFilteredMatches")
-              : t("matchHistory.noMatches")
+            selectedPlayers.length > 1
+              ? t("matchHistory.noFilteredMatchesTogether")
+              : selectedPlayers.length === 1
+                ? t("matchHistory.noFilteredMatches")
+                : t("matchHistory.noMatches")
           }
         />
       </main>

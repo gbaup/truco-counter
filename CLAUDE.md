@@ -70,6 +70,21 @@ The language is selected at runtime via `NEXT_PUBLIC_APP_LANG`. `I18nProvider.ts
 
 Tailwind CSS v4. Shared variants and class merging use `tailwind-variants` + `tailwind-merge` + `clsx`. Reusable primitives live under `components/ui/`.
 
+**No setState in effects:** the ESLint rule `react-hooks/set-state-in-effect` is enabled and treats calling `setState` synchronously inside a `useEffect` body as an error. Sync derived or transient state at the event handler level instead.
+
+```ts
+// correct — sync state in the handler that opens the sheet
+function handleOpen() {
+  setTempState(currentValue);
+  setOpen(true);
+}
+
+// wrong — triggers the lint error
+useEffect(() => {
+  if (open) setTempState(currentValue);
+}, [open]);
+```
+
 **Class merging standard:** always use `twMerge` (from `tailwind-merge`) to compose conditional or dynamic `className` values. Never use template literals (`className={\`...\`}`) or array `.join(" ")` for this — they silently produce duplicate/conflicting Tailwind classes that don't resolve correctly. Import directly from the package:
 
 ```ts

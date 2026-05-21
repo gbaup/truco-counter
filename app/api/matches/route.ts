@@ -128,7 +128,7 @@ export async function GET(request: Request) {
                         team: true,
                         rating_change: true,
                         elo_rating_change: true,
-                        users: { select: { username: true } },
+                        users: { select: { username: true, name: true, last_name: true } },
                     },
                 },
             },

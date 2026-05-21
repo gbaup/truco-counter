@@ -39,7 +39,7 @@ export default function MatchList({
 }: {
   matches: MatchHistoryItem[];
   emptyMessage: string;
-  highlightPlayer?: string | null;
+  highlightPlayer?: string | string[] | null;
 }) {
   if (matches.length === 0) {
     return (

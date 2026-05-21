@@ -1,6 +1,7 @@
 "use client";
 
 import { AdminUser } from "@/types/database";
+import PlayerAvatar from "@/components/ui/PlayerAvatar";
 
 interface AdminUserRowProps {
   user: AdminUser;
@@ -26,29 +27,17 @@ function PencilIcon() {
 }
 
 export default function AdminUserRow({ user, onEdit }: AdminUserRowProps) {
-  const nameInitial = (user.name?.[0] ?? user.username?.[0] ?? "").toUpperCase();
-  const lastnameInitial = (user.last_name?.[0] ?? "").toUpperCase();
-
   return (
     <li className="flex items-center gap-3 rounded-lg bg-surface px-3 py-2.5 border border-border">
-      {/* Avatar */}
-      <div
-        className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full"
+      <PlayerAvatar
+        name={user.name || user.username}
+        lastName={user.last_name}
         style={{
-          background: "linear-gradient(135deg, var(--color-us), var(--color-them))",
+          border: "1px solid transparent",
+          background:
+            "linear-gradient(var(--color-surface-elevated), var(--color-surface-elevated)) padding-box, linear-gradient(135deg, var(--color-us), var(--color-them)) border-box",
         }}
-      >
-        <span
-          className="text-white"
-          style={{
-            fontFamily: "var(--font-crimson-pro), serif",
-            fontWeight: 800,
-            fontSize: 16,
-          }}
-        >
-          {nameInitial + lastnameInitial}
-        </span>
-      </div>
+      />
 
       {/* Name + username */}
       <div className="min-w-0 flex-1">
