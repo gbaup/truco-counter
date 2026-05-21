@@ -5,13 +5,7 @@ import { useTranslation } from "react-i18next";
 import { twMerge } from "tailwind-merge";
 import BottomSheet from "@/components/ui/BottomSheet";
 import PlayerAvatar from "@/components/ui/PlayerAvatar";
-
-export interface RosterEntry {
-  username: string;
-  name: string;
-  last_name: string;
-  matchCount: number;
-}
+import type { RosterEntry } from "@/types/match";
 
 interface PlayerFilterPickerProps {
   roster: RosterEntry[];

@@ -1,5 +1,12 @@
 import { PublicUser } from "./database";
 
+export interface RosterEntry {
+    username: string;
+    name: string;
+    last_name: string;
+    matchCount: number;
+}
+
 export interface MatchParticipantWithUser {
     user_id: string | null;
     team: number;
