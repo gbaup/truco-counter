@@ -37,7 +37,7 @@ Cluster commits and changed files into logical `###` headings. Use the same styl
 
 - "Mesa Design System", "Glicko Ranking System", "User Roles", "Match History", "Database & Auth", "Tooling & Quality", etc.
 - Drop headings with zero items
-- Write bullets in past tense, noun-first: "Added X", "Fixed Y", "Replaced Z"
+- Write bullets in past tense, verb-first: "Added X", "Fixed Y", "Replaced Z"
 
 ## Step 4 — Write the test plan
 
@@ -100,11 +100,11 @@ Do not push or create the PR without explicit confirmation.
 
 After Step 6 (whether or not the PR was opened), generate informal release notes in Uruguayan Spanish to share with the friend group.
 
-**Use the `talk-as-uruguayan` skill for the voice and tone of this section.** Read `.claude/skills/talk-as-uruguayan/SKILL.md` before writing — voseo, sin signos de apertura, sin em dash, vocabulario uruguayo auténtico.
+**First, read `.claude/skills/talk-as-uruguayan/SKILL.md`.** That skill governs the voice — voseo, sin signos de apertura, sin em dash, vocabulario uruguayo auténtico. Apply it throughout this step.
 
 ### Voice rules
 
-- **No metáforas de truco**: nada de "tiramos flor" o "envido ganado" — sonar natural es más importante que forzar el chiste
+- **No metáforas de truco**: nada de "tiramos flor" o "envido ganado". Sonar natural es más importante que forzar el chiste.
 - **Pensado para el grupo**: tiene que entenderlo alguien que no sabe nada de código; cero términos técnicos
 
 ### Format
@@ -113,19 +113,34 @@ After Step 6 (whether or not the PR was opened), generate informal release notes
 🆕 *Truco Counter vX.Y[.Z]*
 
 <Una oración de intro contando de qué va la actualización, en tono de mensaje al grupo.>
+Ejemplo de registro: "Ta, actualicé la app con un par de cosas nuevas."
 
-- <Cambio principal — si no es obvio, terminá la línea con "— <para qué sirve en una frase>">
-- <Segundo cambio — ídem>
+- <Cambio principal, y si no es obvio agregá: para qué sirve en una frase>
+- <Segundo cambio, ídem>
 - <Tercer cambio si corresponde>
 ```
 
 Rules:
-- Intro: una sola oración, tono de "che pibes, actualicé la app"
+- Intro: una sola oración, tono de "ta, actualicé la app"
 - Bullets: 2–4 ítems, solo los cambios que le importan al usuario final; ignorar refactors, tooling y fixes internos
-- Bullets obvios van en una línea; los que necesitan contexto llevan " — <beneficio>" al final
+- Bullets obvios van en una línea; los que necesitan contexto llevan una coma y el beneficio al final
 - No bullets técnicos: nada de "migración de base de datos", "nueva variable de entorno", etc.
-- Emojis permitidos pero sin exagerar — uno por bullet máximo, solo si suma
+- Emojis permitidos pero sin exagerar, uno por bullet máximo, solo si suma
+- **No em dash (—) en ningún lugar del texto**, ni en la intro ni en los bullets. Usar coma o punto.
 
 ### Output
 
 Present the release notes block as a fenced markdown block, ready to copy-paste into WhatsApp.
+
+## Step 8 — Feedback al skill
+
+After presenting the release notes, ask: _"Algo que cambiarías? Si me decís, lo aprendo para la próxima."_
+
+If the user gives any feedback — whether they describe a problem, paste an edited version, or suggest a word change — apply all corrections, not just the first one. For each correction:
+
+1. **Understand the signal.** Is it a word that sounds wrong, a tone that's too formal/informal, a structural issue (bullet too long, emoji misused), a punctuation habit?
+2. **Re-read `.claude/skills/talk-as-uruguayan/SKILL.md`** to find the section that governs the issue — locate it by meaning, not by a hardcoded section name. The skill may have evolved.
+3. **Apply the change** to the most appropriate place: add a word to avoid, sharpen a tone rule, add a punctuation note, add an example, etc.
+4. **Confirm specifically:** _"Ta, aprendido: [qué cambió y en qué sección del skill]."_ One line per correction.
+
+If the user says everything is fine or gives no corrections, skip this step silently.
