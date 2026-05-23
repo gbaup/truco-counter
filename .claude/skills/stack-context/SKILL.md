@@ -13,10 +13,10 @@ This document captures the actual stack and operational realities of this applic
 
 - **Hosting / serverless**: Vercel
 - **Database, auth, storage, realtime**: Supabase
-- **Plan tiers**: _(fill in: Vercel Hobby/Pro/Enterprise, Supabase Free/Pro/Team/Enterprise)_
-- **Primary region**: _(fill in, e.g., us-east-1)_
-- **Approximate scale today**: _(fill in: MAU, peak RPS, DB size, monthly compute)_
-- **Known bottlenecks**: _(fill in any current pain points)_
+- **Plan tiers**: Free tiers at the moment
+- **Primary region**: us-east-1
+- **Approximate scale today**: <20 users (friend group), used roughly weekly, not all weekly-active. Effectively pre-scale — well under free-tier limits on both Vercel and Supabase. RPS not measured (almost certainly near zero except during the brief weekly usage window). DB likely a few MB.
+- **Known bottlenecks**: none at the moment
 
 > Anything marked _(fill in)_ above is project-specific and should be edited by the team. The rest of this document is general knowledge about Vercel + Supabase that applies regardless.
 
