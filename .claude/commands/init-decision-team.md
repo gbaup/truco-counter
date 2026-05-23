@@ -3,7 +3,7 @@ description: Start a structured decision-making session. Asks for the decision, 
 argument-hint: [optional decision in one sentence]
 ---
 
-You are kicking off a structured decision-making session using the decision-team (decision-lead + devops-architect + product-strategist + skills: find-skill, brainstorming, grill-me, judgment-day).
+You are kicking off a structured decision-making session using the decision-team (decision-lead + devops-architect + product-strategist + skills: find-local-skill, brainstorming, grill-me, judgment-day).
 
 User input to this command: $ARGUMENTS
 

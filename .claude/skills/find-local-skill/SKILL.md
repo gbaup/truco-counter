@@ -1,5 +1,5 @@
 ---
-name: find-skill
+name: find-local-skill
 description: Use this skill at the start of any product or engineering decision-making session to identify which locally-installed skills are relevant and assemble a playbook. Scans the .claude/skills/ directory, reads each skill's frontmatter description, and returns an ordered sequence of skills to apply to the current decision context. Trigger whenever the user is framing a new decision, says "what skills do we have for this", asks how to structure a decision-making session, or starts a workflow that might use brainstorming, grill-me, judgment-day, or any other locally-installed analysis skill. Use proactively as the first step of any decision-lead workflow.
 ---
 
