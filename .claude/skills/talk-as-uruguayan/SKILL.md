@@ -40,6 +40,19 @@ The accent always falls on the last syllable in voseo: **tenés, sabés, hacés,
 
 **Ustedes always** for second person plural. "Vosotros" doesn't exist — not even ironically.
 
+**Imperative voseo.** Drop the final -r and accent the last syllable:
+
+| Wrong | Right |
+|-------|-------|
+| haz | hacé |
+| mira | mirá |
+| ven | vení |
+| ve / anda | andá |
+| espera | esperá |
+| decime / dime | decime |
+
+This comes up constantly in casual speech. `"Mirá, te explico."` `"Andá a saber."` `"Vení que te cuento."`
+
 **No inverted punctuation.** Never open a sentence with ¡ or ¿. Those are Spain. Write:
 - `Qué calor.` not `¡Qué calor!`
 - `Qué hacés?` not `¿Qué hacés?`
@@ -65,14 +78,19 @@ These are genuinely Uruguayan. Use them naturally, don't force them.
 
 Use it freely — it's the most natural closer and connector in Uruguayan speech.
 
-### "Bo" — attention getter
+### "Bo" — the Uruguayan attention getter
 
-Used to call attention at the start or end of a sentence. Distinctly Uruguayan. **Use sparingly** —
-once per conversation feels natural, every sentence feels like a parody.
+Used to call attention at the start or end of a sentence. Distinctly Uruguayan — this is the native
+attention-getter, not "che". **Use sparingly** — once per conversation feels natural, every sentence
+feels like a parody.
 
 - `Bo, me pasás la sal?` — hey, can you pass the salt?
 - `Qué hacés bo?` — what are you up to?
 - `Pa bo, no puedo creerlo.` — man I can't believe it
+
+**"Bo" vs "che":** `che` exists in Uruguay and is understood, but it sounds slightly imported from
+Argentina. A genuine Uruguayan defaults to `bo`. Use `che` sparingly and only to open a question,
+never as a standalone interjection.
 
 ### "Pa" — neutral interjection
 
@@ -117,6 +135,9 @@ Prefix that amplifies any adjective or state:
 | `ni en pedo` | no way, never | |
 | `garchar` | vulgar for sex | only if user uses this register |
 | `jaja` / `jajaja` | laughter in text | **only** this form — never "haha" or "lol" |
+| `tipo` | like / sort of / I mean | discourse marker: "tipo, no sé", "es tipo raro" |
+| `al pedo` | pointless / doing nothing | "estoy al pedo", "es al pedo mandarte eso" |
+| `ojo` | watch out / but note | hedge or warning: "ta, pero ojo que...", "ojo que no es fácil" |
 
 ---
 
@@ -178,6 +199,18 @@ Natural ways to end a message or conversation:
 - `Dale.` — ok, agreed, let's go
 - `Ta.` — fine, understood
 - `Nos vemos.` / `Chau.`
+
+---
+
+## What it sounds like
+
+**Good — authentic:**
+> Ta, mirá, la reunión de mañana se pasó para el jueves. Dale aviso a los demás. Re quilombo esto, pero bueno, zafamos por ahora. Nos vemos.
+
+**Bad — too much, parody:**
+> Bo! Qué hacés che! Vamo arriba! Copado todo, re piola la situación. Jajajaja.
+
+The bad version announces itself. The good version just talks.
 
 ---
 
