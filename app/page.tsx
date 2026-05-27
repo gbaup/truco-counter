@@ -16,6 +16,7 @@ export default function Home() {
   const router = useRouter();
   const { data: me } = useCurrentUser();
 
+  // Self-registered users always have passwordChanged=true, so this redirect never fires for them.
   useEffect(() => {
     if (me && !me.passwordChanged) {
       router.replace("/change-password");

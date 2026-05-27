@@ -24,6 +24,65 @@
             "google_already_linked": "Esa cuenta de Google ya la tiene otro"
         }
     },
+    "register": {
+        "tagline": "tu mesa, tu marca, tu ranking",
+        "name": "nombre",
+        "lastName": "apellido",
+        "username": "apodo",
+        "usernameHint": "3-20 caracteres · sin espacios · letras y números",
+        "email": "email (opcional)",
+        "password": "contraseña",
+        "confirmPassword": "confirmá la contraseña",
+        "button": "¡A jugar!",
+        "orContinueWith": "o entrá con",
+        "googleButton": "Registrarse con Google",
+        "alreadyHaveAccount": "¿Ya tenés cuenta?",
+        "loginLink": "Entrar",
+        "errors": {
+            "passwordMismatch": "las contraseñas no coinciden",
+            "passwordTooShort": "la contraseña tiene que tener por lo menos 6 caracteres",
+            "joinFailed": "no se pudo unir al grupo · entrás desde la app"
+        }
+    },
+    "join": {
+        "overline": "Te están esperando",
+        "invalidTitle": "Este link ya no sirve",
+        "invalidDescription": "El link de invitación fue revocado o no existe.",
+        "goToLogin": "ir al inicio",
+        "memberCount_one": "{{count}} jugador en la mesa",
+        "memberCount_other": "{{count}} jugadores en la mesa",
+        "createAccount": "Crear cuenta",
+        "alreadyHaveAccount": "ya tengo cuenta",
+        "alreadyMember": "ya sos de {{groupName}}, campeon",
+        "goHome": "ir al inicio"
+    },
+    "groups": {
+        "new": {
+            "overline": "nuevo grupo",
+            "headline": "armá tu grupo",
+            "description": "ponele nombre a tu mesa.",
+            "nameLabel": "nombre del grupo",
+            "namePlaceholder": "Ej: la barra del jueves",
+            "submit": "Crear grupo"
+        },
+        "invite": {
+            "overline": "tu grupo está listo",
+            "headline": "mandales el link",
+            "description": "compartilo por WhatsApp y se unen solos.",
+            "linkLabel": "link de invitación",
+            "copy": "copiar link",
+            "copied": "¡copiado!",
+            "whatsapp": "mandar por WhatsApp",
+            "whatsappText": "sumáte a nuestra mesa de truco:",
+            "skipToApp": "ir a la app",
+            "loadError": "no se pudo cargar el link"
+        }
+    },
+    "landing": {
+        "tagline": "tu mesa, tu marca, tu ranking",
+        "createGroup": "armar mi grupo",
+        "alreadyHaveAccount": "ya tengo cuenta"
+    },
     "matchSetup": {
         "team1": "Nosotros",
         "team2": "Ellos",

@@ -24,6 +24,46 @@ export async function login(
   }
 }
 
+export async function register(data: {
+  name: string;
+  lastName: string;
+  username: string;
+  email?: string;
+  password: string;
+}): Promise<{ success: boolean; user?: PublicUser; error?: string }> {
+  try {
+    const result = await fetchJSON<{ success: boolean; user?: PublicUser }>(
+      "/api/auth/register",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }
+    );
+    return { success: true, user: result.user };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Registration failed",
+    };
+  }
+}
+
+export async function joinGroup(token: string): Promise<{ success: boolean; groupId?: string; error?: string }> {
+  try {
+    const result = await fetchJSON<{ groupId: string; groupName: string }>(
+      `/api/invite/${token}/join`,
+      { method: "POST" }
+    );
+    return { success: true, groupId: result.groupId };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to join group",
+    };
+  }
+}
+
 export async function logout() {
   // cookie clearing is handled server-side via the logout route
 }
