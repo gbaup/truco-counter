@@ -12,9 +12,16 @@ async function generateUsername(emailPrefix: string): Promise<string | null> {
     .replace(/[^a-z0-9_]/g, "")
     .slice(0, 17);
 
+  // Try the clean prefix first (no suffix)
+  if (USERNAME_RE.test(base)) {
+    const existing = await prisma.users.findUnique({ where: { username: base } });
+    if (!existing) return base;
+  }
+
+  // Fall back to suffix on collision
   for (let i = 0; i < 3; i++) {
     const suffix = Math.floor(Math.random() * 900 + 100).toString();
-    const candidate = `${base}${suffix}`;
+    const candidate = `${base.slice(0, 17)}${suffix}`;
     if (!USERNAME_RE.test(candidate)) continue;
     const existing = await prisma.users.findUnique({ where: { username: candidate } });
     if (!existing) return candidate;
@@ -108,9 +115,8 @@ export async function GET(request: Request) {
         return redirect("/register?error=username_collision");
       }
 
-      const nameParts = googleUser.email.split("@")[0].split(".");
-      const name = nameParts[0] ?? "Usuario";
-      const lastName = nameParts[1] ?? "";
+      const name = googleUser.given_name ?? emailPrefix;
+      const lastName = googleUser.family_name ?? "";
 
       // Derive a random 16-byte password placeholder — user never needs to know it
       const passwordPlaceholder = randomBytes(16).toString("hex");

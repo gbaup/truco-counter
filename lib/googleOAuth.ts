@@ -17,10 +17,10 @@ export async function exchangeCode(code: string): Promise<string> {
 
 export async function fetchGoogleUser(
     accessToken: string
-): Promise<{ id: string; email: string }> {
+): Promise<{ id: string; email: string; given_name?: string; family_name?: string }> {
     const res = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
         headers: { Authorization: `Bearer ${accessToken}` },
     });
     if (!res.ok) throw new Error("Failed to fetch Google user info");
-    return res.json() as Promise<{ id: string; email: string }>;
+    return res.json() as Promise<{ id: string; email: string; given_name?: string; family_name?: string }>;
 }
