@@ -1,52 +1,58 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRegister } from "@/hooks/useRegister";
 import { useTranslation } from "react-i18next";
+import { useForm, useWatch } from "react-hook-form";
 import Suit from "@/components/ui/Suit";
 import Logo from "@/components/ui/Logo";
 import { toast } from "sonner";
-import { twMerge } from "tailwind-merge";
 import Link from "next/link";
 import { joinGroup } from "@/services/auth";
 
-type FocusedField = "name" | "lastName" | "username" | "email" | "password" | "confirmPassword" | null;
+type RegisterFields = {
+  name: string;
+  lastName: string;
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
 function RegisterForm() {
-  const [name, setName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [focused, setFocused] = useState<FocusedField>(null);
-
   const router = useRouter();
   const { t } = useTranslation();
   const { isLoading, handleRegister } = useRegister();
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get("token");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const { register, handleSubmit, control } = useForm<RegisterFields>();
+  const watchedUsername = useWatch({ control, name: "username", defaultValue: "" });
 
-    if (password !== confirmPassword) {
+  const { onChange: onUsernameChange, ...usernameProps } = register("username");
+
+  const usernameHint = watchedUsername.length > 0
+    ? (/^[a-z0-9_]{3,20}$/.test(watchedUsername.trim()) ? null : t("register.usernameHint"))
+    : t("register.usernameHint");
+
+  const onSubmit = async (data: RegisterFields) => {
+    if (data.password !== data.confirmPassword) {
       toast.error(t("register.errors.passwordMismatch"));
       return;
     }
 
-    if (password.length < 6) {
+    if (data.password.length < 6) {
       toast.error(t("register.errors.passwordTooShort"));
       return;
     }
 
     const success = await handleRegister({
-      name,
-      lastName,
-      username: username.trim().toLowerCase(),
-      email: email.trim() || undefined,
-      password,
+      name: data.name,
+      lastName: data.lastName,
+      username: data.username.trim().toLowerCase(),
+      email: data.email.trim() || undefined,
+      password: data.password,
     });
 
     if (!success) return;
@@ -60,10 +66,6 @@ function RegisterForm() {
 
     router.push("/groups/new");
   };
-
-  const usernameHint = username.length > 0
-    ? (/^[a-z0-9_]{3,20}$/.test(username.trim().toLowerCase()) ? null : t("register.usernameHint"))
-    : t("register.usernameHint");
 
   return (
     <div className="bg-background min-h-screen relative overflow-hidden flex flex-col">
@@ -148,14 +150,9 @@ function RegisterForm() {
           {t("register.tagline")}
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-10 w-full flex flex-col gap-2.5">
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-10 w-full flex flex-col gap-2.5">
           <div className="flex gap-2.5">
-            <div
-              className={twMerge(
-                "flex-1 bg-surface rounded-lg px-4 py-3 border transition-colors",
-                focused === "name" ? "border-us/50" : "border-border"
-              )}
-            >
+            <div className="flex-1 bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
               <label
                 htmlFor="name"
                 className="text-caption-italic text-text-dim block cursor-pointer"
@@ -166,22 +163,14 @@ function RegisterForm() {
               <input
                 id="name"
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onFocus={() => setFocused("name")}
-                onBlur={() => setFocused(null)}
+                {...register("name")}
                 className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 focus:outline-none"
                 autoComplete="given-name"
                 required
               />
             </div>
 
-            <div
-              className={twMerge(
-                "flex-1 bg-surface rounded-lg px-4 py-3 border transition-colors",
-                focused === "lastName" ? "border-us/50" : "border-border"
-              )}
-            >
+            <div className="flex-1 bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
               <label
                 htmlFor="lastName"
                 className="text-caption-italic text-text-dim block cursor-pointer"
@@ -192,10 +181,7 @@ function RegisterForm() {
               <input
                 id="lastName"
                 type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                onFocus={() => setFocused("lastName")}
-                onBlur={() => setFocused(null)}
+                {...register("lastName")}
                 className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 focus:outline-none"
                 autoComplete="family-name"
                 required
@@ -203,12 +189,7 @@ function RegisterForm() {
             </div>
           </div>
 
-          <div
-            className={twMerge(
-              "bg-surface rounded-lg px-4 py-3 border transition-colors",
-              focused === "username" ? "border-us/50" : "border-border"
-            )}
-          >
+          <div className="bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
             <label
               htmlFor="username"
               className="text-caption-italic text-text-dim block cursor-pointer"
@@ -219,10 +200,11 @@ function RegisterForm() {
             <input
               id="username"
               type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value.toLowerCase())}
-              onFocus={() => setFocused("username")}
-              onBlur={() => setFocused(null)}
+              {...usernameProps}
+              onChange={(e) => {
+                e.target.value = e.target.value.toLowerCase();
+                onUsernameChange(e);
+              }}
               className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 focus:outline-none"
               autoComplete="username"
               required
@@ -232,12 +214,7 @@ function RegisterForm() {
             )}
           </div>
 
-          <div
-            className={twMerge(
-              "bg-surface rounded-lg px-4 py-3 border transition-colors",
-              focused === "email" ? "border-us/50" : "border-border"
-            )}
-          >
+          <div className="bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
             <label
               htmlFor="email"
               className="text-caption-italic text-text-dim block cursor-pointer"
@@ -248,21 +225,13 @@ function RegisterForm() {
             <input
               id="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onFocus={() => setFocused("email")}
-              onBlur={() => setFocused(null)}
+              {...register("email")}
               className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 focus:outline-none"
               autoComplete="email"
             />
           </div>
 
-          <div
-            className={twMerge(
-              "bg-surface rounded-lg px-4 py-3 border transition-colors",
-              focused === "password" ? "border-us/50" : "border-border"
-            )}
-          >
+          <div className="bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
             <label
               htmlFor="password"
               className="text-caption-italic text-text-dim block cursor-pointer"
@@ -273,22 +242,14 @@ function RegisterForm() {
             <input
               id="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onFocus={() => setFocused("password")}
-              onBlur={() => setFocused(null)}
+              {...register("password")}
               className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 tracking-widest focus:outline-none"
               autoComplete="new-password"
               required
             />
           </div>
 
-          <div
-            className={twMerge(
-              "bg-surface rounded-lg px-4 py-3 border transition-colors",
-              focused === "confirmPassword" ? "border-us/50" : "border-border"
-            )}
-          >
+          <div className="bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
             <label
               htmlFor="confirmPassword"
               className="text-caption-italic text-text-dim block cursor-pointer"
@@ -299,10 +260,7 @@ function RegisterForm() {
             <input
               id="confirmPassword"
               type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              onFocus={() => setFocused("confirmPassword")}
-              onBlur={() => setFocused(null)}
+              {...register("confirmPassword")}
               className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 tracking-widest focus:outline-none"
               autoComplete="new-password"
               required
