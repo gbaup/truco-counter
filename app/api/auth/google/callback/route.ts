@@ -115,8 +115,8 @@ export async function GET(request: Request) {
         return redirect("/register?error=username_collision");
       }
 
-      const name = googleUser.given_name ?? emailPrefix;
-      const lastName = googleUser.family_name ?? "";
+      const name = (googleUser.given_name ?? emailPrefix).trim().toLowerCase();
+      const lastName = (googleUser.family_name ?? "").trim().toLowerCase();
 
       // Derive a random 16-byte password placeholder — user never needs to know it
       const passwordPlaceholder = randomBytes(16).toString("hex");
