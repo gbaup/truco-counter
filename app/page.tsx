@@ -28,6 +28,7 @@ export default function Home() {
     isLoaded,
     isSaving,
     isStarting,
+    isFreePlay,
     startMatch,
     finishMatch,
     incrementScore,
@@ -64,17 +65,20 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SideDrawer
-        isOpen={drawerOpen}
-        onToggle={() => setDrawerOpen((v) => !v)}
-        onClose={() => setDrawerOpen(false)}
-      />
+      {!isFreePlay && (
+        <SideDrawer
+          isOpen={drawerOpen}
+          onToggle={() => setDrawerOpen((v) => !v)}
+          onClose={() => setDrawerOpen(false)}
+        />
+      )}
 
       {matchState.view === "setup" ? (
         <MatchSetup
           onStartMatch={handleStartMatch}
           isStarting={isStarting}
-          onMenuOpen={() => setDrawerOpen(true)}
+          freePlay={isFreePlay}
+          onMenuOpen={isFreePlay ? undefined : () => setDrawerOpen(true)}
         />
       ) : (
         <main className="w-full">

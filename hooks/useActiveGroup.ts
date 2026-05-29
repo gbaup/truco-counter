@@ -22,7 +22,7 @@ const activeGroupCookie = {
 
 export function useActiveGroup() {
   const queryClient = useQueryClient();
-  const { data: groups = [] } = useMyGroups();
+  const { data: groups = [], isPending: isGroupsPending } = useMyGroups();
 
   const [storedId, setStoredId] = useState<string | null>(() => activeGroupCookie.read());
 
@@ -33,6 +33,8 @@ export function useActiveGroup() {
 
   const activeGroup = groups.find((g) => g.id === activeGroupId) ?? null;
 
+  const isFreePlay = !isGroupsPending && groups.length === 0;
+
   const setActiveGroup = useCallback(
     (groupId: string) => {
       activeGroupCookie.write(groupId);
@@ -42,5 +44,5 @@ export function useActiveGroup() {
     [queryClient]
   );
 
-  return { activeGroupId, activeGroup, setActiveGroup, groups };
+  return { activeGroupId, activeGroup, setActiveGroup, groups, isFreePlay };
 }
