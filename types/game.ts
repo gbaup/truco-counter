@@ -8,4 +8,5 @@ export interface MatchState {
     score1: number;
     score2: number;
     matchId?: string;
+    groupId?: string;
 }

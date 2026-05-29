@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { twMerge } from "tailwind-merge";
 import BottomSheet from "@/components/ui/BottomSheet";
 import PlayerAvatar from "@/components/ui/PlayerAvatar";
+import { FilterIcon, CloseIcon, CheckIcon } from "@/components/ui/icons";
 import type { RosterEntry } from "@/types/match";
 
 interface PlayerFilterPickerProps {
@@ -51,18 +52,7 @@ export default function PlayerFilterPicker({
             className="w-full flex items-center justify-between bg-surface border border-border rounded-xl px-3.5 py-2.5 text-text"
           >
             <span className="flex items-center gap-2 text-[13px] font-semibold">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 6h18M6 12h12M10 18h4" />
-              </svg>
+              <FilterIcon size={14} />
               {t("matchHistory.filterHeadline")}
             </span>
             <span
@@ -112,18 +102,7 @@ export default function PlayerFilterPicker({
               aria-label={t("matchHistory.removeFilter")}
               className="text-text-dim p-1 flex items-center shrink-0"
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
+              <CloseIcon size={14} />
             </button>
           </div>
         )}
@@ -184,18 +163,7 @@ export default function PlayerFilterPicker({
                         : "border-border bg-surface-elevated text-transparent"
                     )}
                   >
-                    <svg
-                      width="10"
-                      height="10"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M20 6L9 17l-5-5" />
-                    </svg>
+                    <CheckIcon size={10} />
                   </div>
                 </button>
               </li>

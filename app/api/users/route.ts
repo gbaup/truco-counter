@@ -1,9 +1,27 @@
-import { prisma } from "@/lib/prisma"; // Importamos tu cliente
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { getSession } from "@/lib/auth";
+import { assertGroupMember } from "@/lib/withAuth";
+import { Session } from "@/types/auth";
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
+        const { searchParams } = new URL(request.url);
+        const groupId = searchParams.get("groupId");
+
+        if (groupId) {
+            const session = (await getSession()) as Session | null;
+            if (!session?.userId) {
+                return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            }
+            const rejection = await assertGroupMember(groupId, session.userId);
+            if (rejection) return rejection;
+        }
+
         const users = await prisma.users.findMany({
+            where: groupId
+                ? { group_memberships: { some: { group_id: groupId } } }
+                : undefined,
             select: {
                 id: true,
                 name: true,

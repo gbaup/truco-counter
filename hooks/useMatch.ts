@@ -8,8 +8,10 @@ import {
     saveMatch as persistMatch,
     clearMatch,
 } from "@/lib/persistence/matchStorage";
+import { useActiveGroup } from "./useActiveGroup";
 
 export function useMatch() {
+    const { activeGroupId } = useActiveGroup();
     const [matchState, setMatchState] = useState<MatchState>({
         view: "setup",
         team1: [],
@@ -37,12 +39,13 @@ export function useMatch() {
         if (isStarting) return;
         setIsStarting(true);
         try {
-            const match = await createMatch({ team1, team2, status: "ongoing" });
+            const match = await createMatch({ team1, team2, status: "ongoing", groupId: activeGroupId ?? undefined });
             setMatchState({
                 view: "match",
                 team1, team2, maxPoints,
                 score1: 0, score2: 0,
                 matchId: match.id,
+                groupId: activeGroupId ?? undefined,
             });
         } catch (error: unknown) {
             console.error(error);

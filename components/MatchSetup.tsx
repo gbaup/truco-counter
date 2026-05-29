@@ -6,7 +6,7 @@ import { PublicUser } from "@/types/database";
 import { useUsers } from "@/hooks/useUsers";
 import { useTranslation } from "react-i18next";
 import Logo from "@/components/ui/Logo";
-import MenuIcon from "@/components/ui/MenuIcon";
+import { MenuIcon, SpinnerIcon, ArrowRightIcon } from "@/components/ui/icons";
 import Suit, { SuitKind } from "@/components/ui/Suit";
 
 interface MatchSetupProps {
@@ -125,7 +125,7 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
           aria-label="Menú"
         >
-          <MenuIcon />
+          <MenuIcon size={16} />
         </button>
       </div>
 
@@ -276,19 +276,14 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
           )}
         >
           {isStarting ? (
-            <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
+            <SpinnerIcon className="h-5 w-5 animate-spin" />
           ) : (
             <>
               {!canStart && (team1.length < 2 || team2.length < 2)
                 ? t("matchSetup.button.disabled")
                 : t("matchSetup.button.start")}
               {canStart && (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
+                <ArrowRightIcon size={16} />
               )}
             </>
           )}

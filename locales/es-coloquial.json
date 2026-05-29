@@ -22,7 +22,97 @@
             "oauth_error": "Algo salió mal con Google",
             "oauth_state_mismatch": "Error de seguridad. Probá de nuevo.",
             "google_already_linked": "Esa cuenta de Google ya la tiene otro"
+        },
+        "noAccount": "¿No tenés cuenta?",
+        "registerLink": "Registrarse"
+    },
+    "register": {
+        "tagline": "tu mesa, tu marca, tu ranking",
+        "name": "nombre",
+        "lastName": "apellido",
+        "username": "apodo",
+        "usernameHint": "3-20 caracteres · sin espacios · letras y números",
+        "email": "email (opcional)",
+        "password": "contraseña",
+        "passwordHint": "mínimo 6 caracteres",
+        "confirmPassword": "confirmá la contraseña",
+        "usernameInvalid": "sólo minúsculas, números y guión bajo",
+        "usernameTaken": "ya hay un @{{user}} en el grupo",
+        "button": "¡A jugar!",
+        "orContinueWith": "o entrá con",
+        "googleButton": "Registrarse con Google",
+        "alreadyHaveAccount": "¿Ya tenés cuenta?",
+        "loginLink": "Entrar",
+        "errors": {
+            "passwordMismatch": "las contraseñas no coinciden",
+            "passwordTooShort": "la contraseña tiene que tener por lo menos 6 caracteres",
+            "joinFailed": "no se pudo unir al grupo · entrás desde la app"
         }
+    },
+    "join": {
+        "overline": "Te están esperando",
+        "invalidTitle": "Este link ya no sirve",
+        "invalidDescription": "El link de invitación fue revocado o no existe.",
+        "goToLogin": "ir al inicio",
+        "memberCount_one": "{{count}} jugador en la mesa",
+        "memberCount_other": "{{count}} jugadores en la mesa",
+        "createAccount": "Crear cuenta",
+        "alreadyHaveAccount": "ya tengo cuenta",
+        "alreadyMember": "ya sos de {{groupName}}, campeon",
+        "goHome": "ir al inicio",
+        "step": "sumarse",
+        "headline": "Unite a una mesa",
+        "description": "Pegá el link o el código que te pasaron.",
+        "fieldLabel": "link o código de invitación",
+        "placeholder": "trucopro.app/join/…",
+        "previewOverline": "te estás sumando a",
+        "previewMeta": "{{count}} en la mesa · creada por {{admin}}",
+        "invalid": "ese código no existe o ya venció",
+        "submit": "Unirme",
+        "submitTo": "Unirme a {{group}}",
+        "noInvite": "¿No te invitó nadie todavía?",
+        "noInviteCreate": "Creá tu mesa",
+        "invitedDescription": "Te están esperando en la mesa."
+    },
+    "groups": {
+        "new": {
+            "overline": "nuevo grupo",
+            "headline": "armá tu grupo",
+            "description": "ponele nombre a tu mesa.",
+            "nameLabel": "nombre del grupo",
+            "namePlaceholder": "Ej: la barra del jueves",
+            "submit": "Crear grupo",
+            "inviteFootnote": "En el próximo paso vas a poder invitar a tus amigos con un link."
+        },
+        "invite": {
+            "overline": "tu grupo está listo",
+            "headline": "mandales el link",
+            "description": "compartilo por WhatsApp y se unen solos.",
+            "linkLabel": "link de invitación",
+            "copy": "copiar link",
+            "copied": "¡copiado!",
+            "whatsapp": "mandar por WhatsApp",
+            "whatsappText": "sumáte a nuestra mesa de truco:",
+            "skipToApp": "ir a la app",
+            "loadError": "no se pudo cargar el link"
+        }
+    },
+    "onboarding": {
+        "choose": {
+            "step": "elegir mesa",
+            "overline": "una última cosa, {{name}}",
+            "headline": "¿Armás o te sumás?",
+            "createTitle": "Crear una mesa nueva",
+            "createSub": "Sos el primero. Después invitás al resto.",
+            "joinTitle": "Unirme a una mesa",
+            "joinSub": "Te pasaron un link o un código.",
+            "footnote": "Podés cambiar de mesa cuando quieras."
+        }
+    },
+    "landing": {
+        "tagline": "tu mesa, tu marca, tu ranking",
+        "createGroup": "armar mi grupo",
+        "alreadyHaveAccount": "ya tengo cuenta"
     },
     "matchSetup": {
         "team1": "Nosotros",
@@ -63,7 +153,9 @@
         "history": "Historial",
         "settings": "ajustes",
         "admin": "administración",
-        "logout": "levantarse de la mesa"
+        "logout": "levantarse de la mesa",
+        "group": "tu mesa",
+        "changeGroup": "cambiar de grupo"
     },
     "settings": {
         "account": {
@@ -127,7 +219,15 @@
         "count": "{{count}} en la mesa",
         "search": "buscar jugador...",
         "new": "Nuevo",
-        "loadError": "no se pudieron cargar los jugadores"
+        "loadError": "no se pudieron cargar los jugadores",
+        "groupAdmin": {
+            "title": "tu grupo",
+            "inviteSection": "link de invitación",
+            "copy": "copiar",
+            "copied": "¡copiado!",
+            "revoke": "revocar y generar nuevo",
+            "revoking": "generando..."
+        }
     },
     "create": {
         "overline": "nuevo jugador",
@@ -178,6 +278,14 @@
             "alreadyLinked": "Esa cuenta la tiene otro jugador",
             "unlinkError": "No se pudo desligar"
         }
+    },
+    "groupName": {
+        "edit": "editar nombre del grupo",
+        "overline": "editando el grupo",
+        "headline": "nuevo nombre",
+        "placeholder": "nombre del grupo",
+        "hint": "1-30 caracteres · como quieras llamar a la mesa",
+        "savedToast": "ahora es {{name}}"
     },
     "statistics": {
         "glickoDescription": "Ajusta por incertidumbre e inactividad",

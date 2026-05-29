@@ -28,8 +28,15 @@ export default function ChangeNicknameSheet({
 }: ChangeNicknameSheetProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState(currentNickname);
+  const [prevNickname, setPrevNickname] = useState(currentNickname);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  if (prevNickname !== currentNickname) {
+    setPrevNickname(currentNickname);
+    setDraft(currentNickname);
+    setError(null);
+  }
 
   const hasChanged = draft !== currentNickname;
   const isValid = USERNAME_RE.test(draft);

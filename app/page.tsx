@@ -16,6 +16,7 @@ export default function Home() {
   const router = useRouter();
   const { data: me } = useCurrentUser();
 
+  // Self-registered users always have passwordChanged=true, so this redirect never fires for them.
   useEffect(() => {
     if (me && !me.passwordChanged) {
       router.replace("/change-password");
@@ -85,6 +86,7 @@ export default function Home() {
             onMenuOpen={() => setDrawerOpen(true)}
           />
           <WinnerModal
+            open={!!winner}
             winner={winner}
             onFinish={() =>
               finishMatch({
@@ -95,19 +97,18 @@ export default function Home() {
             }
             isLoading={isSaving}
           />
-          {showExitModal && (
-            <ConfirmationExitModal
-              onConfirm={() => {
-                setShowExitModal(false);
-                finishMatch({
-                  score1: matchState.score1,
-                  score2: matchState.score2,
-                  status: "cancelled",
-                });
-              }}
-              onCancel={() => setShowExitModal(false)}
-            />
-          )}
+          <ConfirmationExitModal
+            open={showExitModal}
+            onConfirm={() => {
+              setShowExitModal(false);
+              finishMatch({
+                score1: matchState.score1,
+                score2: matchState.score2,
+                status: "cancelled",
+              });
+            }}
+            onCancel={() => setShowExitModal(false)}
+          />
         </main>
       )}
     </div>

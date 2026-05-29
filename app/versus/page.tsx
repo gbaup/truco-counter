@@ -5,7 +5,7 @@ import SideDrawer from "@/components/SideDrawer";
 import UserDropdown from "@/components/UserDropdown";
 import VersusResults from "@/components/VersusResults";
 import Logo from "@/components/ui/Logo";
-import MenuIcon from "@/components/ui/MenuIcon";
+import { MenuIcon } from "@/components/ui/icons";
 import { useUsers } from "@/hooks/useUsers";
 import { useVersusStats } from "@/hooks/useVersusStats";
 
@@ -39,7 +39,7 @@ export default function VersusPage() {
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
           aria-label="Menú"
         >
-          <MenuIcon />
+          <MenuIcon size={16} />
         </button>
       </div>
 

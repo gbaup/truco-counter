@@ -31,6 +31,7 @@ export interface CreateMatchDto {
     team1: PublicUser[];
     team2: PublicUser[];
     status?: "ongoing" | "finished";
+    groupId?: string;
 }
 
 export interface UpdateMatchDto {

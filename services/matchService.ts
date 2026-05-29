@@ -21,8 +21,12 @@ export function saveMatch(matchData: CreateMatchDto) {
   return createMatch({ ...matchData, status: "finished" });
 }
 
-export async function getMatches(userId?: string): Promise<MatchHistoryItem[]> {
-  const url = userId ? `/api/matches?userId=${userId}` : "/api/matches";
+export async function getMatches(userId?: string, groupId?: string): Promise<MatchHistoryItem[]> {
+  const params = new URLSearchParams();
+  if (userId) params.set("userId", userId);
+  if (groupId) params.set("groupId", groupId);
+  const query = params.toString();
+  const url = query ? `/api/matches?${query}` : "/api/matches";
   try {
     return await fetchJSON<MatchHistoryItem[]>(url);
   } catch (error) {

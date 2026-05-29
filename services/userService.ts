@@ -20,27 +20,31 @@ export async function updateUserUsername(
   });
 }
 
-export async function getUsers(): Promise<PublicUser[]> {
+export async function getUsers(groupId?: string): Promise<PublicUser[]> {
+  const url = groupId ? `/api/users?groupId=${groupId}` : "/api/users";
   try {
-    return await fetchJSON<PublicUser[]>("/api/users");
+    return await fetchJSON<PublicUser[]>(url);
   } catch (error) {
     console.error("Error fetching users:", error);
     return [];
   }
 }
 
-export async function getUserStats(): Promise<UserStats[]> {
+export async function getUserStats(groupId?: string): Promise<UserStats[]> {
+  const url = groupId ? `/api/users/stats?groupId=${groupId}` : "/api/users/stats";
   try {
-    return await fetchJSON<UserStats[]>("/api/users/stats");
+    return await fetchJSON<UserStats[]>(url);
   } catch (error) {
     console.error("Error fetching user stats:", error);
     return [];
   }
 }
 
-export async function getUsersVersus(p1Id: string, p2Id: string): Promise<VersusStats | null> {
+export async function getUsersVersus(p1Id: string, p2Id: string, groupId?: string): Promise<VersusStats | null> {
+  const base = `/api/users/versus?p1=${p1Id}&p2=${p2Id}`;
+  const url = groupId ? `${base}&groupId=${groupId}` : base;
   try {
-    return await fetchJSON<VersusStats>(`/api/users/versus?p1=${p1Id}&p2=${p2Id}`);
+    return await fetchJSON<VersusStats>(url);
   } catch (error) {
     console.error(error);
     return null;
