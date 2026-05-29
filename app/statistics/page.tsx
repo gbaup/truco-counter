@@ -64,7 +64,7 @@ export default function StatisticsPage() {
     try {
       const res = await fetch("/api/admin/sync-ratings", { method: "POST" });
       if (!res.ok) throw new Error("Failed");
-      queryClient.invalidateQueries({ queryKey: queryKeys.userStats });
+      queryClient.invalidateQueries({ queryKey: queryKeys.userStats() });
       setSyncStatus("success");
     } catch {
       setSyncStatus("error");

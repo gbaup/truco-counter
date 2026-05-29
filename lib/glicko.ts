@@ -47,9 +47,10 @@ export function teamAggregate(members: PlayerRating[]): PlayerRating {
   };
 }
 
-export function missedMatchesWhere(since: Date, before?: Date) {
+export function missedMatchesWhere(since: Date, before?: Date, groupId?: string | null) {
   return {
     status: "finished" as const,
     created_at: before ? { gt: since, lt: before } : { gt: since },
+    ...(groupId ? { group_id: groupId } : {}),
   };
 }

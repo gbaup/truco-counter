@@ -122,7 +122,9 @@
         "history": "Historial",
         "settings": "Ajustes",
         "admin": "Administración",
-        "logout": "Cerrar sesión"
+        "logout": "Cerrar sesión",
+        "group": "Grupo activo",
+        "changeGroup": "Cambiar grupo"
     },
     "settings": {
         "account": {

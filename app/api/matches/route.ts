@@ -8,13 +8,37 @@ import { withAuth } from "@/lib/withAuth";
 export const POST = withAuth(async (request, session: Session) => {
     try {
         const body: CreateMatchDto = await request.json();
-        const { score1, score2, team1, team2, winner_team, status } = body;
+        const { score1, score2, team1, team2, winner_team, status, groupId } = body;
 
         if (!team1 || team1.length === 0 || !team2 || team2.length === 0) {
             return NextResponse.json(
                 { success: false, error: "Both teams must have at least one player" },
                 { status: 400 }
             );
+        }
+
+        if (groupId) {
+            const allPlayerIds = [...team1, ...team2].map((u) => u.id);
+            const memberIds = await prisma.group_memberships
+                .findMany({
+                    where: { group_id: groupId, user_id: { in: [session.userId, ...allPlayerIds] } },
+                    select: { user_id: true },
+                })
+                .then((rows) => new Set(rows.map((r) => r.user_id)));
+
+            if (!memberIds.has(session.userId)) {
+                return NextResponse.json(
+                    { success: false, error: "You are not a member of this group" },
+                    { status: 403 }
+                );
+            }
+            const nonMembers = allPlayerIds.filter((id) => !memberIds.has(id));
+            if (nonMembers.length > 0) {
+                return NextResponse.json(
+                    { success: false, error: "All players must be members of the group" },
+                    { status: 400 }
+                );
+            }
         }
 
         const allPlayerIds = [...team1, ...team2].map(user => user.id);
@@ -67,6 +91,7 @@ export const POST = withAuth(async (request, session: Session) => {
                         winner_team: winner_team,
                         status: matchStatus,
                         created_by: session.userId,
+                        group_id: groupId ?? null,
                         match_participants: {
                             create: [
                                 ...team1Ids.map((id) => ({ user_id: id, team: 1 })),
@@ -82,6 +107,7 @@ export const POST = withAuth(async (request, session: Session) => {
                     winner_team as 1 | 2,
                     created.created_at!,
                     created.id,
+                    groupId ?? null,
                 );
                 return created;
             })
@@ -92,6 +118,7 @@ export const POST = withAuth(async (request, session: Session) => {
                     winner_team: winner_team,
                     status: matchStatus,
                     created_by: session.userId,
+                    group_id: groupId ?? null,
                     match_participants: {
                         create: [
                             ...team1Ids.map((id) => ({ user_id: id, team: 1 })),
@@ -115,11 +142,13 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId");
+        const groupId = searchParams.get("groupId");
 
         const matches = await prisma.matches.findMany({
             where: {
                 status: "finished",
                 ...(userId ? { match_participants: { some: { user_id: userId } } } : {}),
+                ...(groupId ? { group_id: groupId } : {}),
             },
             include: {
                 match_participants: {

@@ -1,9 +1,15 @@
-import { prisma } from "@/lib/prisma"; // Importamos tu cliente
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
+        const { searchParams } = new URL(request.url);
+        const groupId = searchParams.get("groupId");
+
         const users = await prisma.users.findMany({
+            where: groupId
+                ? { group_memberships: { some: { group_id: groupId } } }
+                : undefined,
             select: {
                 id: true,
                 name: true,

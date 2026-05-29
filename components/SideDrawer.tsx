@@ -10,6 +10,7 @@ import Suit from "@/components/ui/Suit";
 import PaperPanel from "@/components/ui/PaperPanel";
 import RoleBadge from "@/components/admin/RoleBadge";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useActiveGroup } from "@/hooks/useActiveGroup";
 import { UserRole } from "@/types/auth";
 
 interface SideDrawerProps {
@@ -25,6 +26,7 @@ export default function SideDrawer({
 }: SideDrawerProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const { data: me } = useCurrentUser();
+  const { activeGroupId, activeGroup, setActiveGroup, groups } = useActiveGroup();
   const username = me?.username ?? null;
   const role = (me?.role as UserRole) ?? null;
   const pathname = usePathname();
@@ -146,6 +148,35 @@ export default function SideDrawer({
             <Suit kind="espada" size={20} color="#1A1410" className="shrink-0" />
           </div>
         </PaperPanel>
+
+        {/* Group selector */}
+        {groups.length > 0 && (
+          <div className="mb-4">
+            <p
+              className="text-caption-italic text-text-mute mb-1.5"
+              style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
+            >
+              {t("sideDrawer.group")}
+            </p>
+            {groups.length === 1 ? (
+              <div
+                className="px-3.5 py-2 rounded-md bg-surface border border-border text-sm text-text font-medium truncate"
+              >
+                {activeGroup?.name}
+              </div>
+            ) : (
+              <select
+                value={activeGroupId ?? ""}
+                onChange={(e) => setActiveGroup(e.target.value)}
+                className="w-full px-3.5 py-2 rounded-md bg-surface border border-border text-sm text-text font-medium appearance-none cursor-pointer"
+              >
+                {groups.map((g) => (
+                  <option key={g.id} value={g.id}>{g.name}</option>
+                ))}
+              </select>
+            )}
+          </div>
+        )}
 
         {/* Section label */}
         <p

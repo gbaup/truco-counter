@@ -122,7 +122,9 @@
         "history": "Historial",
         "settings": "ajustes",
         "admin": "administración",
-        "logout": "levantarse de la mesa"
+        "logout": "levantarse de la mesa",
+        "group": "tu mesa",
+        "changeGroup": "cambiar de grupo"
     },
     "settings": {
         "account": {

@@ -16,7 +16,7 @@ export function useUpdateMyUsername() {
         if (!old) return old;
         return { ...old, username };
       });
-      queryClient.invalidateQueries({ queryKey: queryKeys.userStats });
+      queryClient.invalidateQueries({ queryKey: queryKeys.userStats() });
     },
   });
 }
