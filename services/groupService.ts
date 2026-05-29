@@ -44,3 +44,15 @@ export async function getShareLink(groupId: string): Promise<{ token: string; jo
   );
   return { token: result.token, joinUrl: result.joinUrl };
 }
+
+export async function updateGroupName(groupId: string, name: string): Promise<Group> {
+  const result = await fetchJSON<{ success: boolean; group: Group }>(
+    `/api/groups/${groupId}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    }
+  );
+  return result.group;
+}

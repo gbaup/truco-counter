@@ -278,6 +278,14 @@
             "unlinkError": "Error al desvincular"
         }
     },
+    "groupName": {
+        "edit": "Editar nombre del grupo",
+        "overline": "Editando el grupo",
+        "headline": "Nuevo nombre",
+        "placeholder": "Nombre del grupo",
+        "hint": "1-30 caracteres · como quieras llamar al grupo",
+        "savedToast": "Ahora se llama {{name}}"
+    },
     "statistics": {
         "glickoDescription": "Ajusta por incertidumbre e inactividad",
         "eloDescription": "Clásico · K=32",
