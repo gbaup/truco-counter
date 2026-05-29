@@ -9,6 +9,8 @@ import Suit from "@/components/ui/Suit";
 import Logo from "@/components/ui/Logo";
 import { toast } from "sonner";
 import { joinGroup } from "@/services/auth";
+import OnboardingField from "@/components/onboarding/OnboardingField";
+import PasswordField from "@/components/onboarding/PasswordField";
 
 type LoginFields = {
   username: string;
@@ -51,25 +53,26 @@ export default function LoginPage() {
 
   return (
     <div className="bg-background min-h-screen relative overflow-hidden flex flex-col">
+      {/* felt glow */}
       <div
-        className="absolute top-0 left-0 w-80 h-80 bg-them opacity-20 rounded-full pointer-events-none"
-        style={{ filter: "blur(120px)", transform: "translate(-30%, -30%)" }}
-      />
-      <div
-        className="absolute bottom-0 right-0 w-80 h-80 bg-us opacity-20 rounded-full pointer-events-none"
-        style={{ filter: "blur(120px)", transform: "translate(30%, 30%)" }}
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 40% at 18% -5%, color-mix(in srgb, var(--color-them) 12%, transparent) 0%, transparent 60%), radial-gradient(ellipse 80% 45% at 85% 4%, color-mix(in srgb, var(--color-us) 13%, transparent) 0%, transparent 60%)",
+        }}
       />
 
-      {/* Decorative card — 1 de espada (right, front) */}
+      {/* corner ace */}
       <div
         className="absolute bg-paper shadow-raised rounded-lg pointer-events-none"
         style={{
-          top: 90,
-          right: -40,
-          width: 140,
-          height: 200,
-          transform: "rotate(18deg)",
-          padding: 14,
+          top: 60,
+          right: -28,
+          width: 120,
+          height: 172,
+          transform: "rotate(16deg)",
+          opacity: 0.62,
+          padding: 12,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -78,47 +81,16 @@ export default function LoginPage() {
       >
         <span
           className="self-start text-paper-ink leading-none"
-          style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 30, fontWeight: 800 }}
+          style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 26, fontWeight: 800 }}
         >
           1
         </span>
-        <Suit kind="espada" size={50} color="#1A1410" />
+        <Suit kind="espada" size={42} color="#1A1410" />
         <span
           className="self-end text-paper-ink leading-none rotate-180"
-          style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 30, fontWeight: 800 }}
+          style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 26, fontWeight: 800 }}
         >
           1
-        </span>
-      </div>
-
-      {/* Decorative card — 7 de copa (left, back) */}
-      <div
-        className="absolute bg-paper shadow-raised rounded-lg pointer-events-none opacity-70"
-        style={{
-          top: 130,
-          left: -50,
-          width: 140,
-          height: 200,
-          transform: "rotate(-15deg)",
-          padding: 14,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <span
-          className="self-start text-paper-ink leading-none"
-          style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 30, fontWeight: 800 }}
-        >
-          7
-        </span>
-        <Suit kind="copa" size={50} color="#1A1410" />
-        <span
-          className="self-end text-paper-ink leading-none rotate-180"
-          style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 30, fontWeight: 800 }}
-        >
-          7
         </span>
       </div>
 
@@ -133,41 +105,21 @@ export default function LoginPage() {
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-10 w-full flex flex-col gap-2.5">
-          <div className="bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
-            <label
-              htmlFor="username"
-              className="text-caption-italic text-text-dim block cursor-pointer"
-              style={{ fontFamily: "var(--font-crimson-pro), serif" }}
-            >
-              {t("login.username")}
-            </label>
-            <input
-              id="username"
-              type="text"
-              {...register("username")}
-              className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 focus:outline-none"
-              autoComplete="username"
-              required
-            />
-          </div>
+          <OnboardingField
+            id="username"
+            label={t("login.username")}
+            {...register("username")}
+            autoComplete="username"
+            required
+          />
 
-          <div className="bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
-            <label
-              htmlFor="password"
-              className="text-caption-italic text-text-dim block cursor-pointer"
-              style={{ fontFamily: "var(--font-crimson-pro), serif" }}
-            >
-              {t("login.password")}
-            </label>
-            <input
-              id="password"
-              type="password"
-              {...register("password")}
-              className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 tracking-widest focus:outline-none"
-              autoComplete="current-password"
-              required
-            />
-          </div>
+          <PasswordField
+            id="password"
+            label={t("login.password")}
+            {...register("password")}
+            autoComplete="current-password"
+            required
+          />
 
           <button
             type="submit"
@@ -186,16 +138,7 @@ export default function LoginPage() {
             ) : (
               <>
                 {t("login.button")}
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </>

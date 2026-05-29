@@ -26,7 +26,7 @@ const EyeIcon = ({ off }: { off: boolean }) => (
 );
 
 const PasswordField = forwardRef<HTMLInputElement, Props>(function PasswordField(
-  { label = "Contraseña", hint = "Mínimo 6 caracteres", ...rest },
+  { label = "Contraseña", hint, ...rest },
   ref
 ) {
   const [show, setShow] = useState(false);
