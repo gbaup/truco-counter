@@ -111,7 +111,7 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen, freeP
     >
       {/* Header */}
       <div
-        className={twMerge("flex items-center px-5 pt-14 pb-3", freePlay ? "justify-center gap-3" : "justify-between")}
+        className={twMerge("flex items-center px-5 pt-14 pb-3 justify-between")}
         onClick={(e) => e.stopPropagation()}
       >
         <Logo size={18} />
@@ -121,15 +121,13 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen, freeP
         >
           {t("sideDrawer.home")}
         </span>
-        {!freePlay && (
-          <button
-            onClick={onMenuOpen}
-            className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
-            aria-label="Menú"
-          >
-            <MenuIcon size={16} />
-          </button>
-        )}
+        <button
+          onClick={onMenuOpen}
+          className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
+          aria-label="Menú"
+        >
+          <MenuIcon size={16} />
+        </button>
       </div>
 
       {/* Body */}

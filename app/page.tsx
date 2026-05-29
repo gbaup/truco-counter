@@ -65,20 +65,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      {!isFreePlay && (
-        <SideDrawer
-          isOpen={drawerOpen}
-          onToggle={() => setDrawerOpen((v) => !v)}
-          onClose={() => setDrawerOpen(false)}
-        />
-      )}
+      <SideDrawer
+        isOpen={drawerOpen}
+        onToggle={() => setDrawerOpen((v) => !v)}
+        onClose={() => setDrawerOpen(false)}
+      />
 
       {matchState.view === "setup" ? (
         <MatchSetup
           onStartMatch={handleStartMatch}
           isStarting={isStarting}
           freePlay={isFreePlay}
-          onMenuOpen={isFreePlay ? undefined : () => setDrawerOpen(true)}
+          onMenuOpen={() => setDrawerOpen(true)}
         />
       ) : (
         <main className="w-full">
