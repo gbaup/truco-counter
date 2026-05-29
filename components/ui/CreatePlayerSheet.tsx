@@ -38,6 +38,10 @@ export default function CreatePlayerSheet({
     try {
       await createPlayerMutation.mutateAsync({ firstName, lastName, username });
       toast.success(t("create.savedToast", { name: username }));
+      setFirstName("");
+      setLastName("");
+      setUsername("");
+      setErrors({});
       onCreated();
       onClose();
     } catch (e: unknown) {

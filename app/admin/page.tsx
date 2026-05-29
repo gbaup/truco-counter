@@ -111,14 +111,12 @@ export default function AdminPage() {
       {isSystemAdmin && (
         <>
           <CreatePlayerSheet
-            key={creating ? "open" : "closed"}
             open={creating}
             onClose={() => setCreating(false)}
             onCreated={() => {}}
           />
 
           <ChangeNicknameSheet
-            key={editingUser?.id ?? "no-user"}
             open={!!editingUser}
             currentNickname={editingUser?.username ?? ""}
             overline={t("nickname.overline.admin", { name: editingUser?.username ?? "" })}
