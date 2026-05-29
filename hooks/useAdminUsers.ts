@@ -4,8 +4,8 @@ import { useState } from "react";
 import { AdminUser } from "@/types/database";
 import { useAdminUsersList } from "./useAdminUsersList";
 
-export function useAdminUsers() {
-  const { data: players = [], error, isPending: isLoading } = useAdminUsersList();
+export function useAdminUsers(enabled = true) {
+  const { data: players = [], error, isPending: isLoading } = useAdminUsersList(enabled);
   const [query, setQuery] = useState("");
   const [creating, setCreating] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);

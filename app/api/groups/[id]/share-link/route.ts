@@ -27,6 +27,7 @@ export const GET = withGroupMemberAuth(async (_request: Request, session: Sessio
 
     return NextResponse.json({
       success: true,
+      tokenId: activeToken.id,
       token: activeToken.token,
       joinUrl: `${appUrl}/join/${activeToken.token}`,
     });

@@ -188,7 +188,15 @@
         "count": "{{count}} en la mesa",
         "search": "buscar jugador...",
         "new": "Nuevo",
-        "loadError": "no se pudieron cargar los jugadores"
+        "loadError": "no se pudieron cargar los jugadores",
+        "groupAdmin": {
+            "title": "tu grupo",
+            "inviteSection": "link de invitación",
+            "copy": "copiar",
+            "copied": "¡copiado!",
+            "revoke": "revocar y generar nuevo",
+            "revoking": "generando..."
+        }
     },
     "create": {
         "overline": "nuevo jugador",

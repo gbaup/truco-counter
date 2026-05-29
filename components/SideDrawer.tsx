@@ -29,6 +29,7 @@ export default function SideDrawer({
   const { activeGroupId, activeGroup, setActiveGroup, groups } = useActiveGroup();
   const username = me?.username ?? null;
   const role = (me?.role as UserRole) ?? null;
+  const isGroupAdmin = groups.some((g) => g.admin_id === me?.userId);
   const pathname = usePathname();
   const { t } = useTranslation();
 
@@ -223,7 +224,7 @@ export default function SideDrawer({
         </nav>
 
         {/* Admin section */}
-        {role === UserRole.admin && (
+        {(role === UserRole.admin || isGroupAdmin) && (
           <div className="mt-4">
             <p
               className="text-caption-italic text-text-mute mb-1.5"

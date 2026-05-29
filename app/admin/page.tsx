@@ -12,7 +12,9 @@ import AdminSearchBar from "@/components/admin/AdminSearchBar";
 import AdminUserRow from "@/components/admin/AdminUserRow";
 import ChangeNicknameSheet from "@/components/ui/ChangeNicknameSheet";
 import CreatePlayerSheet from "@/components/ui/CreatePlayerSheet";
+import GroupAdminSection from "@/components/admin/GroupAdminSection";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useMyGroups } from "@/hooks/useMyGroups";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 import { useUpdateUserUsername } from "@/hooks/useUpdateUserUsername";
 import LoadingScreen from "@/components/ui/LoadingScreen";
@@ -23,6 +25,12 @@ export default function AdminPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { data: me, isPending: meLoading } = useCurrentUser();
+  const { data: groups = [], isPending: groupsLoading } = useMyGroups();
+
+  const isSystemAdmin = me?.role === "admin";
+  const adminedGroups = groups.filter((g) => g.admin_id === me?.userId);
+  const isGroupAdmin = adminedGroups.length > 0;
+
   const updateOther = useUpdateUserUsername();
   const {
     players,
@@ -35,19 +43,20 @@ export default function AdminPage() {
     setEditingUser,
     isLoading: playersLoading,
     error,
-  } = useAdminUsers();
+  } = useAdminUsers(isSystemAdmin);
 
   useEffect(() => {
     if (error) toast.error(t("admin.loadError"));
   }, [error, t]);
 
   useEffect(() => {
-    if (meLoading) return;
+    if (meLoading || groupsLoading) return;
     if (!me) { router.replace("/login"); return; }
-    if (me.role !== "admin") { router.replace("/"); return; }
-  }, [me, meLoading, router]);
+    if (!isSystemAdmin && !isGroupAdmin) { router.replace("/"); return; }
+  }, [me, meLoading, groupsLoading, isSystemAdmin, isGroupAdmin, router]);
 
-  if (meLoading || playersLoading) return <LoadingScreen />;
+  if (meLoading || groupsLoading) return <LoadingScreen />;
+  if (isSystemAdmin && playersLoading) return <LoadingScreen />;
 
   return (
     <div className="min-h-screen bg-background text-text">
@@ -76,38 +85,50 @@ export default function AdminPage() {
       </div>
 
       <main className="flex flex-col pb-5">
-        <AdminSubHeader count={players.length} onCreate={() => setCreating(true)} />
-        <AdminSearchBar value={query} onChange={setQuery} />
+        {/* Group admin section — visible to any group admin */}
+        {isGroupAdmin && <GroupAdminSection adminedGroups={adminedGroups} />}
 
-        <ul className="px-5 flex flex-col gap-1.5">
-          {filtered.map((p) => (
-            <AdminUserRow key={p.id} user={p} onEdit={setEditingUser} />
-          ))}
-          {filtered.length === 0 && query && (
-            <p className="py-8 text-center font-serif text-sm italic text-text-mute">
-              Sin resultados para &quot;{query}&quot;
-            </p>
-          )}
-        </ul>
+        {/* System admin section */}
+        {isSystemAdmin && (
+          <>
+            <AdminSubHeader count={players.length} onCreate={() => setCreating(true)} />
+            <AdminSearchBar value={query} onChange={setQuery} />
+
+            <ul className="px-5 flex flex-col gap-1.5">
+              {filtered.map((p) => (
+                <AdminUserRow key={p.id} user={p} onEdit={setEditingUser} />
+              ))}
+              {filtered.length === 0 && query && (
+                <p className="py-8 text-center font-serif text-sm italic text-text-mute">
+                  Sin resultados para &quot;{query}&quot;
+                </p>
+              )}
+            </ul>
+          </>
+        )}
       </main>
 
-      <CreatePlayerSheet
-        key={creating ? "open" : "closed"}
-        open={creating}
-        onClose={() => setCreating(false)}
-        onCreated={() => {}}
-      />
+      {isSystemAdmin && (
+        <>
+          <CreatePlayerSheet
+            key={creating ? "open" : "closed"}
+            open={creating}
+            onClose={() => setCreating(false)}
+            onCreated={() => {}}
+          />
 
-      <ChangeNicknameSheet
-        key={editingUser?.id ?? "no-user"}
-        open={!!editingUser}
-        currentNickname={editingUser?.username ?? ""}
-        overline={t("nickname.overline.admin", { name: editingUser?.username ?? "" })}
-        headline={t("nickname.headline.admin")}
-        onSave={(draft) => updateOther.mutateAsync({ userId: editingUser!.id, username: draft })}
-        onClose={() => setEditingUser(null)}
-        onSaved={() => setEditingUser(null)}
-      />
+          <ChangeNicknameSheet
+            key={editingUser?.id ?? "no-user"}
+            open={!!editingUser}
+            currentNickname={editingUser?.username ?? ""}
+            overline={t("nickname.overline.admin", { name: editingUser?.username ?? "" })}
+            headline={t("nickname.headline.admin")}
+            onSave={(draft) => updateOther.mutateAsync({ userId: editingUser!.id, username: draft })}
+            onClose={() => setEditingUser(null)}
+            onSaved={() => setEditingUser(null)}
+          />
+        </>
+      )}
     </div>
   );
 }
