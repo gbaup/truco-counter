@@ -1,9 +1,8 @@
-import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { Session } from "@/types/auth";
 import { serverT } from "@/lib/serverT";
 import { redirect } from "next/navigation";
-import { randomBytes } from "crypto";
+import { findOrCreateShareToken } from "@/lib/inviteTokens";
 import Logo from "@/components/ui/Logo";
 import ShareLinkPanel from "./ShareLinkPanel";
 
@@ -16,23 +15,7 @@ export default async function GroupInvitePage({ params }: { params: Promise<{ id
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
-
-  let activeToken = await prisma.invite_tokens.findFirst({
-    where: { group_id: groupId, revoked_at: null },
-    orderBy: { created_at: "asc" },
-  });
-
-  if (!activeToken) {
-    const token = randomBytes(24).toString("base64url");
-    activeToken = await prisma.invite_tokens.create({
-      data: {
-        group_id: groupId,
-        created_by_user_id: session.userId,
-        token,
-      },
-    });
-  }
-
+  const activeToken = await findOrCreateShareToken(groupId, session.userId);
   const joinUrl = `${appUrl}/join/${activeToken.token}`;
 
   return (

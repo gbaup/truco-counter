@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withGroupMemberAuth } from "@/lib/withAuth";
+import { toGroupMember } from "@/lib/mappers";
 
 const PAGE_SIZE = 20;
 
@@ -25,16 +26,7 @@ export const GET = withGroupMemberAuth(async (request, _session, context) => {
       prisma.group_memberships.count({ where: { group_id: id } }),
     ]);
 
-    const members = memberships.map((m) => ({
-      id: m.users!.id,
-      username: m.users!.username,
-      name: m.users!.name,
-      last_name: m.users!.last_name,
-      joined_at: m.joined_at,
-      rating: m.rating,
-      rating_deviation: m.rating_deviation,
-      elo_rating: m.elo_rating,
-    }));
+    const members = memberships.map(toGroupMember);
 
     return NextResponse.json({
       success: true,

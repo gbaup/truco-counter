@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withGroupMemberAuth } from "@/lib/withAuth";
+import { toGroupMember } from "@/lib/mappers";
 
 export const GET = withGroupMemberAuth(async (_request, _session, context) => {
   try {
@@ -25,16 +26,7 @@ export const GET = withGroupMemberAuth(async (_request, _session, context) => {
       return NextResponse.json({ success: false, error: "Group not found" }, { status: 404 });
     }
 
-    const members = group.memberships.map((m) => ({
-      id: m.users!.id,
-      username: m.users!.username,
-      name: m.users!.name,
-      last_name: m.users!.last_name,
-      joined_at: m.joined_at,
-      rating: m.rating,
-      rating_deviation: m.rating_deviation,
-      elo_rating: m.elo_rating,
-    }));
+    const members = group.memberships.map(toGroupMember);
 
     return NextResponse.json({
       success: true,

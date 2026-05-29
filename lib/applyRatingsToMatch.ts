@@ -26,6 +26,60 @@ export async function applyRatingsToMatch(
   return applyGlobalRatings(tx, team1UserIds, team2UserIds, winnerTeam, matchCreatedAt, matchId);
 }
 
+type RatingData = { rating: number; rating_deviation: number; elo_rating: number; last_decay_at: Date };
+
+async function applyRatingCalculations(
+  tx: Prisma.TransactionClient,
+  team1UserIds: string[],
+  team2UserIds: string[],
+  winnerTeam: 1 | 2,
+  matchId: string,
+  matchCreatedAt: Date,
+  decayed: Map<string, { r: number; RD: number }>,
+  eloById: Map<string, number>,
+  writeRatings: (id: string, data: RatingData) => Promise<unknown>,
+): Promise<void> {
+  const allIds = [...team1UserIds, ...team2UserIds];
+  const resolvedTeam1Ids = team1UserIds.filter((id) => decayed.has(id));
+  const resolvedTeam2Ids = team2UserIds.filter((id) => decayed.has(id));
+  const team1 = resolvedTeam1Ids.map((id) => decayed.get(id)!);
+  const team2 = resolvedTeam2Ids.map((id) => decayed.get(id)!);
+
+  if (team1.length === 0 || team2.length === 0) return;
+
+  const agg1 = teamAggregate(team1);
+  const agg2 = teamAggregate(team2);
+  const eloAvg1 = teamAvgElo(resolvedTeam1Ids.map((id) => eloById.get(id)!));
+  const eloAvg2 = teamAvgElo(resolvedTeam2Ids.map((id) => eloById.get(id)!));
+
+  await Promise.all(
+    allIds.map((id) => {
+      const current = decayed.get(id);
+      const elo = eloById.get(id);
+      if (!current || elo === undefined) return Promise.resolve();
+      const isTeam1 = team1UserIds.includes(id);
+      const opponent = isTeam1 ? agg2 : agg1;
+      const S: 0 | 1 = (isTeam1 ? 1 : 2) === winnerTeam ? 1 : 0;
+      const updated = updateRating(current, opponent, S);
+      const ratingChange = Math.round((updated.r - current.r) * 100) / 100;
+      const newElo = Math.round(updateElo(elo, isTeam1 ? eloAvg2 : eloAvg1, S) * 100) / 100;
+      const eloChange = Math.round((newElo - elo) * 100) / 100;
+      return Promise.all([
+        writeRatings(id, {
+          rating: Math.round(updated.r * 100) / 100,
+          rating_deviation: Math.round(updated.RD * 100) / 100,
+          elo_rating: newElo,
+          last_decay_at: matchCreatedAt,
+        }),
+        tx.match_participants.update({
+          where: { match_id_user_id: { match_id: matchId, user_id: id } },
+          data: { rating_change: ratingChange, elo_rating_change: eloChange },
+        }),
+      ]);
+    }),
+  );
+}
+
 async function applyGlobalRatings(
   tx: Prisma.TransactionClient,
   team1UserIds: string[],
@@ -53,52 +107,14 @@ async function applyGlobalRatings(
         where: missedMatchesWhere(p.last_decay_at, matchCreatedAt),
       });
     }
-    decayed.set(id, {
-      r: p.rating,
-      RD: applyDecay(p.rating_deviation, missedMatches),
-    });
+    decayed.set(id, { r: p.rating, RD: applyDecay(p.rating_deviation, missedMatches) });
   }
 
-  const resolvedTeam1Ids = team1UserIds.filter((id) => decayed.has(id));
-  const resolvedTeam2Ids = team2UserIds.filter((id) => decayed.has(id));
-  const team1 = resolvedTeam1Ids.map((id) => decayed.get(id)!);
-  const team2 = resolvedTeam2Ids.map((id) => decayed.get(id)!);
-
-  if (team1.length === 0 || team2.length === 0) return;
-
-  const agg1 = teamAggregate(team1);
-  const agg2 = teamAggregate(team2);
-  const eloAvg1 = teamAvgElo(resolvedTeam1Ids.map((id) => byId.get(id)!.elo_rating));
-  const eloAvg2 = teamAvgElo(resolvedTeam2Ids.map((id) => byId.get(id)!.elo_rating));
-
-  await Promise.all(
-    allIds.map((id) => {
-      const current = decayed.get(id);
-      const p = byId.get(id);
-      if (!current || !p) return Promise.resolve();
-      const isTeam1 = team1UserIds.includes(id);
-      const opponent = isTeam1 ? agg2 : agg1;
-      const S: 0 | 1 = (isTeam1 ? 1 : 2) === winnerTeam ? 1 : 0;
-      const updated = updateRating(current, opponent, S);
-      const ratingChange = Math.round((updated.r - current.r) * 100) / 100;
-      const newElo = Math.round(updateElo(p.elo_rating, isTeam1 ? eloAvg2 : eloAvg1, S) * 100) / 100;
-      const eloChange = Math.round((newElo - p.elo_rating) * 100) / 100;
-      return Promise.all([
-        tx.users.update({
-          where: { id },
-          data: {
-            rating: Math.round(updated.r * 100) / 100,
-            rating_deviation: Math.round(updated.RD * 100) / 100,
-            elo_rating: newElo,
-            last_decay_at: matchCreatedAt,
-          },
-        }),
-        tx.match_participants.update({
-          where: { match_id_user_id: { match_id: matchId, user_id: id } },
-          data: { rating_change: ratingChange, elo_rating_change: eloChange },
-        }),
-      ]);
-    }),
+  await applyRatingCalculations(
+    tx, team1UserIds, team2UserIds, winnerTeam, matchId, matchCreatedAt,
+    decayed,
+    new Map(participants.map((p) => [p.id, p.elo_rating])),
+    (id, data) => tx.users.update({ where: { id }, data }),
   );
 }
 
@@ -130,51 +146,16 @@ async function applyGroupRatings(
         where: missedMatchesWhere(m.last_decay_at, matchCreatedAt, groupId),
       });
     }
-    decayed.set(id, {
-      r: m.rating,
-      RD: applyDecay(m.rating_deviation, missedMatches),
-    });
+    decayed.set(id, { r: m.rating, RD: applyDecay(m.rating_deviation, missedMatches) });
   }
 
-  const resolvedTeam1Ids = team1UserIds.filter((id) => decayed.has(id));
-  const resolvedTeam2Ids = team2UserIds.filter((id) => decayed.has(id));
-  const team1 = resolvedTeam1Ids.map((id) => decayed.get(id)!);
-  const team2 = resolvedTeam2Ids.map((id) => decayed.get(id)!);
-
-  if (team1.length === 0 || team2.length === 0) return;
-
-  const agg1 = teamAggregate(team1);
-  const agg2 = teamAggregate(team2);
-  const eloAvg1 = teamAvgElo(resolvedTeam1Ids.map((id) => byId.get(id)!.elo_rating));
-  const eloAvg2 = teamAvgElo(resolvedTeam2Ids.map((id) => byId.get(id)!.elo_rating));
-
-  await Promise.all(
-    allIds.map((id) => {
-      const current = decayed.get(id);
-      const m = byId.get(id);
-      if (!current || !m) return Promise.resolve();
-      const isTeam1 = team1UserIds.includes(id);
-      const opponent = isTeam1 ? agg2 : agg1;
-      const S: 0 | 1 = (isTeam1 ? 1 : 2) === winnerTeam ? 1 : 0;
-      const updated = updateRating(current, opponent, S);
-      const ratingChange = Math.round((updated.r - current.r) * 100) / 100;
-      const newElo = Math.round(updateElo(m.elo_rating, isTeam1 ? eloAvg2 : eloAvg1, S) * 100) / 100;
-      const eloChange = Math.round((newElo - m.elo_rating) * 100) / 100;
-      return Promise.all([
-        tx.group_memberships.update({
-          where: { group_id_user_id: { group_id: groupId, user_id: id } },
-          data: {
-            rating: Math.round(updated.r * 100) / 100,
-            rating_deviation: Math.round(updated.RD * 100) / 100,
-            elo_rating: newElo,
-            last_decay_at: matchCreatedAt,
-          },
-        }),
-        tx.match_participants.update({
-          where: { match_id_user_id: { match_id: matchId, user_id: id } },
-          data: { rating_change: ratingChange, elo_rating_change: eloChange },
-        }),
-      ]);
+  await applyRatingCalculations(
+    tx, team1UserIds, team2UserIds, winnerTeam, matchId, matchCreatedAt,
+    decayed,
+    new Map(memberships.map((m) => [m.user_id, m.elo_rating])),
+    (id, data) => tx.group_memberships.update({
+      where: { group_id_user_id: { group_id: groupId, user_id: id } },
+      data,
     }),
   );
 }

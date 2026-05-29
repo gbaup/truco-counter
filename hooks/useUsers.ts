@@ -5,11 +5,12 @@ import { getUsers } from "@/services/userService";
 import { queryKeys } from "./queryKeys";
 import { useActiveGroup } from "./useActiveGroup";
 
-export function useUsers() {
+export function useUsers(groupId?: string) {
   const { activeGroupId } = useActiveGroup();
+  const effectiveGroupId = groupId ?? activeGroupId ?? undefined;
   return useQuery({
-    queryKey: queryKeys.users(activeGroupId ?? undefined),
-    queryFn: () => getUsers(activeGroupId ?? undefined),
+    queryKey: queryKeys.users(effectiveGroupId),
+    queryFn: () => getUsers(effectiveGroupId),
     staleTime: 2 * 60_000,
   });
 }

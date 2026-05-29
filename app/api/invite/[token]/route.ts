@@ -23,9 +23,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
 
     return NextResponse.json({
       success: true,
-      groupId: inviteToken.groups.id,
-      groupName: inviteToken.groups.name,
-      memberCount: inviteToken.groups._count.memberships,
       group: {
         id: inviteToken.groups.id,
         name: inviteToken.groups.name,
