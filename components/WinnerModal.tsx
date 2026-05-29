@@ -17,6 +17,7 @@ export default function WinnerModal({ open, winner, onFinish, isLoading }: Winne
   return (
     <div
       aria-hidden={!open}
+      inert={!open || undefined}
       className={twMerge(
         "fixed inset-0 z-50",
         open ? "pointer-events-auto" : "pointer-events-none"

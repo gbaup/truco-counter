@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { applyRatingsToMatch } from "@/lib/applyRatingsToMatch";
 import { Session } from "@/types/auth";
 import { CreateMatchDto } from "@/types/match";
-import { withAuth } from "@/lib/withAuth";
+import { withAuth, assertGroupMember } from "@/lib/withAuth";
+import { getSession } from "@/lib/auth";
 
 export const POST = withAuth(async (request, session: Session) => {
     try {
@@ -143,6 +144,15 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId");
         const groupId = searchParams.get("groupId");
+
+        if (groupId) {
+            const session = (await getSession()) as Session | null;
+            if (!session?.userId) {
+                return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            }
+            const rejection = await assertGroupMember(groupId, session.userId);
+            if (rejection) return rejection;
+        }
 
         const matches = await prisma.matches.findMany({
             where: {

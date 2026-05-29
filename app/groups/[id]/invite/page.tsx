@@ -3,6 +3,7 @@ import { Session } from "@/types/auth";
 import { serverT } from "@/lib/serverT";
 import { redirect } from "next/navigation";
 import { findOrCreateShareToken } from "@/lib/inviteTokens";
+import { prisma } from "@/lib/prisma";
 import Logo from "@/components/ui/Logo";
 import ShareLinkPanel from "./ShareLinkPanel";
 
@@ -12,6 +13,13 @@ export default async function GroupInvitePage({ params }: { params: Promise<{ id
 
   if (!session?.userId) {
     redirect("/login");
+  }
+
+  const membership = await prisma.group_memberships.findUnique({
+    where: { group_id_user_id: { group_id: groupId, user_id: session.userId } },
+  });
+  if (!membership) {
+    redirect("/");
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL!;

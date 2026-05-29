@@ -6,6 +6,7 @@ import { joinGroup } from "@/services/auth";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 import { SpinnerIcon } from "@/components/ui/icons";
+import { useTranslation } from "react-i18next";
 
 interface JoinButtonProps {
   token: string;
@@ -15,6 +16,7 @@ interface JoinButtonProps {
 export default function JoinButton({ token, groupName }: JoinButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleJoin = async () => {
     setIsLoading(true);
@@ -24,7 +26,7 @@ export default function JoinButton({ token, groupName }: JoinButtonProps) {
     if (result.success) {
       router.push("/");
     } else {
-      toast.error(result.error ?? "No se pudo unir al grupo");
+      toast.error(result.error ?? t("register.errors.joinFailed"));
     }
   };
 
@@ -32,9 +34,9 @@ export default function JoinButton({ token, groupName }: JoinButtonProps) {
     <div className="bg-background min-h-screen flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-sm flex flex-col items-center gap-6">
         <div className="text-center">
-          <p className="text-text-dim text-sm uppercase tracking-widest mb-1">Invitación</p>
+          <p className="text-text-dim text-sm uppercase tracking-widest mb-1">{t("join.overline")}</p>
           <h1 className="text-text text-2xl font-bold">{groupName}</h1>
-          <p className="text-text-dim mt-2 text-sm">Te invitaron a unirte a este grupo.</p>
+          <p className="text-text-dim mt-2 text-sm">{t("join.invitedDescription")}</p>
         </div>
 
         <button
@@ -48,7 +50,7 @@ export default function JoinButton({ token, groupName }: JoinButtonProps) {
           {isLoading ? (
             <SpinnerIcon className="h-5 w-5 animate-spin" />
           ) : (
-            "Unirme al grupo"
+            t("join.submitTo", { group: groupName })
           )}
         </button>
       </div>

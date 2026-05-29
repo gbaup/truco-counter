@@ -35,22 +35,25 @@ function OAuthErrorToast() {
   return null;
 }
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const { t } = useTranslation();
   const { isLoading, handleLogin } = useLogin();
   const { register, handleSubmit } = useForm<LoginFields>();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get("token");
 
   const onSubmit = async ({ username, password }: LoginFields) => {
     const success = await handleLogin(username, password);
     if (!success) return;
-    const token = new URLSearchParams(window.location.search).get("token");
-    if (token) {
-      const result = await joinGroup(token).catch(() => ({ success: false }));
+    if (inviteToken) {
+      const result = await joinGroup(inviteToken).catch(() => ({ success: false }));
       if (!result.success) toast.error(t("register.errors.joinFailed"));
     }
     router.push("/");
   };
+
+  const registerHref = inviteToken ? `/register?token=${inviteToken}` : "/register";
 
   return (
     <div className="bg-background min-h-screen relative overflow-hidden flex flex-col">
@@ -171,7 +174,7 @@ export default function LoginPage() {
           </a>
           <p className="text-center text-sm text-text-dim mt-2">
             {t("login.noAccount")}{" "}
-            <Link href="/register" className="text-us font-semibold">
+            <Link href={registerHref} className="text-us font-semibold">
               {t("login.registerLink")}
             </Link>
           </p>
@@ -181,5 +184,13 @@ export default function LoginPage() {
         <OAuthErrorToast />
       </Suspense>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

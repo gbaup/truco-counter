@@ -71,7 +71,8 @@
         "submit": "Unirme",
         "submitTo": "Unirme a {{group}}",
         "noInvite": "¿No te invitó nadie todavía?",
-        "noInviteCreate": "Creá tu mesa"
+        "noInviteCreate": "Creá tu mesa",
+        "invitedDescription": "Te están esperando en la mesa."
     },
     "groups": {
         "new": {

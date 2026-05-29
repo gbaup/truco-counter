@@ -72,6 +72,7 @@ export async function getUsersVersus(
         JOIN match_participants mp1 ON mp1.match_id = m.id AND mp1.user_id = ${p1}::uuid
         JOIN match_participants mp2 ON mp2.match_id = m.id AND mp2.user_id = ${p2}::uuid
         WHERE m.group_id = ${groupId}::uuid
+            AND mp1.team != mp2.team
     `;
     const stats = result[0] ?? { total_matches: 0, p1_wins: 0, p2_wins: 0, draws: 0 };
     return deserializeBigints(stats);
