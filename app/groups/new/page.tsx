@@ -5,11 +5,18 @@ import { useRouter } from "next/navigation";
 import { useCreateGroup } from "@/hooks/useCreateGroup";
 import { useTranslation } from "react-i18next";
 import Logo from "@/components/ui/Logo";
-import { twMerge } from "tailwind-merge";
+import OnboardingField from "@/components/onboarding/OnboardingField";
+
+const BackChevron = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+    <polyline points="15 18 9 12 15 6" />
+  </svg>
+);
+
+const MAX_LENGTH = 30;
 
 export default function NewGroupPage() {
   const [groupName, setGroupName] = useState("");
-  const [focused, setFocused] = useState(false);
   const router = useRouter();
   const { t } = useTranslation();
   const { isLoading, createGroup } = useCreateGroup();
@@ -23,49 +30,69 @@ export default function NewGroupPage() {
   };
 
   return (
-    <div className="bg-background min-h-screen flex flex-col items-center justify-center px-6">
-      <div className="w-full max-w-sm flex flex-col items-center gap-8">
-        <div className="flex flex-col items-center gap-2">
-          <Logo size={42} />
-          <div className="text-center">
-            <p className="text-text-dim text-xs uppercase tracking-widest">{t("groups.new.overline")}</p>
-            <h1 className="text-text text-2xl font-bold mt-1">{t("groups.new.headline")}</h1>
-            <p className="text-text-dim text-sm mt-2">{t("groups.new.description")}</p>
-          </div>
+    <div className="bg-background min-h-screen relative overflow-hidden flex flex-col">
+      {/* felt glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 40% at 18% -5%, color-mix(in srgb, var(--color-them) 12%, transparent) 0%, transparent 60%), radial-gradient(ellipse 80% 45% at 85% 4%, color-mix(in srgb, var(--color-us) 13%, transparent) 0%, transparent 60%)",
+        }}
+      />
+
+      <div className="relative flex-1 flex flex-col px-5.5 pt-6 pb-7">
+        <div className="flex items-center justify-between h-9">
+          <button
+            type="button"
+            onClick={() => router.push("/onboarding/choose")}
+            className="w-9 h-9 rounded-full bg-surface border border-border text-text flex items-center justify-center"
+          >
+            <BackChevron />
+          </button>
+          <span
+            className="text-text-mute text-[11px] tracking-[0.16em] italic"
+            style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+          >
+            {t("groups.new.overline")}
+          </span>
+          <div className="w-9" />
         </div>
 
-        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
-          <div
-            className={twMerge(
-              "bg-surface rounded-lg px-4 py-3 border transition-colors",
-              focused ? "border-us/50" : "border-border"
-            )}
+        <div className="flex flex-col items-center mt-8 mb-6">
+          <Logo size={30} />
+          <h1
+            className="text-text text-[27px] font-bold mt-4"
+            style={{ fontFamily: "var(--font-crimson-pro), serif" }}
           >
-            <label
-              htmlFor="groupName"
-              className="text-caption-italic text-text-dim block cursor-pointer"
-              style={{ fontFamily: "var(--font-crimson-pro), serif" }}
-            >
-              {t("groups.new.nameLabel")}
-            </label>
-            <input
+            {t("groups.new.headline")}
+          </h1>
+          <p className="text-text-dim text-sm mt-1.5 text-center">{t("groups.new.description")}</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+          <div>
+            <OnboardingField
               id="groupName"
-              type="text"
+              label={t("groups.new.nameLabel")}
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 focus:outline-none"
               placeholder={t("groups.new.namePlaceholder")}
+              maxLength={MAX_LENGTH}
               required
               autoFocus
             />
+            <p
+              className="text-right text-[11px] mt-1.5 pr-1"
+              style={{ fontFamily: "var(--font-space-grotesk), sans-serif", color: "var(--color-text-mute)" }}
+            >
+              {groupName.length}/{MAX_LENGTH}
+            </p>
           </div>
 
           <button
             type="submit"
             disabled={isLoading || !groupName.trim()}
-            className="w-full bg-us text-white rounded-lg py-4 text-base font-bold flex items-center justify-center gap-2 disabled:opacity-50 active:scale-[0.98] transition-transform"
+            className="w-full rounded-lg py-4 text-base font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform bg-us text-white disabled:bg-surface-elevated disabled:text-text-mute disabled:active:scale-100"
           >
             {isLoading ? (
               <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -77,6 +104,13 @@ export default function NewGroupPage() {
             )}
           </button>
         </form>
+
+        <p
+          className="mt-auto pt-6 text-center text-text-mute text-[13px] italic"
+          style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+        >
+          {t("groups.new.inviteFootnote")}
+        </p>
       </div>
     </div>
   );

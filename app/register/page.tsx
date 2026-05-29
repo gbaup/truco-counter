@@ -5,11 +5,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useRegister } from "@/hooks/useRegister";
 import { useTranslation } from "react-i18next";
 import { useForm, useWatch } from "react-hook-form";
-import Suit from "@/components/ui/Suit";
 import Logo from "@/components/ui/Logo";
+import Suit from "@/components/ui/Suit";
 import { toast } from "sonner";
 import Link from "next/link";
 import { joinGroup } from "@/services/auth";
+import OnboardingField from "@/components/onboarding/OnboardingField";
+import PasswordField from "@/components/onboarding/PasswordField";
 
 type RegisterFields = {
   name: string;
@@ -17,7 +19,6 @@ type RegisterFields = {
   username: string;
   email: string;
   password: string;
-  confirmPassword: string;
 };
 
 function RegisterForm() {
@@ -32,16 +33,11 @@ function RegisterForm() {
 
   const { onChange: onUsernameChange, ...usernameProps } = register("username");
 
-  const usernameHint = watchedUsername.length > 0
-    ? (/^[a-z0-9_]{3,20}$/.test(watchedUsername.trim()) ? null : t("register.usernameHint"))
-    : t("register.usernameHint");
+  const isValidUsername = /^[a-z0-9_]{3,20}$/.test(watchedUsername.trim());
+  const usernameError = watchedUsername.length > 0 && !isValidUsername ? t("register.usernameInvalid") : null;
+  const usernameHint = watchedUsername.length === 0 ? t("register.usernameHint") : undefined;
 
   const onSubmit = async (data: RegisterFields) => {
-    if (data.password !== data.confirmPassword) {
-      toast.error(t("register.errors.passwordMismatch"));
-      return;
-    }
-
     if (data.password.length < 6) {
       toast.error(t("register.errors.passwordTooShort"));
       return;
@@ -66,30 +62,31 @@ function RegisterForm() {
       return;
     }
 
-    router.push("/groups/new");
+    router.push(`/onboarding/choose?name=${encodeURIComponent(data.name)}`);
   };
 
   return (
     <div className="bg-background min-h-screen relative overflow-hidden flex flex-col">
+      {/* felt glow */}
       <div
-        className="absolute top-0 left-0 w-80 h-80 bg-them opacity-20 rounded-full pointer-events-none"
-        style={{ filter: "blur(120px)", transform: "translate(-30%, -30%)" }}
-      />
-      <div
-        className="absolute bottom-0 right-0 w-80 h-80 bg-us opacity-20 rounded-full pointer-events-none"
-        style={{ filter: "blur(120px)", transform: "translate(30%, 30%)" }}
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 40% at 18% -5%, color-mix(in srgb, var(--color-them) 12%, transparent) 0%, transparent 60%), radial-gradient(ellipse 80% 45% at 85% 4%, color-mix(in srgb, var(--color-us) 13%, transparent) 0%, transparent 60%)",
+        }}
       />
 
-      {/* Decorative card — 1 de espada */}
+      {/* corner ace — partially off-screen, won't overlap inputs */}
       <div
         className="absolute bg-paper shadow-raised rounded-lg pointer-events-none"
         style={{
-          top: 90,
-          right: -40,
-          width: 140,
-          height: 200,
-          transform: "rotate(18deg)",
-          padding: 14,
+          top: 60,
+          right: -28,
+          width: 120,
+          height: 172,
+          transform: "rotate(16deg)",
+          opacity: 0.62,
+          padding: 12,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -98,47 +95,16 @@ function RegisterForm() {
       >
         <span
           className="self-start text-paper-ink leading-none"
-          style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 30, fontWeight: 800 }}
+          style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 26, fontWeight: 800 }}
         >
           1
         </span>
-        <Suit kind="espada" size={50} color="#1A1410" />
+        <Suit kind="espada" size={42} color="#1A1410" />
         <span
           className="self-end text-paper-ink leading-none rotate-180"
-          style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 30, fontWeight: 800 }}
+          style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 26, fontWeight: 800 }}
         >
           1
-        </span>
-      </div>
-
-      {/* Decorative card — 7 de copa */}
-      <div
-        className="absolute bg-paper shadow-raised rounded-lg pointer-events-none opacity-70"
-        style={{
-          top: 130,
-          left: -50,
-          width: 140,
-          height: 200,
-          transform: "rotate(-15deg)",
-          padding: 14,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <span
-          className="self-start text-paper-ink leading-none"
-          style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 30, fontWeight: 800 }}
-        >
-          7
-        </span>
-        <Suit kind="copa" size={50} color="#1A1410" />
-        <span
-          className="self-end text-paper-ink leading-none rotate-180"
-          style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 30, fontWeight: 800 }}
-        >
-          7
         </span>
       </div>
 
@@ -154,120 +120,55 @@ function RegisterForm() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-10 w-full flex flex-col gap-2.5">
           <div className="flex gap-2.5">
-            <div className="flex-1 bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
-              <label
-                htmlFor="name"
-                className="text-caption-italic text-text-dim block cursor-pointer"
-                style={{ fontFamily: "var(--font-crimson-pro), serif" }}
-              >
-                {t("register.name")}
-              </label>
-              <input
+            <div className="flex-1">
+              <OnboardingField
                 id="name"
-                type="text"
+                label={t("register.name")}
                 {...register("name")}
-                className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 focus:outline-none"
                 autoComplete="given-name"
                 required
               />
             </div>
-
-            <div className="flex-1 bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
-              <label
-                htmlFor="lastName"
-                className="text-caption-italic text-text-dim block cursor-pointer"
-                style={{ fontFamily: "var(--font-crimson-pro), serif" }}
-              >
-                {t("register.lastName")}
-              </label>
-              <input
+            <div className="flex-1">
+              <OnboardingField
                 id="lastName"
-                type="text"
+                label={t("register.lastName")}
                 {...register("lastName")}
-                className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 focus:outline-none"
                 autoComplete="family-name"
                 required
               />
             </div>
           </div>
 
-          <div className="bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
-            <label
-              htmlFor="username"
-              className="text-caption-italic text-text-dim block cursor-pointer"
-              style={{ fontFamily: "var(--font-crimson-pro), serif" }}
-            >
-              {t("register.username")}
-            </label>
-            <input
-              id="username"
-              type="text"
-              {...usernameProps}
-              onChange={(e) => {
-                e.target.value = e.target.value.toLowerCase();
-                onUsernameChange(e);
-              }}
-              className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 focus:outline-none"
-              autoComplete="username"
-              required
-            />
-            {usernameHint && (
-              <p className="text-xs text-text-dim mt-1">{usernameHint}</p>
-            )}
-          </div>
+          <OnboardingField
+            id="username"
+            label={t("register.username")}
+            {...usernameProps}
+            onChange={(e) => {
+              e.target.value = e.target.value.toLowerCase();
+              onUsernameChange(e);
+            }}
+            autoComplete="username"
+            required
+            hint={usernameHint}
+            error={usernameError}
+          />
 
-          <div className="bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
-            <label
-              htmlFor="email"
-              className="text-caption-italic text-text-dim block cursor-pointer"
-              style={{ fontFamily: "var(--font-crimson-pro), serif" }}
-            >
-              {t("register.email")}
-            </label>
-            <input
-              id="email"
-              type="email"
-              {...register("email")}
-              className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 focus:outline-none"
-              autoComplete="email"
-            />
-          </div>
+          <OnboardingField
+            id="email"
+            label={t("register.email")}
+            type="email"
+            {...register("email")}
+            autoComplete="email"
+          />
 
-          <div className="bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
-            <label
-              htmlFor="password"
-              className="text-caption-italic text-text-dim block cursor-pointer"
-              style={{ fontFamily: "var(--font-crimson-pro), serif" }}
-            >
-              {t("register.password")}
-            </label>
-            <input
-              id="password"
-              type="password"
-              {...register("password")}
-              className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 tracking-widest focus:outline-none"
-              autoComplete="new-password"
-              required
-            />
-          </div>
-
-          <div className="bg-surface rounded-lg px-4 py-3 border border-border focus-within:border-us/50 transition-colors">
-            <label
-              htmlFor="confirmPassword"
-              className="text-caption-italic text-text-dim block cursor-pointer"
-              style={{ fontFamily: "var(--font-crimson-pro), serif" }}
-            >
-              {t("register.confirmPassword")}
-            </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              {...register("confirmPassword")}
-              className="w-full bg-transparent text-text font-semibold text-[15px] mt-0.5 tracking-widest focus:outline-none"
-              autoComplete="new-password"
-              required
-            />
-          </div>
+          <PasswordField
+            id="password"
+            label={t("register.password")}
+            hint={t("register.passwordHint")}
+            {...register("password")}
+            required
+          />
 
           <button
             type="submit"

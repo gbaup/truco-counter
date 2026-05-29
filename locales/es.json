@@ -32,7 +32,10 @@
         "usernameHint": "3-20 caracteres · sin espacios · letras y números",
         "email": "Email (opcional)",
         "password": "Contraseña",
+        "passwordHint": "Mínimo 6 caracteres",
         "confirmPassword": "Confirmar contraseña",
+        "usernameInvalid": "Sólo minúsculas, números y guión bajo",
+        "usernameTaken": "Ya existe ese usuario",
         "button": "Crear cuenta",
         "orContinueWith": "O continuar con",
         "googleButton": "Registrarse con Google",
@@ -54,7 +57,19 @@
         "createAccount": "Crear cuenta",
         "alreadyHaveAccount": "Ya tengo cuenta",
         "alreadyMember": "Ya sos parte de {{groupName}}",
-        "goHome": "Ir al inicio"
+        "goHome": "Ir al inicio",
+        "step": "Sumarse",
+        "headline": "Unite a un grupo",
+        "description": "Pegá el link o el código que te pasaron.",
+        "fieldLabel": "Link o código de invitación",
+        "placeholder": "trucopro.app/join/…",
+        "previewOverline": "Te estás uniendo a",
+        "previewMeta": "{{count}} en el grupo · creada por {{admin}}",
+        "invalid": "Ese código no existe o ya venció",
+        "submit": "Unirme",
+        "submitTo": "Unirme a {{group}}",
+        "noInvite": "¿No te invitó nadie todavía?",
+        "noInviteCreate": "Creá tu grupo"
     },
     "groups": {
         "new": {
@@ -63,7 +78,8 @@
             "description": "Dale un nombre a tu grupo de truco.",
             "nameLabel": "Nombre del grupo",
             "namePlaceholder": "Ej: La Barra del Jueves",
-            "submit": "Crear grupo"
+            "submit": "Crear grupo",
+            "inviteFootnote": "En el próximo paso vas a poder invitar a tus amigos con un link."
         },
         "invite": {
             "overline": "Tu grupo está listo",
@@ -76,6 +92,18 @@
             "whatsappText": "Unite a nuestro grupo de truco:",
             "skipToApp": "Ir a la app",
             "loadError": "No se pudo cargar el link"
+        }
+    },
+    "onboarding": {
+        "choose": {
+            "step": "Elegir mesa",
+            "overline": "Último paso",
+            "headline": "¿Creás o te unís?",
+            "createTitle": "Crear un grupo nuevo",
+            "createSub": "Sos el primero; después invitás al resto.",
+            "joinTitle": "Unirme a un grupo",
+            "joinSub": "Te pasaron un link o un código.",
+            "footnote": "Podés cambiar de grupo cuando quieras."
         }
     },
     "landing": {

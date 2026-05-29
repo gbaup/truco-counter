@@ -9,7 +9,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
       where: { token },
       include: {
         groups: {
-          include: { _count: { select: { memberships: true } } },
+          include: {
+            _count: { select: { memberships: true } },
+            admin: { select: { name: true } },
+          },
         },
       },
     });
@@ -23,6 +26,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
       groupId: inviteToken.groups.id,
       groupName: inviteToken.groups.name,
       memberCount: inviteToken.groups._count.memberships,
+      group: {
+        id: inviteToken.groups.id,
+        name: inviteToken.groups.name,
+        memberCount: inviteToken.groups._count.memberships,
+        createdByName: inviteToken.groups.admin.name,
+      },
     });
   } catch (error) {
     console.error("Error validating invite token:", error);

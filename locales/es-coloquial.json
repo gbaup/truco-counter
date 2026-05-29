@@ -32,7 +32,10 @@
         "usernameHint": "3-20 caracteres · sin espacios · letras y números",
         "email": "email (opcional)",
         "password": "contraseña",
+        "passwordHint": "mínimo 6 caracteres",
         "confirmPassword": "confirmá la contraseña",
+        "usernameInvalid": "sólo minúsculas, números y guión bajo",
+        "usernameTaken": "ya hay un @{{user}} en el grupo",
         "button": "¡A jugar!",
         "orContinueWith": "o entrá con",
         "googleButton": "Registrarse con Google",
@@ -54,7 +57,19 @@
         "createAccount": "Crear cuenta",
         "alreadyHaveAccount": "ya tengo cuenta",
         "alreadyMember": "ya sos de {{groupName}}, campeon",
-        "goHome": "ir al inicio"
+        "goHome": "ir al inicio",
+        "step": "sumarse",
+        "headline": "Unite a una mesa",
+        "description": "Pegá el link o el código que te pasaron.",
+        "fieldLabel": "link o código de invitación",
+        "placeholder": "trucopro.app/join/…",
+        "previewOverline": "te estás sumando a",
+        "previewMeta": "{{count}} en la mesa · creada por {{admin}}",
+        "invalid": "ese código no existe o ya venció",
+        "submit": "Unirme",
+        "submitTo": "Unirme a {{group}}",
+        "noInvite": "¿No te invitó nadie todavía?",
+        "noInviteCreate": "Creá tu mesa"
     },
     "groups": {
         "new": {
@@ -63,7 +78,8 @@
             "description": "ponele nombre a tu mesa.",
             "nameLabel": "nombre del grupo",
             "namePlaceholder": "Ej: la barra del jueves",
-            "submit": "Crear grupo"
+            "submit": "Crear grupo",
+            "inviteFootnote": "En el próximo paso vas a poder invitar a tus amigos con un link."
         },
         "invite": {
             "overline": "tu grupo está listo",
@@ -76,6 +92,18 @@
             "whatsappText": "sumáte a nuestra mesa de truco:",
             "skipToApp": "ir a la app",
             "loadError": "no se pudo cargar el link"
+        }
+    },
+    "onboarding": {
+        "choose": {
+            "step": "elegir mesa",
+            "overline": "una última cosa, {{name}}",
+            "headline": "¿Armás o te sumás?",
+            "createTitle": "Crear una mesa nueva",
+            "createSub": "Sos el primero. Después invitás al resto.",
+            "joinTitle": "Unirme a una mesa",
+            "joinSub": "Te pasaron un link o un código.",
+            "footnote": "Podés cambiar de mesa cuando quieras."
         }
     },
     "landing": {
