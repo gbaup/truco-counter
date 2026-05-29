@@ -8,16 +8,11 @@ import { toast } from "sonner";
 import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
 import OnboardingField from "@/components/onboarding/OnboardingField";
+import { ChevronLeftIcon } from "@/components/ui/icons";
 import { joinGroup } from "@/services/auth";
 
 type GroupPreview = { id: string; name: string; memberCount: number; createdByName: string };
 type ResolveState = "idle" | "loading" | "resolved" | "invalid";
-
-const BackChevron = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
-    <polyline points="15 18 9 12 15 6" />
-  </svg>
-);
 
 function extractToken(raw: string): string | null {
   const v = raw.trim();
@@ -101,7 +96,7 @@ export default function JoinPage() {
             onClick={() => router.back()}
             className="w-9 h-9 rounded-full bg-surface border border-border text-text flex items-center justify-center"
           >
-            <BackChevron />
+            <ChevronLeftIcon size={20} />
           </button>
           <span
             className="text-text-mute text-[11px] tracking-[0.16em] italic"

@@ -6,12 +6,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
-
-const ChevronRight = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
-    <polyline points="9 6 15 12 9 18" />
-  </svg>
-);
+import { ChevronRightIcon } from "@/components/ui/icons";
 
 type Choice = {
   href: string;
@@ -109,7 +104,7 @@ function ChooseTableContent() {
                 <div className="text-text-dim text-[12.5px] mt-0.5 leading-snug">{c.sub}</div>
               </div>
               <span style={{ color: c.primary ? `var(${c.accentVar})` : "var(--color-text-mute)" }}>
-                <ChevronRight />
+                <ChevronRightIcon size={18} />
               </span>
             </Link>
           ))}

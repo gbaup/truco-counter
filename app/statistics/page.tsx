@@ -8,7 +8,7 @@ import PaperPanel from "@/components/ui/PaperPanel";
 import Suit from "@/components/ui/Suit";
 import Logo from "@/components/ui/Logo";
 import { UserStats } from "@/types/database";
-import MenuIcon from "@/components/ui/MenuIcon";
+import { MenuIcon } from "@/components/ui/icons";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { UserRole } from "@/types/auth";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -95,7 +95,7 @@ export default function StatisticsPage() {
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
           aria-label="Menú"
         >
-          <MenuIcon />
+          <MenuIcon size={16} />
         </button>
       </div>
 

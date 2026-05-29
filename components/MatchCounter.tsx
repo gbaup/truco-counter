@@ -4,7 +4,7 @@ import { PublicUser } from "@/types/database";
 import TeamCounter from "./TeamCounter";
 import Controls from "./Controls";
 import Logo from "@/components/ui/Logo";
-import MenuIcon from "@/components/ui/MenuIcon";
+import { MenuIcon } from "@/components/ui/icons";
 import { useTranslation } from "react-i18next";
 
 interface MatchCounterProps {

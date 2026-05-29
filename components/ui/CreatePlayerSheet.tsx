@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { USERNAME_RE, NAME_RE } from "@/lib/validators";
 import { INITIAL_USER_PASSWORD } from "@/lib/constants";
 import { twMerge } from "tailwind-merge";
+import { LockIcon } from "@/components/ui/icons";
 
 interface CreatePlayerSheetProps {
   open: boolean;
@@ -110,20 +111,7 @@ export default function CreatePlayerSheet({
       </div>
 
       <div className="mt-3.5 flex items-start gap-2.5 rounded-md border border-warning/40 bg-warning/[0.12] px-3 py-2.5">
-        <svg
-          width={16}
-          height={16}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="mt-0.5 shrink-0 text-warning"
-        >
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
+        <LockIcon size={16} className="mt-0.5 shrink-0 text-warning" />
         <div>
           <p className="text-xs font-bold text-warning">
             {t("create.passwordInfo")}:{" "}

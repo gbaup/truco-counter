@@ -6,7 +6,7 @@ import Link from "next/link";
 import SideDrawer from "@/components/SideDrawer";
 import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
-import MenuIcon from "@/components/ui/MenuIcon";
+import { MenuIcon } from "@/components/ui/icons";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { useProfileData } from "@/hooks/useProfileData";
 import { formatTeamNames } from "@/lib/domain/match";
@@ -46,7 +46,7 @@ export default function ProfilePage() {
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
           aria-label="Menú"
         >
-          <MenuIcon />
+          <MenuIcon size={16} />
         </button>
       </div>
 

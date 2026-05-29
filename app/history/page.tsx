@@ -9,7 +9,7 @@ import PlayerFilterPicker from "@/components/ui/PlayerFilterPicker";
 import type { RosterEntry } from "@/types/match";
 import { USERNAME_RE } from "@/lib/validators";
 import Logo from "@/components/ui/Logo";
-import MenuIcon from "@/components/ui/MenuIcon";
+import { MenuIcon } from "@/components/ui/icons";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { useMatches } from "@/hooks/useMatches";
 
@@ -111,7 +111,7 @@ function HistoryPageContent() {
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
           aria-label="Menú"
         >
-          <MenuIcon />
+          <MenuIcon size={16} />
         </button>
       </div>
 

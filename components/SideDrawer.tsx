@@ -11,6 +11,7 @@ import PaperPanel from "@/components/ui/PaperPanel";
 import RoleBadge from "@/components/admin/RoleBadge";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useActiveGroup } from "@/hooks/useActiveGroup";
+import { MenuIcon, CloseIcon, ArrowRightIcon } from "@/components/ui/icons";
 import { UserRole } from "@/types/auth";
 
 interface SideDrawerProps {
@@ -55,19 +56,7 @@ export default function SideDrawer({
           className="fixed top-4 right-4 z-50 w-9 h-9 rounded-md bg-surface border border-border text-text flex items-center justify-center transition-colors hover:bg-surface-elevated"
           aria-label="Toggle menu"
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <line x1="4" x2="20" y1="6" y2="6" />
-            <line x1="4" x2="20" y1="12" y2="12" />
-            <line x1="4" x2="20" y1="18" y2="18" />
-          </svg>
+          <MenuIcon size={16} />
         </button>
       )}
 
@@ -97,17 +86,7 @@ export default function SideDrawer({
             className="w-8 h-8 rounded-full bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
             aria-label="Cerrar menú"
           >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-            >
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
+            <CloseIcon size={14} />
           </button>
         </div>
 
@@ -204,20 +183,7 @@ export default function SideDrawer({
                 )}
               >
                 <span>{label}</span>
-                {isActive && (
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                )}
+                {isActive && <ArrowRightIcon size={14} />}
               </Link>
             );
           })}
