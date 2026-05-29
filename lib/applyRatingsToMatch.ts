@@ -27,6 +27,25 @@ export async function applyRatingsToMatch(
 }
 
 type RatingData = { rating: number; rating_deviation: number; elo_rating: number; last_decay_at: Date };
+type RatingRecord = { rating: number; rating_deviation: number; elo_rating: number; last_decay_at: Date | null };
+
+async function loadDecayedRatings(
+  allIds: string[],
+  byId: Map<string, RatingRecord>,
+  countMissed: (lastDecayAt: Date) => Promise<number>,
+): Promise<{ decayed: Map<string, { r: number; RD: number }>; eloById: Map<string, number> }> {
+  const decayed = new Map<string, { r: number; RD: number }>();
+  for (const id of allIds) {
+    const p = byId.get(id);
+    if (!p) continue;
+    const missed = p.last_decay_at !== null ? await countMissed(p.last_decay_at) : 0;
+    decayed.set(id, { r: p.rating, RD: applyDecay(p.rating_deviation, missed) });
+  }
+  return {
+    decayed,
+    eloById: new Map([...byId].map(([id, p]) => [id, p.elo_rating])),
+  };
+}
 
 async function applyRatingCalculations(
   tx: Prisma.TransactionClient,
@@ -89,31 +108,18 @@ async function applyGlobalRatings(
   matchId: string,
 ): Promise<void> {
   const allIds = [...team1UserIds, ...team2UserIds];
-
   const participants = await tx.users.findMany({
     where: { id: { in: allIds } },
     select: { id: true, rating: true, rating_deviation: true, elo_rating: true, last_decay_at: true },
   });
-
   const byId = new Map(participants.map((p) => [p.id, p]));
-  const decayed = new Map<string, { r: number; RD: number }>();
-
-  for (const id of allIds) {
-    const p = byId.get(id);
-    if (!p) continue;
-    let missedMatches = 0;
-    if (p.last_decay_at !== null) {
-      missedMatches = await tx.matches.count({
-        where: missedMatchesWhere(p.last_decay_at, matchCreatedAt),
-      });
-    }
-    decayed.set(id, { r: p.rating, RD: applyDecay(p.rating_deviation, missedMatches) });
-  }
-
+  const { decayed, eloById } = await loadDecayedRatings(
+    allIds, byId,
+    (lastDecayAt) => tx.matches.count({ where: missedMatchesWhere(lastDecayAt, matchCreatedAt) }),
+  );
   await applyRatingCalculations(
     tx, team1UserIds, team2UserIds, winnerTeam, matchId, matchCreatedAt,
-    decayed,
-    new Map(participants.map((p) => [p.id, p.elo_rating])),
+    decayed, eloById,
     (id, data) => tx.users.update({ where: { id }, data }),
   );
 }
@@ -128,31 +134,18 @@ async function applyGroupRatings(
   groupId: string,
 ): Promise<void> {
   const allIds = [...team1UserIds, ...team2UserIds];
-
   const memberships = await tx.group_memberships.findMany({
     where: { group_id: groupId, user_id: { in: allIds } },
     select: { user_id: true, rating: true, rating_deviation: true, elo_rating: true, last_decay_at: true },
   });
-
   const byId = new Map(memberships.map((m) => [m.user_id, m]));
-  const decayed = new Map<string, { r: number; RD: number }>();
-
-  for (const id of allIds) {
-    const m = byId.get(id);
-    if (!m) continue;
-    let missedMatches = 0;
-    if (m.last_decay_at !== null) {
-      missedMatches = await tx.matches.count({
-        where: missedMatchesWhere(m.last_decay_at, matchCreatedAt, groupId),
-      });
-    }
-    decayed.set(id, { r: m.rating, RD: applyDecay(m.rating_deviation, missedMatches) });
-  }
-
+  const { decayed, eloById } = await loadDecayedRatings(
+    allIds, byId,
+    (lastDecayAt) => tx.matches.count({ where: missedMatchesWhere(lastDecayAt, matchCreatedAt, groupId) }),
+  );
   await applyRatingCalculations(
     tx, team1UserIds, team2UserIds, winnerTeam, matchId, matchCreatedAt,
-    decayed,
-    new Map(memberships.map((m) => [m.user_id, m.elo_rating])),
+    decayed, eloById,
     (id, data) => tx.group_memberships.update({
       where: { group_id_user_id: { group_id: groupId, user_id: id } },
       data,

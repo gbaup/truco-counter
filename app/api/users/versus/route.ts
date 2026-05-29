@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isValidUUID } from "@/lib/validators";
-import { getUsersVersus, getGroupUsersVersus } from "@/lib/queries";
+import { getUsersVersus, type Scope } from "@/lib/queries";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -17,9 +17,8 @@ export async function GET(request: Request) {
     }
 
     try {
-        const stats = groupId
-            ? await getGroupUsersVersus(groupId, p1, p2)
-            : await getUsersVersus(p1, p2);
+        const scope: Scope = groupId ? { type: "group", groupId } : { type: "global" };
+        const stats = await getUsersVersus(p1, p2, scope);
         return NextResponse.json(stats);
     } catch (error) {
         console.error("Error in versus API:", error);

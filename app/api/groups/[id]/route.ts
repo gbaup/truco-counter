@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withGroupMemberAuth, withGroupAdminAuth } from "@/lib/withAuth";
-import { toGroupMember } from "@/lib/mappers";
+import { toGroupDetail } from "@/lib/mappers";
 
 export const GET = withGroupMemberAuth(async (_request, _session, context) => {
   try {
@@ -26,19 +26,7 @@ export const GET = withGroupMemberAuth(async (_request, _session, context) => {
       return NextResponse.json({ success: false, error: "Group not found" }, { status: 404 });
     }
 
-    const members = group.memberships.map(toGroupMember);
-
-    return NextResponse.json({
-      success: true,
-      group: {
-        id: group.id,
-        name: group.name,
-        admin_id: group.admin_id,
-        created_at: group.created_at,
-        member_count: group._count.memberships,
-        members,
-      },
-    });
+    return NextResponse.json({ success: true, group: toGroupDetail(group) });
   } catch (error) {
     console.error("Error fetching group:", error);
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
