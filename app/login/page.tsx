@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { joinGroup } from "@/services/auth";
 import OnboardingField from "@/components/onboarding/OnboardingField";
 import PasswordField from "@/components/onboarding/PasswordField";
+import Link from "next/link";
 
 type LoginFields = {
   username: string;
@@ -168,6 +169,12 @@ export default function LoginPage() {
             </svg>
             {t("login.googleButton")}
           </a>
+          <p className="text-center text-sm text-text-dim mt-2">
+            {t("login.noAccount")}{" "}
+            <Link href="/register" className="text-us font-semibold">
+              {t("login.registerLink")}
+            </Link>
+          </p>
         </form>
       </div>
       <Suspense>

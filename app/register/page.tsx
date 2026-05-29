@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRegister } from "@/hooks/useRegister";
 import { useTranslation } from "react-i18next";
@@ -10,6 +10,7 @@ import Suit from "@/components/ui/Suit";
 import { toast } from "sonner";
 import Link from "next/link";
 import { joinGroup } from "@/services/auth";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import OnboardingField from "@/components/onboarding/OnboardingField";
 import PasswordField from "@/components/onboarding/PasswordField";
 
@@ -26,10 +27,18 @@ function RegisterForm() {
   const { t } = useTranslation();
   const { isLoading, handleRegister } = useRegister();
   const searchParams = useSearchParams();
+  const { data: currentUser, isLoading: isCheckingAuth } = useCurrentUser();
+
+  useEffect(() => {
+    if (currentUser) router.replace("/");
+  }, [currentUser, router]);
+
   const inviteToken = searchParams.get("token");
 
   const { register, handleSubmit, control } = useForm<RegisterFields>();
   const watchedUsername = useWatch({ control, name: "username", defaultValue: "" });
+
+  if (isCheckingAuth || currentUser) return null;
 
   const { onChange: onUsernameChange, ...usernameProps } = register("username");
 

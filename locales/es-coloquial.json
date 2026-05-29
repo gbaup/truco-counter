@@ -22,7 +22,9 @@
             "oauth_error": "Algo salió mal con Google",
             "oauth_state_mismatch": "Error de seguridad. Probá de nuevo.",
             "google_already_linked": "Esa cuenta de Google ya la tiene otro"
-        }
+        },
+        "noAccount": "¿No tenés cuenta?",
+        "registerLink": "Registrarse"
     },
     "register": {
         "tagline": "tu mesa, tu marca, tu ranking",

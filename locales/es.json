@@ -22,7 +22,9 @@
             "oauth_error": "Error al conectar con Google",
             "oauth_state_mismatch": "Error de seguridad. Intentá de nuevo.",
             "google_already_linked": "Esa cuenta de Google ya está vinculada a otro usuario"
-        }
+        },
+        "noAccount": "¿No tenés cuenta?",
+        "registerLink": "Registrarse"
     },
     "register": {
         "tagline": "Contador · Ranking · Historial",
