@@ -86,6 +86,7 @@ export default function Home() {
             onMenuOpen={() => setDrawerOpen(true)}
           />
           <WinnerModal
+            open={!!winner}
             winner={winner}
             onFinish={() =>
               finishMatch({
@@ -96,19 +97,18 @@ export default function Home() {
             }
             isLoading={isSaving}
           />
-          {showExitModal && (
-            <ConfirmationExitModal
-              onConfirm={() => {
-                setShowExitModal(false);
-                finishMatch({
-                  score1: matchState.score1,
-                  score2: matchState.score2,
-                  status: "cancelled",
-                });
-              }}
-              onCancel={() => setShowExitModal(false)}
-            />
-          )}
+          <ConfirmationExitModal
+            open={showExitModal}
+            onConfirm={() => {
+              setShowExitModal(false);
+              finishMatch({
+                score1: matchState.score1,
+                score2: matchState.score2,
+                status: "cancelled",
+              });
+            }}
+            onCancel={() => setShowExitModal(false)}
+          />
         </main>
       )}
     </div>
