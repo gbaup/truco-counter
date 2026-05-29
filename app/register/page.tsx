@@ -62,6 +62,8 @@ function RegisterForm() {
       if (!joinResult.success) {
         toast.error(t("register.errors.joinFailed"));
       }
+      router.push("/");
+      return;
     }
 
     router.push("/groups/new");

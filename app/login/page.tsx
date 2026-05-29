@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, Suspense } from "react";
+import { useEffect, useRef, Suspense, MutableRefObject } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLogin } from "@/hooks/useLogin";
 import { useTranslation } from "react-i18next";
@@ -8,25 +8,31 @@ import { useForm } from "react-hook-form";
 import Suit from "@/components/ui/Suit";
 import Logo from "@/components/ui/Logo";
 import { toast } from "sonner";
+import { joinGroup } from "@/services/auth";
 
 type LoginFields = {
   username: string;
   password: string;
 };
 
-function OAuthErrorToast() {
+function SearchParamsSideEffects({ tokenRef }: { tokenRef: MutableRefObject<string | null> }) {
   const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const error = searchParams.get("error");
+  const token = searchParams.get("token");
+
   useEffect(() => {
-    const error = searchParams.get("error");
     if (!error) return;
     const key = `login.errors.${error}`;
     const message = t(key, { defaultValue: t("login.errors.oauth_error") });
     toast.error(message);
     router.replace("/login");
-  }, [searchParams, t, router]);
+  }, [error, t, router]);
+
+  // Store token in ref so the submit handler can read it without re-rendering
+  tokenRef.current = token;
 
   return null;
 }
@@ -36,10 +42,17 @@ export default function LoginPage() {
   const { t } = useTranslation();
   const { isLoading, handleLogin } = useLogin();
   const { register, handleSubmit } = useForm<LoginFields>();
+  const inviteTokenRef = useRef<string | null>(null);
 
   const onSubmit = async ({ username, password }: LoginFields) => {
     const success = await handleLogin(username, password);
-    if (success) router.push("/");
+    if (!success) return;
+    const token = inviteTokenRef.current;
+    if (token) {
+      const result = await joinGroup(token).catch(() => ({ success: false }));
+      if (!result.success) toast.error(t("register.errors.joinFailed"));
+    }
+    router.push("/");
   };
 
   return (
@@ -221,7 +234,7 @@ export default function LoginPage() {
         </form>
       </div>
       <Suspense>
-        <OAuthErrorToast />
+        <SearchParamsSideEffects tokenRef={inviteTokenRef} />
       </Suspense>
     </div>
   );
