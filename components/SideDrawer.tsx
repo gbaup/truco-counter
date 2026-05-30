@@ -149,7 +149,9 @@ export default function SideDrawer({
             ) : (
               <select
                 value={activeGroupId ?? ""}
-                onChange={(e) => setActiveGroup(e.target.value)}
+                onChange={(e) => {
+                  setActiveGroup(e.target.value);
+                }}
                 className="w-full px-3.5 py-2 rounded-md bg-surface border border-border text-sm text-text font-medium appearance-none cursor-pointer"
               >
                 {groups.map((g) => (

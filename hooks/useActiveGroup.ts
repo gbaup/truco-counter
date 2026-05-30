@@ -46,8 +46,8 @@ export function useActiveGroup() {
   const setActiveGroup = useCallback(
     (groupId: string) => {
       activeGroupCookie.write(groupId);
+      queryClient.clear();
       queryClient.setQueryData(ACTIVE_GROUP_QUERY_KEY, groupId);
-      queryClient.invalidateQueries();
     },
     [queryClient]
   );

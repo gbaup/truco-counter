@@ -15,6 +15,7 @@ import CreatePlayerSheet from "@/components/ui/CreatePlayerSheet";
 import GroupAdminSection from "@/components/admin/GroupAdminSection";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useMyGroups } from "@/hooks/useMyGroups";
+import { useActiveGroup } from "@/hooks/useActiveGroup";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 import { useGroupMembers } from "@/hooks/useGroupMembers";
 import { useUpdateUserUsername } from "@/hooks/useUpdateUserUsername";
@@ -26,23 +27,27 @@ export default function AdminPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedGroupOverride, setSelectedGroupOverride] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: me, isPending: meLoading } = useCurrentUser();
   const { data: groups = [], isPending: groupsLoading } = useMyGroups();
+  const { activeGroupId, setActiveGroup } = useActiveGroup();
 
   const isSystemAdmin = me?.role === "admin";
-  const adminedGroups = groups.filter((g) => g.admin_id === me?.userId);
+  const adminedGroups = isSystemAdmin
+    ? groups
+    : groups.filter((g) => g.admin_id === me?.userId);
   const isGroupAdmin = adminedGroups.length > 0;
-  const selectedGroupId = selectedGroupOverride ?? adminedGroups[0]?.id ?? null;
 
-  // Group-scoped members (used when a group is selected)
+  const defaultGroupId = adminedGroups.some((g) => g.id === activeGroupId)
+    ? activeGroupId
+    : (adminedGroups[0]?.id ?? null);
+  const selectedGroupId = defaultGroupId;
+
   const { data: groupMembers = [], isPending: membersLoading } = useGroupMembers(
     selectedGroupId
   );
 
-  // All-users list (system admin only, used when no group is selected)
   const {
     players,
     creating,
@@ -56,14 +61,14 @@ export default function AdminPage() {
   // Derive one unified display list
   const displayList: AdminUser[] = selectedGroupId
     ? groupMembers.map((m) => ({
-        id: m.id,
-        name: m.name,
-        last_name: m.last_name,
-        username: m.username,
-        rating: m.rating,
-        rating_deviation: m.rating_deviation,
-        role: "user" as UserRole,
-      }))
+      id: m.id,
+      name: m.name,
+      last_name: m.last_name,
+      username: m.username,
+      rating: m.rating,
+      rating_deviation: m.rating_deviation,
+      role: "user" as UserRole,
+    }))
     : players;
 
   const filteredList = displayList.filter(
@@ -79,6 +84,12 @@ export default function AdminPage() {
   useEffect(() => {
     if (error) toast.error(t("admin.loadError"));
   }, [error, t]);
+
+  useEffect(() => {
+    if (defaultGroupId && defaultGroupId !== activeGroupId) {
+      setActiveGroup(defaultGroupId);
+    }
+  }, [defaultGroupId, activeGroupId, setActiveGroup]);
 
   useEffect(() => {
     if (meLoading || groupsLoading) return;
@@ -120,7 +131,7 @@ export default function AdminPage() {
           <GroupAdminSection
             adminedGroups={adminedGroups}
             selectedGroupId={selectedGroupId}
-            onSelectGroup={setSelectedGroupOverride}
+            onSelectGroup={setActiveGroup}
           />
         )}
 
@@ -161,7 +172,7 @@ export default function AdminPage() {
           <CreatePlayerSheet
             open={creating}
             onClose={() => setCreating(false)}
-            onCreated={() => {}}
+            onCreated={() => { }}
           />
 
           <ChangeNicknameSheet
