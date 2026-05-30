@@ -149,7 +149,7 @@ export default function SideDrawer({
               <GroupSelector
                 groups={groups}
                 value={activeGroupId}
-                onChange={(id) => { setActiveGroup(id); closeMenu(); }}
+                onChange={(id) => { if (id) { setActiveGroup(id); closeMenu(); } }}
               />
             )}
           </div>
