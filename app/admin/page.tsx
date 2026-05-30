@@ -17,11 +17,9 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useMyGroups } from "@/hooks/useMyGroups";
 import { useActiveGroup } from "@/hooks/useActiveGroup";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
-import { useGroupMembers } from "@/hooks/useGroupMembers";
+import { useAdminDisplayList } from "@/hooks/useAdminDisplayList";
 import { useUpdateUserUsername } from "@/hooks/useUpdateUserUsername";
 import LoadingScreen from "@/components/ui/LoadingScreen";
-import { UserRole } from "@/types/auth";
-import { AdminUser } from "@/types/database";
 
 export default function AdminPage() {
   const { t } = useTranslation();
@@ -44,40 +42,19 @@ export default function AdminPage() {
     : (adminedGroups[0]?.id ?? null);
   const selectedGroupId = defaultGroupId;
 
-  const { data: groupMembers = [], isPending: membersLoading } = useGroupMembers(
-    selectedGroupId
-  );
-
   const {
-    players,
     creating,
     setCreating,
     editingUser,
     setEditingUser,
-    isLoading: playersLoading,
     error,
   } = useAdminUsers(isSystemAdmin && !selectedGroupId);
 
-  // Derive one unified display list
-  const displayList: AdminUser[] = selectedGroupId
-    ? groupMembers.map((m) => ({
-      id: m.id,
-      name: m.name,
-      last_name: m.last_name,
-      username: m.username,
-      rating: m.rating,
-      rating_deviation: m.rating_deviation,
-      role: "user" as UserRole,
-    }))
-    : players;
-
-  const filteredList = displayList.filter(
-    (p) =>
-      p.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      `${p.name} ${p.last_name}`.toLowerCase().includes(searchQuery.toLowerCase())
+  const { list: filteredList, total, isLoading: isListLoading } = useAdminDisplayList(
+    selectedGroupId,
+    searchQuery,
+    isSystemAdmin && !selectedGroupId
   );
-
-  const isListLoading = selectedGroupId ? membersLoading : playersLoading;
 
   const updateOther = useUpdateUserUsername();
 
@@ -138,7 +115,7 @@ export default function AdminPage() {
         {/* Player count + create button — system admins only */}
         {isSystemAdmin && (
           <AdminSubHeader
-            count={displayList.length}
+            count={total}
             onCreate={() => setCreating(true)}
           />
         )}

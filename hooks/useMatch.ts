@@ -52,7 +52,6 @@ export function useMatch() {
                 groupId: activeGroupId ?? undefined,
             });
         } catch (error: unknown) {
-            console.error(error);
             throw error;
         } finally {
             setIsStarting(false);

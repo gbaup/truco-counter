@@ -11,7 +11,7 @@ export function useUpdateUserUsername() {
       updateUserUsername(userId, username),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers });
-      queryClient.invalidateQueries({ queryKey: ["groupMembers"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.groupMembers.all });
     },
   });
 }

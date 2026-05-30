@@ -9,6 +9,7 @@ import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
 import PaperPanel from "@/components/ui/PaperPanel";
 import RoleBadge from "@/components/admin/RoleBadge";
+import GroupSelector from "@/components/ui/GroupSelector";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useActiveGroup } from "@/hooks/useActiveGroup";
 import { MenuIcon, CloseIcon, ArrowRightIcon, LockIcon } from "@/components/ui/icons";
@@ -141,24 +142,15 @@ export default function SideDrawer({
               {t("sideDrawer.group")}
             </p>
             {groups.length === 1 ? (
-              <div
-                className="px-3.5 py-2 rounded-md bg-surface border border-border text-sm text-text font-medium truncate"
-              >
+              <div className="px-3.5 py-2 rounded-md bg-surface border border-border text-sm text-text font-medium truncate">
                 {activeGroup?.name}
               </div>
             ) : (
-              <select
-                value={activeGroupId ?? ""}
-                onChange={(e) => {
-                  setActiveGroup(e.target.value);
-                  closeMenu();
-                }}
-                className="w-full px-3.5 py-2 rounded-md bg-surface border border-border text-sm text-text font-medium appearance-none cursor-pointer"
-              >
-                {groups.map((g) => (
-                  <option key={g.id} value={g.id}>{g.name}</option>
-                ))}
-              </select>
+              <GroupSelector
+                groups={groups}
+                value={activeGroupId}
+                onChange={(id) => { setActiveGroup(id); closeMenu(); }}
+              />
             )}
           </div>
         )}

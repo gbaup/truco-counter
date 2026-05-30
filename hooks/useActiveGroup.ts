@@ -3,6 +3,7 @@
 import { useCallback } from "react";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useMyGroups } from "./useMyGroups";
+import { queryKeys } from "./queryKeys";
 
 const COOKIE_KEY = "active-group-id";
 const ACTIVE_GROUP_QUERY_KEY = ["ui", "active-group"] as const;
@@ -46,8 +47,17 @@ export function useActiveGroup() {
   const setActiveGroup = useCallback(
     (groupId: string) => {
       activeGroupCookie.write(groupId);
-      queryClient.clear();
       queryClient.setQueryData(ACTIVE_GROUP_QUERY_KEY, groupId);
+      for (const key of [
+        queryKeys.users.all,
+        queryKeys.userStats.all,
+        queryKeys.matches.all,
+        queryKeys.versusStats.all,
+        queryKeys.groupMembers.all,
+        queryKeys.adminUsers,
+      ]) {
+        queryClient.invalidateQueries({ queryKey: key });
+      }
     },
     [queryClient]
   );
