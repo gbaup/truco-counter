@@ -13,6 +13,7 @@ interface MatchSetupProps {
   onStartMatch: (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => void;
   isStarting: boolean;
   onMenuOpen?: () => void;
+  freePlay?: boolean;
 }
 
 const POINTS_OPTIONS = [20, 30, 40, 50];
@@ -59,8 +60,8 @@ const TEAM_CONFIGS: Omit<TeamConfig, "label" | "list">[] = [
   },
 ];
 
-export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: MatchSetupProps) {
-  const { data: users = [], isPending: loading } = useUsers();
+export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen, freePlay }: MatchSetupProps) {
+  const { data: users = [], isPending: loading } = useUsers(undefined, { enabled: !freePlay });
   const [team1, setTeam1] = useState<PublicUser[]>([]);
   const [team2, setTeam2] = useState<PublicUser[]>([]);
   const [maxPoints, setMaxPoints] = useState<number>(40);
@@ -83,8 +84,8 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
   const toggleSumar = (team: 1 | 2) =>
     setActiveTeam((prev) => (prev === team ? null : team));
 
-  const canStart = team1.length === team2.length && team1.length >= 2;
-  const showWarning = team1.length !== team2.length && team1.length > 0 && team2.length > 0;
+  const canStart = freePlay || (team1.length === team2.length && team1.length >= 2);
+  const showWarning = !freePlay && team1.length !== team2.length && team1.length > 0 && team2.length > 0;
 
   const poolUsers = users.filter(
     (u) => !team1.find((p) => p.id === u.id) && !team2.find((p) => p.id === u.id) && !u.isPlaying
@@ -95,7 +96,7 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
     label: c.team === 1 ? t("matchSetup.team1") : t("matchSetup.team2"),
   }));
 
-  if (loading) {
+  if (!freePlay && loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-us border-t-transparent" />
@@ -110,7 +111,7 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
     >
       {/* Header */}
       <div
-        className="flex items-center justify-between px-5 pt-14 pb-3"
+        className={twMerge("flex items-center px-5 pt-14 pb-3 justify-between")}
         onClick={(e) => e.stopPropagation()}
       >
         <Logo size={18} />
@@ -131,103 +132,107 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
 
       {/* Body */}
       <div
-        className="flex flex-col gap-3 px-5 pb-6 flex-1"
+        className={twMerge("flex flex-col gap-3 px-5 flex-1", freePlay ? "justify-center pb-0" : "pb-6")}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Team panels */}
-        <div className="grid grid-cols-2 gap-2.5">
-          {teamConfigs.map(({ team, label, color, colorClass, suitKind, panelResting, panelActive, chipClass, sumarResting, sumarActive }) => {
-            const isActive = activeTeam === team;
-            const list = getList(team);
-
-            return (
-              <div
-                key={team}
-                className={twMerge(isActive ? panelActive : panelResting, "rounded-xl p-3 transition-all duration-200")}
-              >
-                {/* Panel header */}
-                <div className="flex items-center justify-between mb-2.5">
-                  <div className="flex items-center gap-1.5">
-                    <Suit kind={suitKind} size={12} color={color} />
-                    <span
-                      className={twMerge("text-heading-sm", colorClass)}
-                      style={{ fontFamily: "var(--font-crimson-pro), serif" }}
-                    >
-                      {label}
-                    </span>
-                  </div>
-                  <span
-                    className="text-caption-italic text-text-mute"
-                    style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 10 }}
-                  >
-                    {list.length}/3
-                  </span>
-                </div>
-
-                {/* Selected chips */}
-                <div className="flex flex-col gap-1">
-                  {list.map((user) => (
-                    <button
-                      key={user.id}
-                      onClick={() => removeFromTeam(user, team)}
-                      className={twMerge("flex items-center justify-between px-2.5 py-1.5 rounded-sm text-xs font-semibold capitalize text-left transition-colors", chipClass)}
-                    >
-                      <span>{user.username}</span>
-                      <span className="opacity-50 ml-1 text-[10px]">×</span>
-                    </button>
-                  ))}
-
-                  {/* + sumar */}
-                  {list.length < 3 && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); toggleSumar(team); }}
-                      aria-pressed={isActive}
-                      aria-label={`Sumar a ${label}`}
-                      className={twMerge("px-2.5 py-1.5 rounded-sm text-[11px] italic text-center transition-all duration-200", isActive ? sumarActive : sumarResting)}
-                    >
-                      {isActive ? "↓ tocá un jugador" : "+ sumar"}
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Pool */}
-        {poolUsers.length > 0 && (
-          <div onClick={(e) => e.stopPropagation()}>
-            <p
-              className="text-caption-italic text-text-mute mb-2"
-              style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
-            >
-              {t("matchSetup.pool")}
-              {activeTeam && (
-                <span className={activeTeam === 1 ? "text-us" : "text-them"}>
-                  {" · "}sumando a {activeTeam === 1 ? t("matchSetup.team1") : t("matchSetup.team2")}
-                </span>
-              )}
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {poolUsers.map((user) => {
-                const cfg = activeTeam ? teamConfigs.find((c) => c.team === activeTeam)! : null;
-                const chipClass = cfg
-                  ? `border ${cfg.poolChipActive}`
-                  : "bg-surface border border-border text-text cursor-default";
+        {/* Team panels — hidden in free play mode */}
+        {!freePlay && (
+          <>
+            <div className="grid grid-cols-2 gap-2.5">
+              {teamConfigs.map(({ team, label, color, colorClass, suitKind, panelResting, panelActive, chipClass, sumarResting, sumarActive }) => {
+                const isActive = activeTeam === team;
+                const list = getList(team);
 
                 return (
-                  <button
-                    key={user.id}
-                    onClick={() => addToActiveTeam(user)}
-                    aria-disabled={!activeTeam}
-                    className={twMerge("px-2.5 py-1.5 rounded-sm text-xs capitalize transition-all duration-200", chipClass)}
+                  <div
+                    key={team}
+                    className={twMerge(isActive ? panelActive : panelResting, "rounded-xl p-3 transition-all duration-200")}
                   >
-                    {user.username}
-                  </button>
+                    {/* Panel header */}
+                    <div className="flex items-center justify-between mb-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <Suit kind={suitKind} size={12} color={color} />
+                        <span
+                          className={twMerge("text-heading-sm", colorClass)}
+                          style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+                        >
+                          {label}
+                        </span>
+                      </div>
+                      <span
+                        className="text-caption-italic text-text-mute"
+                        style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 10 }}
+                      >
+                        {list.length}/3
+                      </span>
+                    </div>
+
+                    {/* Selected chips */}
+                    <div className="flex flex-col gap-1">
+                      {list.map((user) => (
+                        <button
+                          key={user.id}
+                          onClick={() => removeFromTeam(user, team)}
+                          className={twMerge("flex items-center justify-between px-2.5 py-1.5 rounded-sm text-xs font-semibold capitalize text-left transition-colors", chipClass)}
+                        >
+                          <span>{user.username}</span>
+                          <span className="opacity-50 ml-1 text-[10px]">×</span>
+                        </button>
+                      ))}
+
+                      {/* + sumar */}
+                      {list.length < 3 && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); toggleSumar(team); }}
+                          aria-pressed={isActive}
+                          aria-label={`Sumar a ${label}`}
+                          className={twMerge("px-2.5 py-1.5 rounded-sm text-[11px] italic text-center transition-all duration-200", isActive ? sumarActive : sumarResting)}
+                        >
+                          {isActive ? "↓ tocá un jugador" : "+ sumar"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 );
               })}
             </div>
-          </div>
+
+            {/* Pool */}
+            {poolUsers.length > 0 && (
+              <div onClick={(e) => e.stopPropagation()}>
+                <p
+                  className="text-caption-italic text-text-mute mb-2"
+                  style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
+                >
+                  {t("matchSetup.pool")}
+                  {activeTeam && (
+                    <span className={activeTeam === 1 ? "text-us" : "text-them"}>
+                      {" · "}sumando a {activeTeam === 1 ? t("matchSetup.team1") : t("matchSetup.team2")}
+                    </span>
+                  )}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {poolUsers.map((user) => {
+                    const cfg = activeTeam ? teamConfigs.find((c) => c.team === activeTeam)! : null;
+                    const chipClass = cfg
+                      ? `border ${cfg.poolChipActive}`
+                      : "bg-surface border border-border text-text cursor-default";
+
+                    return (
+                      <button
+                        key={user.id}
+                        onClick={() => addToActiveTeam(user)}
+                        aria-disabled={!activeTeam}
+                        className={twMerge("px-2.5 py-1.5 rounded-sm text-xs capitalize transition-all duration-200", chipClass)}
+                      >
+                        {user.username}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         {/* Score selector */}
@@ -269,7 +274,8 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
           onClick={() => canStart && onStartMatch(team1, team2, maxPoints)}
           disabled={!canStart || isStarting}
           className={twMerge(
-            "mt-auto w-full bg-us text-white rounded-lg py-4 text-base font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98]",
+            "w-full bg-us text-white rounded-lg py-4 text-base font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98]",
+            !freePlay && "mt-auto",
             canStart
               ? "shadow-[0_8px_20px_-10px_#8B5CF6] opacity-100"
               : "opacity-40 cursor-not-allowed",
@@ -279,12 +285,10 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen }: Mat
             <SpinnerIcon className="h-5 w-5 animate-spin" />
           ) : (
             <>
-              {!canStart && (team1.length < 2 || team2.length < 2)
+              {!freePlay && !canStart && (team1.length < 2 || team2.length < 2)
                 ? t("matchSetup.button.disabled")
                 : t("matchSetup.button.start")}
-              {canStart && (
-                <ArrowRightIcon size={16} />
-              )}
+              {canStart && <ArrowRightIcon size={16} />}
             </>
           )}
         </button>

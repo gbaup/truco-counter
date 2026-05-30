@@ -9,9 +9,10 @@ import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
 import PaperPanel from "@/components/ui/PaperPanel";
 import RoleBadge from "@/components/admin/RoleBadge";
+import GroupSelector from "@/components/ui/GroupSelector";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useActiveGroup } from "@/hooks/useActiveGroup";
-import { MenuIcon, CloseIcon, ArrowRightIcon } from "@/components/ui/icons";
+import { MenuIcon, CloseIcon, ArrowRightIcon, LockIcon } from "@/components/ui/icons";
 import { UserRole } from "@/types/auth";
 
 interface SideDrawerProps {
@@ -27,10 +28,10 @@ export default function SideDrawer({
 }: SideDrawerProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const { data: me } = useCurrentUser();
-  const { activeGroupId, activeGroup, setActiveGroup, groups } = useActiveGroup();
+  const { activeGroupId, activeGroup, setActiveGroup, groups, isFreePlay } = useActiveGroup();
   const username = me?.username ?? null;
   const role = (me?.role as UserRole) ?? null;
-  const isGroupAdmin = groups.some((g) => g.admin_id === me?.userId);
+  const isGroupAdmin = activeGroup?.admin_id === me?.userId;
   const pathname = usePathname();
   const { t } = useTranslation();
 
@@ -38,6 +39,8 @@ export default function SideDrawer({
   const isOpen = isControlled ? externalOpen : internalOpen;
   const toggleMenu = onToggle ?? (() => setInternalOpen((v) => !v));
   const closeMenu = externalClose ?? (() => setInternalOpen(false));
+
+  const FREE_PLAY_ALLOWED = new Set(["/", "/settings"]);
 
   const navItems = [
     { href: "/", label: t("sideDrawer.home") },
@@ -139,21 +142,15 @@ export default function SideDrawer({
               {t("sideDrawer.group")}
             </p>
             {groups.length === 1 ? (
-              <div
-                className="px-3.5 py-2 rounded-md bg-surface border border-border text-sm text-text font-medium truncate"
-              >
+              <div className="px-3.5 py-2 rounded-md bg-surface border border-border text-sm text-text font-medium truncate">
                 {activeGroup?.name}
               </div>
             ) : (
-              <select
-                value={activeGroupId ?? ""}
-                onChange={(e) => setActiveGroup(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-md bg-surface border border-border text-sm text-text font-medium appearance-none cursor-pointer"
-              >
-                {groups.map((g) => (
-                  <option key={g.id} value={g.id}>{g.name}</option>
-                ))}
-              </select>
+              <GroupSelector
+                groups={groups}
+                value={activeGroupId}
+                onChange={(id) => { if (id) { setActiveGroup(id); closeMenu(); } }}
+              />
             )}
           </div>
         )}
@@ -170,6 +167,20 @@ export default function SideDrawer({
         <nav className="flex flex-col gap-0.5">
           {navItems.map(({ href, label }) => {
             const isActive = pathname === href;
+            const isLocked = isFreePlay && !FREE_PLAY_ALLOWED.has(href);
+
+            if (isLocked) {
+              return (
+                <div
+                  key={href}
+                  className="flex items-center justify-between px-3.5 py-3 rounded-md border border-transparent cursor-not-allowed select-none opacity-40"
+                >
+                  <span className="text-sm text-text font-medium">{label}</span>
+                  <LockIcon size={12} className="text-text-mute" />
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={href}

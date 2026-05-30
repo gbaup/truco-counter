@@ -86,6 +86,10 @@ export async function GET(request: Request) {
       return redirect("/profile?linked=true");
     }
 
+    if (action === "register" && process.env.NEXT_PUBLIC_ENABLE_REGISTRATION === "false") {
+      return redirect("/login?error=registration_disabled");
+    }
+
     if (action === "register") {
       const existingByGoogle = await prisma.users.findUnique({
         where: { google_id: googleUser.id },

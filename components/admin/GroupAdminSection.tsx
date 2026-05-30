@@ -8,6 +8,7 @@ import { useGroupShareLink } from "@/hooks/useGroupShareLink";
 import { useUpdateGroupName } from "@/hooks/useUpdateGroupName";
 import ChangeGroupNameSheet from "@/components/ui/ChangeGroupNameSheet";
 import { UsersIcon, PencilIcon, CopyIcon, CheckIcon, RefreshIcon } from "@/components/ui/icons";
+import GroupSelector from "@/components/ui/GroupSelector";
 
 interface MyGroup extends Group {
   member_count: number;
@@ -16,11 +17,12 @@ interface MyGroup extends Group {
 
 interface Props {
   adminedGroups: MyGroup[];
+  selectedGroupId: string | null;
+  onSelectGroup: (id: string) => void;
 }
 
-export default function GroupAdminSection({ adminedGroups }: Props) {
+export default function GroupAdminSection({ adminedGroups, selectedGroupId, onSelectGroup }: Props) {
   const { t } = useTranslation();
-  const [selectedGroupId, setSelectedGroupId] = useState(adminedGroups[0]?.id ?? null);
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
 
@@ -46,15 +48,12 @@ export default function GroupAdminSection({ adminedGroups }: Props) {
   return (
     <div className="px-5 pt-5 pb-4 border-b border-border">
       {adminedGroups.length > 1 && (
-        <select
-          value={selectedGroupId ?? ""}
-          onChange={(e) => setSelectedGroupId(e.target.value)}
-          className="w-full px-3 py-2 mb-3 rounded-md bg-surface border border-border text-sm text-text appearance-none cursor-pointer"
-        >
-          {adminedGroups.map((g) => (
-            <option key={g.id} value={g.id}>{g.name}</option>
-          ))}
-        </select>
+        <GroupSelector
+          groups={adminedGroups}
+          value={selectedGroupId}
+          onChange={(id) => { if (id) onSelectGroup(id); }}
+          className="mb-3"
+        />
       )}
 
       <div className="rounded-2xl bg-surface border border-border p-3.5 shadow-card">

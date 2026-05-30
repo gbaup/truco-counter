@@ -11,7 +11,7 @@ import {
 import { useActiveGroup } from "./useActiveGroup";
 
 export function useMatch() {
-    const { activeGroupId } = useActiveGroup();
+    const { activeGroupId, isFreePlay, isGroupsPending } = useActiveGroup();
     const [matchState, setMatchState] = useState<MatchState>({
         view: "setup",
         team1: [],
@@ -39,6 +39,10 @@ export function useMatch() {
         if (isStarting) return;
         setIsStarting(true);
         try {
+            if (isFreePlay) {
+                setMatchState({ view: "match", team1: [], team2: [], maxPoints, score1: 0, score2: 0 });
+                return;
+            }
             const match = await createMatch({ team1, team2, status: "ongoing", groupId: activeGroupId ?? undefined });
             setMatchState({
                 view: "match",
@@ -48,7 +52,6 @@ export function useMatch() {
                 groupId: activeGroupId ?? undefined,
             });
         } catch (error: unknown) {
-            console.error(error);
             throw error;
         } finally {
             setIsStarting(false);
@@ -83,7 +86,7 @@ export function useMatch() {
 
         const winner_team = determineWinner(result.score1, result.score2, matchState.maxPoints);
 
-        if (winner_team || result.status === "cancelled") {
+        if (!isFreePlay && (winner_team || result.status === "cancelled")) {
             try {
                 if (matchState.matchId) {
                     await updateMatch(matchState.matchId, { ...result, winner_team });
@@ -116,6 +119,8 @@ export function useMatch() {
         isLoaded,
         isStarting,
         isSaving,
+        isFreePlay,
+        isGroupsPending,
         startMatch,
         finishMatch,
         incrementScore,

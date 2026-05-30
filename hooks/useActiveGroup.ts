@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useMyGroups } from "./useMyGroups";
+import { queryKeys } from "./queryKeys";
 
 const COOKIE_KEY = "active-group-id";
+const ACTIVE_GROUP_QUERY_KEY = ["ui", "active-group"] as const;
 
 const activeGroupCookie = {
   read(): string | null {
@@ -22,9 +24,16 @@ const activeGroupCookie = {
 
 export function useActiveGroup() {
   const queryClient = useQueryClient();
-  const { data: groups = [] } = useMyGroups();
+  const { data: groups = [], isPending: isGroupsPending, isSuccess: isGroupsSuccess } = useMyGroups();
 
-  const [storedId, setStoredId] = useState<string | null>(() => activeGroupCookie.read());
+  // Shared across all instances via query cache — setQueryData updates all simultaneously
+  const { data: storedId = null } = useQuery({
+    queryKey: ACTIVE_GROUP_QUERY_KEY,
+    queryFn: () => activeGroupCookie.read(),
+    initialData: activeGroupCookie.read(),
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
 
   const activeGroupId =
     storedId && groups.some((g) => g.id === storedId)
@@ -33,14 +42,25 @@ export function useActiveGroup() {
 
   const activeGroup = groups.find((g) => g.id === activeGroupId) ?? null;
 
+  const isFreePlay = isGroupsSuccess && groups.length === 0;
+
   const setActiveGroup = useCallback(
     (groupId: string) => {
       activeGroupCookie.write(groupId);
-      setStoredId(groupId);
-      queryClient.invalidateQueries();
+      queryClient.setQueryData(ACTIVE_GROUP_QUERY_KEY, groupId);
+      for (const key of [
+        queryKeys.users.all,
+        queryKeys.userStats.all,
+        queryKeys.matches.all,
+        queryKeys.versusStats.all,
+        queryKeys.groupMembers.all,
+        queryKeys.adminUsers,
+      ]) {
+        queryClient.invalidateQueries({ queryKey: key });
+      }
     },
     [queryClient]
   );
 
-  return { activeGroupId, activeGroup, setActiveGroup, groups };
+  return { activeGroupId, activeGroup, setActiveGroup, groups, isFreePlay, isGroupsPending };
 }

@@ -227,6 +227,9 @@
             "copied": "¡Copiado!",
             "revoke": "Revocar y generar nuevo",
             "revoking": "Generando..."
+        },
+        "scope": {
+            "all": "Todos los jugadores"
         }
     },
     "create": {

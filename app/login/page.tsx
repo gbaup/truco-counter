@@ -172,12 +172,14 @@ function LoginForm() {
             </svg>
             {t("login.googleButton")}
           </a>
-          <p className="text-center text-sm text-text-dim mt-2">
-            {t("login.noAccount")}{" "}
-            <Link href={registerHref} className="text-us font-semibold">
-              {t("login.registerLink")}
-            </Link>
-          </p>
+          {process.env.NEXT_PUBLIC_ENABLE_REGISTRATION !== "false" && (
+            <p className="text-center text-sm text-text-dim mt-2">
+              {t("login.noAccount")}{" "}
+              <Link href={registerHref} className="text-us font-semibold">
+                {t("login.registerLink")}
+              </Link>
+            </p>
+          )}
         </form>
       </div>
       <Suspense>

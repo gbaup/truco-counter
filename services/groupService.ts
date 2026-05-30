@@ -1,5 +1,5 @@
 import { fetchJSON } from "@/lib/fetchJSON";
-import { Group, InviteToken } from "@/types/group";
+import { Group, GroupMember, InviteToken } from "@/types/group";
 
 interface GroupWithMemberCount extends Group {
   member_count: number;
@@ -43,6 +43,14 @@ export async function getShareLink(groupId: string): Promise<{ token: string; jo
     `/api/groups/${groupId}/share-link`
   );
   return { token: result.token, joinUrl: result.joinUrl };
+}
+
+export async function listGroupMembers(groupId: string, all = false): Promise<GroupMember[]> {
+  const qs = all ? "?all=true" : "";
+  const result = await fetchJSON<{ success: boolean; members: GroupMember[] }>(
+    `/api/groups/${groupId}/members${qs}`
+  );
+  return result.members;
 }
 
 export async function updateGroupName(groupId: string, name: string): Promise<Group> {

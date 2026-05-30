@@ -6,7 +6,7 @@ import { PencilIcon } from "@/components/ui/icons";
 
 interface AdminUserRowProps {
   user: AdminUser;
-  onEdit: (user: AdminUser) => void;
+  onEdit?: (user: AdminUser) => void;
 }
 
 export default function AdminUserRow({ user, onEdit }: AdminUserRowProps) {
@@ -44,14 +44,16 @@ export default function AdminUserRow({ user, onEdit }: AdminUserRowProps) {
         </p>
       </div>
 
-      {/* Edit button */}
-      <button
-        onClick={() => onEdit(user)}
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border text-text-dim transition-colors hover:bg-surface-elevated active:scale-95"
-        aria-label={`Editar @${user.username}`}
-      >
-        <PencilIcon size={14} />
-      </button>
+      {/* Edit button — only rendered when the caller provides the handler */}
+      {onEdit && (
+        <button
+          onClick={() => onEdit(user)}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border text-text-dim transition-colors hover:bg-surface-elevated active:scale-95"
+          aria-label={`Editar @${user.username}`}
+        >
+          <PencilIcon size={14} />
+        </button>
+      )}
     </li>
   );
 }

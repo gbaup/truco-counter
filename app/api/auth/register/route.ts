@@ -5,6 +5,10 @@ import { prisma } from "@/lib/prisma";
 import { USERNAME_RE, NAME_RE, EMAIL_RE } from "@/lib/validators";
 
 export async function POST(request: Request) {
+  if (process.env.NEXT_PUBLIC_ENABLE_REGISTRATION === "false") {
+    return NextResponse.json({ success: false, error: "Registration is disabled" }, { status: 403 });
+  }
+
   try {
     const body = await request.json();
     const { name, lastName, username, email, password } = body;
