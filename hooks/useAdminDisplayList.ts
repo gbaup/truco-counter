@@ -19,7 +19,7 @@ export function useAdminDisplayList(
   showSystemUsers: boolean
 ) {
   const { data: groupMembers = [], isPending: membersLoading } =
-    useGroupMembers(selectedGroupId);
+    useGroupMembers(selectedGroupId, true);
   const { data: players = [], isPending: playersLoading } =
     useAdminUsersList(showSystemUsers);
 

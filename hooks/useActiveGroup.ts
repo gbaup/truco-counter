@@ -24,7 +24,7 @@ const activeGroupCookie = {
 
 export function useActiveGroup() {
   const queryClient = useQueryClient();
-  const { data: groups = [], isPending: isGroupsPending } = useMyGroups();
+  const { data: groups = [], isPending: isGroupsPending, isSuccess: isGroupsSuccess } = useMyGroups();
 
   // Shared across all instances via query cache — setQueryData updates all simultaneously
   const { data: storedId = null } = useQuery({
@@ -42,7 +42,7 @@ export function useActiveGroup() {
 
   const activeGroup = groups.find((g) => g.id === activeGroupId) ?? null;
 
-  const isFreePlay = !isGroupsPending && groups.length === 0;
+  const isFreePlay = isGroupsSuccess && groups.length === 0;
 
   const setActiveGroup = useCallback(
     (groupId: string) => {

@@ -61,7 +61,7 @@ const TEAM_CONFIGS: Omit<TeamConfig, "label" | "list">[] = [
 ];
 
 export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen, freePlay }: MatchSetupProps) {
-  const { data: users = [], isPending: loading } = useUsers();
+  const { data: users = [], isPending: loading } = useUsers(undefined, { enabled: !freePlay });
   const [team1, setTeam1] = useState<PublicUser[]>([]);
   const [team2, setTeam2] = useState<PublicUser[]>([]);
   const [maxPoints, setMaxPoints] = useState<number>(40);

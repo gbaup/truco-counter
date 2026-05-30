@@ -51,7 +51,7 @@ export default function GroupAdminSection({ adminedGroups, selectedGroupId, onSe
         <GroupSelector
           groups={adminedGroups}
           value={selectedGroupId}
-          onChange={onSelectGroup}
+          onChange={(id) => { if (id) onSelectGroup(id); }}
           className="mb-3"
         />
       )}

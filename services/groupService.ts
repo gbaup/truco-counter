@@ -45,9 +45,10 @@ export async function getShareLink(groupId: string): Promise<{ token: string; jo
   return { token: result.token, joinUrl: result.joinUrl };
 }
 
-export async function listGroupMembers(groupId: string): Promise<GroupMember[]> {
+export async function listGroupMembers(groupId: string, all = false): Promise<GroupMember[]> {
+  const qs = all ? "?all=true" : "";
   const result = await fetchJSON<{ success: boolean; members: GroupMember[] }>(
-    `/api/groups/${groupId}/members?all=true`
+    `/api/groups/${groupId}/members${qs}`
   );
   return result.members;
 }

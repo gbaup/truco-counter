@@ -13,6 +13,7 @@ import AdminUserRow from "@/components/admin/AdminUserRow";
 import ChangeNicknameSheet from "@/components/ui/ChangeNicknameSheet";
 import CreatePlayerSheet from "@/components/ui/CreatePlayerSheet";
 import GroupAdminSection from "@/components/admin/GroupAdminSection";
+import GroupSelector from "@/components/ui/GroupSelector";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useMyGroups } from "@/hooks/useMyGroups";
 import { useActiveGroup } from "@/hooks/useActiveGroup";
@@ -40,7 +41,9 @@ export default function AdminPage() {
   const defaultGroupId = adminedGroups.some((g) => g.id === activeGroupId)
     ? activeGroupId
     : (adminedGroups[0]?.id ?? null);
-  const selectedGroupId = defaultGroupId;
+
+  const [listScopeId, setListScopeId] = useState<string | null>(null);
+  const effectiveScopeId = isSystemAdmin ? listScopeId : (listScopeId ?? defaultGroupId);
 
   const {
     creating,
@@ -48,12 +51,12 @@ export default function AdminPage() {
     editingUser,
     setEditingUser,
     error,
-  } = useAdminUsers(isSystemAdmin && !selectedGroupId);
+  } = useAdminUsers(isSystemAdmin && effectiveScopeId === null);
 
   const { list: filteredList, total, isLoading: isListLoading } = useAdminDisplayList(
-    selectedGroupId,
+    effectiveScopeId,
     searchQuery,
-    isSystemAdmin && !selectedGroupId
+    isSystemAdmin && effectiveScopeId === null
   );
 
   const updateOther = useUpdateUserUsername();
@@ -107,9 +110,21 @@ export default function AdminPage() {
         {isGroupAdmin && (
           <GroupAdminSection
             adminedGroups={adminedGroups}
-            selectedGroupId={selectedGroupId}
+            selectedGroupId={defaultGroupId}
             onSelectGroup={setActiveGroup}
           />
+        )}
+
+        {/* Scope selector — system admins in groups can switch between a group view and the global user list */}
+        {isSystemAdmin && adminedGroups.length > 0 && (
+          <div className="px-5 pb-3">
+            <GroupSelector
+              groups={adminedGroups}
+              value={listScopeId}
+              onChange={setListScopeId}
+              allOption={t("admin.scope.all")}
+            />
+          </div>
         )}
 
         {/* Player count + create button — system admins only */}
