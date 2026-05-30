@@ -27,6 +27,7 @@ Required variables (copy to `.env.local`):
 DATABASE_URL=       # PostgreSQL connection string
 JWT_SECRET=         # Secret for HS256 JWT signing
 NEXT_PUBLIC_APP_LANG=  # es | es-coloquial
+NEXT_PUBLIC_ENABLE_REGISTRATION=  # true (default) | false — set to "false" to disable public sign-up
 ```
 
 A `docker-compose.yaml` is present at the root but contains unrelated services (n8n, evolution-api). Use a Supabase project or a standalone PostgreSQL instance for local development.
