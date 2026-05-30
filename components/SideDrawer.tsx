@@ -151,6 +151,7 @@ export default function SideDrawer({
                 value={activeGroupId ?? ""}
                 onChange={(e) => {
                   setActiveGroup(e.target.value);
+                  closeMenu();
                 }}
                 className="w-full px-3.5 py-2 rounded-md bg-surface border border-border text-sm text-text font-medium appearance-none cursor-pointer"
               >
