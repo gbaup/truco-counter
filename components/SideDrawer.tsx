@@ -30,7 +30,7 @@ export default function SideDrawer({
   const { activeGroupId, activeGroup, setActiveGroup, groups, isFreePlay } = useActiveGroup();
   const username = me?.username ?? null;
   const role = (me?.role as UserRole) ?? null;
-  const isGroupAdmin = groups.some((g) => g.admin_id === me?.userId);
+  const isGroupAdmin = activeGroup?.admin_id === me?.userId;
   const pathname = usePathname();
   const { t } = useTranslation();
 

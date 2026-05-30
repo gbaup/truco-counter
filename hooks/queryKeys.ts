@@ -15,4 +15,5 @@ export const queryKeys = {
     groupId
       ? (["versusStats", p1, p2, groupId] as const)
       : (["versusStats", p1, p2] as const),
+  groupMembers: (groupId: string) => ["groupMembers", groupId] as const,
 };

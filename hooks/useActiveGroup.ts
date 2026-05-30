@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useMyGroups } from "./useMyGroups";
 
 const COOKIE_KEY = "active-group-id";
+const ACTIVE_GROUP_QUERY_KEY = ["ui", "active-group"] as const;
 
 const activeGroupCookie = {
   read(): string | null {
@@ -24,7 +25,14 @@ export function useActiveGroup() {
   const queryClient = useQueryClient();
   const { data: groups = [], isPending: isGroupsPending } = useMyGroups();
 
-  const [storedId, setStoredId] = useState<string | null>(() => activeGroupCookie.read());
+  // Shared across all instances via query cache — setQueryData updates all simultaneously
+  const { data: storedId = null } = useQuery({
+    queryKey: ACTIVE_GROUP_QUERY_KEY,
+    queryFn: () => activeGroupCookie.read(),
+    initialData: activeGroupCookie.read(),
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
 
   const activeGroupId =
     storedId && groups.some((g) => g.id === storedId)
@@ -38,11 +46,11 @@ export function useActiveGroup() {
   const setActiveGroup = useCallback(
     (groupId: string) => {
       activeGroupCookie.write(groupId);
-      setStoredId(groupId);
+      queryClient.setQueryData(ACTIVE_GROUP_QUERY_KEY, groupId);
       queryClient.invalidateQueries();
     },
     [queryClient]
   );
 
-  return { activeGroupId, activeGroup, setActiveGroup, groups, isFreePlay };
+  return { activeGroupId, activeGroup, setActiveGroup, groups, isFreePlay, isGroupsPending };
 }

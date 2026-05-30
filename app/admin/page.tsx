@@ -16,6 +16,7 @@ import GroupAdminSection from "@/components/admin/GroupAdminSection";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useMyGroups } from "@/hooks/useMyGroups";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
+import { useGroupMembers } from "@/hooks/useGroupMembers";
 import { useUpdateUserUsername } from "@/hooks/useUpdateUserUsername";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 
@@ -23,6 +24,7 @@ export default function AdminPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedGroupOverride, setSelectedGroupOverride] = useState<string | null>(null);
 
   const { data: me, isPending: meLoading } = useCurrentUser();
   const { data: groups = [], isPending: groupsLoading } = useMyGroups();
@@ -30,6 +32,12 @@ export default function AdminPage() {
   const isSystemAdmin = me?.role === "admin";
   const adminedGroups = groups.filter((g) => g.admin_id === me?.userId);
   const isGroupAdmin = adminedGroups.length > 0;
+  const selectedGroupId = selectedGroupOverride ?? adminedGroups[0]?.id ?? null;
+
+  const { data: groupMembers = [], isPending: membersLoading } = useGroupMembers(
+    isGroupAdmin ? selectedGroupId : null
+  );
+  const [memberQuery, setMemberQuery] = useState("");
 
   const updateOther = useUpdateUserUsername();
   const {
@@ -86,7 +94,59 @@ export default function AdminPage() {
 
       <main className="flex flex-col pb-5">
         {/* Group admin section — visible to any group admin */}
-        {isGroupAdmin && <GroupAdminSection adminedGroups={adminedGroups} />}
+        {isGroupAdmin && (
+          <GroupAdminSection
+            adminedGroups={adminedGroups}
+            selectedGroupId={selectedGroupId}
+            onSelectGroup={setSelectedGroupOverride}
+          />
+        )}
+
+        {/* Group member list — scoped to the selected group */}
+        {isGroupAdmin && (
+          <div className="px-5 pt-4">
+            <AdminSearchBar value={memberQuery} onChange={setMemberQuery} />
+            {membersLoading ? (
+              <div className="flex justify-center py-8">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-us border-t-transparent" />
+              </div>
+            ) : (
+              <ul className="mt-1.5 flex flex-col gap-1.5">
+                {groupMembers
+                  .filter((m) =>
+                    m.username.toLowerCase().includes(memberQuery.toLowerCase()) ||
+                    `${m.name} ${m.last_name}`.toLowerCase().includes(memberQuery.toLowerCase())
+                  )
+                  .map((m) => (
+                    <li
+                      key={m.id}
+                      className="flex items-center gap-3 rounded-lg bg-surface px-3 py-2.5 border border-border"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[13px] capitalize font-semibold text-text">
+                          {m.name} {m.last_name}
+                        </p>
+                        <p className="font-display text-[11px] font-medium text-text-dim">
+                          @{m.username}
+                        </p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="font-serif text-[9px] italic text-text-mute">glicko</p>
+                        <p className="font-display text-[14px] font-extrabold text-text">
+                          {Math.round(m.rating)}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                {groupMembers.length === 0 && !membersLoading && (
+                  <p className="py-8 text-center font-serif text-sm italic text-text-mute">
+                    Sin jugadores en este grupo
+                  </p>
+                )}
+              </ul>
+            )}
+          </div>
+        )}
 
         {/* System admin section */}
         {isSystemAdmin && (

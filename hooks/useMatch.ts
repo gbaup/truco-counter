@@ -11,7 +11,7 @@ import {
 import { useActiveGroup } from "./useActiveGroup";
 
 export function useMatch() {
-    const { activeGroupId, isFreePlay } = useActiveGroup();
+    const { activeGroupId, isFreePlay, isGroupsPending } = useActiveGroup();
     const [matchState, setMatchState] = useState<MatchState>({
         view: "setup",
         team1: [],
@@ -121,6 +121,7 @@ export function useMatch() {
         isStarting,
         isSaving,
         isFreePlay,
+        isGroupsPending,
         startMatch,
         finishMatch,
         incrementScore,

@@ -9,7 +9,8 @@ export const GET = withGroupMemberAuth(async (request, _session, context) => {
   try {
     const { id } = await (context.params as Promise<{ id: string }>);
     const { searchParams } = new URL(request.url);
-    const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
+    const all = searchParams.get("all") === "true";
+    const page = all ? 1 : Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
 
     const [memberships, total] = await Promise.all([
       prisma.group_memberships.findMany({
@@ -20,8 +21,7 @@ export const GET = withGroupMemberAuth(async (request, _session, context) => {
           },
         },
         orderBy: { joined_at: "asc" },
-        skip: (page - 1) * PAGE_SIZE,
-        take: PAGE_SIZE,
+        ...(all ? {} : { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }),
       }),
       prisma.group_memberships.count({ where: { group_id: id } }),
     ]);

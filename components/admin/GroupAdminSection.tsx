@@ -16,11 +16,12 @@ interface MyGroup extends Group {
 
 interface Props {
   adminedGroups: MyGroup[];
+  selectedGroupId: string | null;
+  onSelectGroup: (id: string) => void;
 }
 
-export default function GroupAdminSection({ adminedGroups }: Props) {
+export default function GroupAdminSection({ adminedGroups, selectedGroupId, onSelectGroup }: Props) {
   const { t } = useTranslation();
-  const [selectedGroupId, setSelectedGroupId] = useState(adminedGroups[0]?.id ?? null);
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
 
@@ -48,7 +49,7 @@ export default function GroupAdminSection({ adminedGroups }: Props) {
       {adminedGroups.length > 1 && (
         <select
           value={selectedGroupId ?? ""}
-          onChange={(e) => setSelectedGroupId(e.target.value)}
+          onChange={(e) => onSelectGroup(e.target.value)}
           className="w-full px-3 py-2 mb-3 rounded-md bg-surface border border-border text-sm text-text appearance-none cursor-pointer"
         >
           {adminedGroups.map((g) => (

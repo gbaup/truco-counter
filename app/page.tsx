@@ -29,6 +29,7 @@ export default function Home() {
     isSaving,
     isStarting,
     isFreePlay,
+    isGroupsPending,
     startMatch,
     finishMatch,
     incrementScore,
@@ -45,7 +46,7 @@ export default function Home() {
         ? "Ellos"
         : null;
 
-  if (!isLoaded) return null;
+  if (!isLoaded || isGroupsPending) return null;
 
   const handleStartMatch = async (
     t1: PublicUser[],
