@@ -135,7 +135,7 @@ export default function WinnerScreen({
             {t("win.over")}
           </div>
           <div className="text-[34px] font-extrabold leading-none text-text" style={{ fontFamily: "var(--font-crimson-pro), serif" }}>
-            {t("win.wonBy", { team: "" })}<span className="italic" style={{ color }}>{teamLabel}</span>
+            {winner === "them" ? t("win.wonByThem") : t("win.wonBy")}<span className="italic" style={{ color }}>{teamLabel}</span>
           </div>
         </div>
 

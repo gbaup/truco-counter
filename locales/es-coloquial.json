@@ -147,7 +147,8 @@
     },
     "win": {
         "over": "se acabó",
-        "wonBy": "ganó ",
+        "wonBy": "Ganamos ",
+        "wonByThem": "Ganaron ",
         "playedTo": "se jugó a {{max}} · ganó por {{diff}}",
         "rematch": "revancha",
         "exit": "levantarse"
