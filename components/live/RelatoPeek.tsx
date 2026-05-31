@@ -1,6 +1,7 @@
 "use client";
 
-import { Mano } from "@/hooks/usePointLog";
+import { useTranslation } from "react-i18next";
+import { Mano, TimeStyle } from "@/hooks/usePointLog";
 import { clockTime, timeAgo, useTick } from "@/lib/timeAgo";
 
 /**
@@ -10,8 +11,6 @@ import { clockTime, timeAgo, useTick } from "@/lib/timeAgo";
  * Va dentro de MatchCounter, posicionada por encima de <Controls/>.
  * Si no hay manos todavía, no se renderiza.
  */
-
-type TimeStyle = "rel" | "hora";
 
 interface RelatoPeekProps {
   lastMano: Mano | null;
@@ -24,6 +23,7 @@ export default function RelatoPeek({
   onOpen,
   timeStyle = "rel",
 }: RelatoPeekProps) {
+  const { t } = useTranslation();
   useTick(15000);
   if (!lastMano) return null;
 
@@ -33,7 +33,7 @@ export default function RelatoPeek({
   return (
     <button
       onClick={onOpen}
-      aria-label="Ver el relato del partido"
+      aria-label={t("relato.openAriaLabel")}
       className="flex w-full items-center gap-[9px] rounded-[13px] border border-border bg-surface/95 px-3 py-[9px] shadow-[0_8px_20px_-10px_rgba(0,0,0,0.6)] backdrop-blur active:scale-[0.99] transition-transform"
     >
       <span className="flex min-w-0 flex-1 items-center gap-[7px] text-left">
@@ -41,7 +41,7 @@ export default function RelatoPeek({
           <span className="font-display font-extrabold text-sm text-us">
             +{lastMano.us}{" "}
             <span className="font-serif font-normal not-italic text-xs italic">
-              Nos.
+              {t("relato.usAbbr")}
             </span>
           </span>
         )}
@@ -51,7 +51,7 @@ export default function RelatoPeek({
         {lastMano.them > 0 && (
           <span className="font-display font-extrabold text-sm text-them">
             +{lastMano.them}{" "}
-            <span className="font-serif font-normal text-xs italic">Ellos</span>
+            <span className="font-serif font-normal text-xs italic">{t("relato.them")}</span>
           </span>
         )}
         <span className="font-serif italic text-xs text-text-dim">
@@ -59,7 +59,7 @@ export default function RelatoPeek({
         </span>
       </span>
       <span className="flex shrink-0 items-center gap-[3px] font-serif italic text-[11px] text-text-mute">
-        ver relato
+        {t("relato.openButton")}
         <svg
           viewBox="0 0 24 24"
           width="13"

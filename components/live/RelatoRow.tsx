@@ -1,7 +1,8 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import Suit from "@/components/ui/Suit";
-import { Mano, Side } from "@/hooks/usePointLog";
+import { Mano, Side, TimeStyle } from "@/hooks/usePointLog";
 import { clockTime, timeAgo } from "@/lib/timeAgo";
 
 /**
@@ -16,8 +17,6 @@ import { clockTime, timeAgo } from "@/lib/timeAgo";
  * `pending` = la mano en curso (ventana de debounce abierta): los
  * tokens laten, el centro dice "anotando…" y hay una barra ámbar.
  */
-
-type TimeStyle = "rel" | "hora";
 
 interface RelatoRowProps {
   mano: Pick<Mano, "us" | "them" | "ts">;
@@ -71,6 +70,7 @@ export default function RelatoRow({
   pending = false,
   last = false,
 }: RelatoRowProps) {
+  const { t } = useTranslation();
   const time =
     timeStyle === "hora" ? clockTime(mano.ts) : timeAgo(mano.ts);
 
@@ -92,7 +92,7 @@ export default function RelatoRow({
         {pending ? (
           <span className="inline-flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-warning animate-pulse" />
-            anotando…
+            {t("relato.recording")}
           </span>
         ) : (
           time

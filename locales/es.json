@@ -171,6 +171,20 @@
         "gateSub": "No podés armar otra hasta que este partido termine",
         "watch": "Mirar en vivo"
     },
+    "relato": {
+        "title": "el relato",
+        "subtitle": "mano por mano, cómo se fue dando",
+        "us": "Nosotros",
+        "handCol": "la mano",
+        "them": "Ellos",
+        "live": "en vivo",
+        "empty": "todavía no hay manos anotadas",
+        "usAbbr": "Nos.",
+        "openButton": "ver relato",
+        "recording": "anotando…",
+        "ariaLabel": "El relato del partido",
+        "openAriaLabel": "Ver el relato del partido"
+    },
     "nav": {
         "setup": "Armar mesa"
     },

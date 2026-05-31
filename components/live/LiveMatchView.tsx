@@ -6,7 +6,7 @@ import PaperPanel from "@/components/ui/PaperPanel";
 import { Tally } from "@/components/ui/Palito";
 import { LiveBadge, LiveDot } from "./LiveBadge";
 import { CloseIcon, MenuIcon, LockIcon } from "@/components/ui/icons";
-import { splitScore } from "@/lib/domain/match";
+import { splitScore } from "@/lib/domain/match-display";
 
 type LiveMatchViewProps = {
   scoreUs: number;

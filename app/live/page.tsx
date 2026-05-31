@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useLiveMatch } from "@/hooks/useLiveMatch";
+import { useLiveMatch } from "@/contexts/LiveMatchContext";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import LiveMatchView from "@/components/live/LiveMatchView";
 import SideDrawer from "@/components/SideDrawer";

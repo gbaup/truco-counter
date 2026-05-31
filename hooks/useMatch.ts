@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { PublicUser } from "@/types/database";
 import { MatchState } from "@/types/game";
 import { createMatch, updateMatch, saveMatch } from "@/services/matchService";
-import { determineWinner } from "@/lib/domain/match";
+import { determineWinner } from "@/lib/domain/match-display";
 import {
     loadMatch,
     saveMatch as persistMatch,

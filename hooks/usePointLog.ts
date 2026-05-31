@@ -31,6 +31,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const WINDOW_MS = 2500; // se cierra la mano tras 2.5 s sin tocar
 const MAX_WAIT_MS = 6000; // tope: nunca deja la mano abierta más de 6 s
 
+export type TimeStyle = "rel" | "hora";
+
 export type Side = "us" | "them";
 
 export interface Mano {

@@ -16,7 +16,7 @@ const LiveMatchContext = createContext<LiveMatchContextValue>({
   isLoading: false,
 });
 
-export function useLiveMatchContext(): LiveMatchContextValue {
+export function useLiveMatch(): LiveMatchContextValue {
   return useContext(LiveMatchContext);
 }
 

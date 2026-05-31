@@ -12,8 +12,8 @@ import LiveGate from "@/components/live/LiveGate";
 import RelatoSheet from "@/components/live/RelatoSheet";
 import { useMatch } from "@/hooks/useMatch";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useLiveMatch } from "@/hooks/useLiveMatch";
-import { resolveWinner } from "@/lib/domain/match";
+import { useLiveMatch } from "@/contexts/LiveMatchContext";
+import { resolveWinner } from "@/lib/domain/match-display";
 import { PublicUser } from "@/types/database";
 
 export default function Home() {

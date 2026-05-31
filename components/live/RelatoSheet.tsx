@@ -1,8 +1,9 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import Suit from "@/components/ui/Suit";
 import RelatoRow from "@/components/live/RelatoRow";
-import { Mano } from "@/hooks/usePointLog";
+import { Mano, TimeStyle } from "@/hooks/usePointLog";
 import { useTick } from "@/lib/timeAgo";
 
 /**
@@ -16,8 +17,6 @@ import { useTick } from "@/lib/timeAgo";
  * es cada equipo, así los renglones pueden ir sin repetir el nombre.
  */
 
-type TimeStyle = "rel" | "hora";
-
 interface RelatoSheetProps {
   open: boolean;
   onClose: () => void;
@@ -28,20 +27,21 @@ interface RelatoSheetProps {
 }
 
 function ColumnHead() {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center pb-2 px-0.5 border-b border-border mb-0.5">
       <div className="flex-1 flex items-center gap-1.5">
         <Suit kind="espada" size={10} className="text-us" />
         <span className="font-serif italic font-bold text-[13px] text-us">
-          Nosotros
+          {t("relato.us")}
         </span>
       </div>
       <div className="shrink-0 w-[86px] text-center text-[9px] tracking-[0.14em] uppercase text-text-mute">
-        la mano
+        {t("relato.handCol")}
       </div>
       <div className="flex-1 flex items-center justify-end gap-1.5">
         <span className="font-serif italic font-bold text-[13px] text-them">
-          Ellos
+          {t("relato.them")}
         </span>
         <Suit kind="basto" size={10} className="text-them" />
       </div>
@@ -57,7 +57,8 @@ export default function RelatoSheet({
   live = false,
   timeStyle = "rel",
 }: RelatoSheetProps) {
-  useTick(15000); // refresca los "hace …"
+  const { t } = useTranslation();
+  useTick(15000);
 
   const empty = manos.length === 0 && !pending;
 
@@ -74,7 +75,7 @@ export default function RelatoSheet({
       {/* Sheet */}
       <div
         role="dialog"
-        aria-label="El relato del partido"
+        aria-label={t("relato.ariaLabel")}
         className={`fixed inset-x-0 bottom-0 z-50 flex flex-col overflow-hidden rounded-t-2xl border-t border-border bg-surface shadow-[0_-20px_40px_rgba(0,0,0,0.45)] transition-transform duration-[240ms] ease-[cubic-bezier(0.2,0.9,0.3,1)] ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
@@ -87,16 +88,16 @@ export default function RelatoSheet({
         <div className="flex items-center justify-between px-[18px] pt-2 pb-2">
           <div>
             <h2 className="font-serif italic font-bold text-lg text-text">
-              el relato
+              {t("relato.title")}
             </h2>
             <p className="mt-px text-[10.5px] tracking-[0.04em] text-text-mute">
-              mano por mano, cómo se fue dando
+              {t("relato.subtitle")}
             </p>
           </div>
           {live && (
             <span className="flex items-center gap-1.5 font-serif italic text-[11px] text-them">
               <span className="w-[7px] h-[7px] rounded-full bg-them animate-pulse" />
-              en vivo
+              {t("relato.live")}
             </span>
           )}
         </div>
@@ -109,7 +110,7 @@ export default function RelatoSheet({
         >
           {empty ? (
             <p className="pt-10 text-center font-serif italic text-text-mute">
-              todavía no hay manos anotadas
+              {t("relato.empty")}
             </p>
           ) : (
             <>

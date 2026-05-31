@@ -9,7 +9,7 @@ import { MenuIcon } from "@/components/ui/icons";
 import RelatoPeek from "@/components/live/RelatoPeek";
 import { useTranslation } from "react-i18next";
 import { LiveDot } from "@/components/live/LiveBadge";
-import { splitScore } from "@/lib/domain/match";
+import { splitScore } from "@/lib/domain/match-display";
 
 type TimeStyle = "rel" | "hora";
 

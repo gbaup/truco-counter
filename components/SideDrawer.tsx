@@ -12,7 +12,7 @@ import RoleBadge from "@/components/admin/RoleBadge";
 import GroupSelector from "@/components/ui/GroupSelector";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useActiveGroup } from "@/hooks/useActiveGroup";
-import { useLiveMatch } from "@/hooks/useLiveMatch";
+import { useLiveMatch } from "@/contexts/LiveMatchContext";
 import { LiveDot, MiniScore } from "@/components/live/LiveBadge";
 import { MenuIcon, CloseIcon, ArrowRightIcon, LockIcon } from "@/components/ui/icons";
 import { UserRole } from "@/types/auth";
