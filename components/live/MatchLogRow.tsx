@@ -2,24 +2,24 @@
 
 import { useTranslation } from "react-i18next";
 import Suit from "@/components/ui/Suit";
-import { Mano, Side, TimeStyle } from "@/hooks/usePointLog";
+import { Hand, Side, TimeStyle } from "@/hooks/usePointLog";
 import { clockTime, timeAgo } from "@/lib/timeAgo";
 
 /**
- * RelatoRow — una MANO como renglón de libreta.
+ * MatchLogRow — a single HAND as a row in the match log.
  *
- *   Nosotros (izq, morado) · hora al medio · Ellos (der, esmeralda)
+ *   Us (left, purple) · time in the middle · Them (right, emerald)
  *
- * Muestra la mano COMPLETA: si los dos equipos sumaron se ven los dos
- * tokens ("1 a 1", "3 a 1"); si solo sumó uno, el otro lado queda con
- * un guión tenue. Nunca se muestra solo la diferencia.
+ * Shows the FULL hand: if both teams scored, both tokens are visible
+ * ("1 a 1", "3 a 1"); if only one team scored, the other side shows a
+ * faint dash. The net difference is never shown alone.
  *
- * `pending` = la mano en curso (ventana de debounce abierta): los
- * tokens laten, el centro dice "anotando…" y hay una barra ámbar.
+ * `pending` = the hand in progress (debounce window open): tokens pulse,
+ * the center reads "recording…", and an amber bar appears.
  */
 
-interface RelatoRowProps {
-  mano: Pick<Mano, "us" | "them" | "ts">;
+interface MatchLogRowProps {
+  hand: Pick<Hand, "us" | "them" | "ts">;
   timeStyle?: TimeStyle;
   pending?: boolean;
   last?: boolean;
@@ -64,15 +64,15 @@ function Token({
   );
 }
 
-export default function RelatoRow({
-  mano,
+export default function MatchLogRow({
+  hand,
   timeStyle = "rel",
   pending = false,
   last = false,
-}: RelatoRowProps) {
+}: MatchLogRowProps) {
   const { t } = useTranslation();
   const time =
-    timeStyle === "hora" ? clockTime(mano.ts) : timeAgo(mano.ts);
+    timeStyle === "hora" ? clockTime(hand.ts) : timeAgo(hand.ts, t);
 
   return (
     <div
@@ -81,7 +81,7 @@ export default function RelatoRow({
       }`}
     >
       <div className="flex-1 flex justify-start">
-        <Token side="us" n={mano.us} pending={pending} />
+        <Token side="us" n={hand.us} pending={pending} />
       </div>
 
       <div
@@ -100,7 +100,7 @@ export default function RelatoRow({
       </div>
 
       <div className="flex-1 flex justify-end">
-        <Token side="them" n={mano.them} pending={pending} mirror />
+        <Token side="them" n={hand.them} pending={pending} mirror />
       </div>
 
       {pending && (

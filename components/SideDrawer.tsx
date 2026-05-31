@@ -96,7 +96,7 @@ export default function SideDrawer({
           <button
             onClick={closeMenu}
             className="w-8 h-8 rounded-full bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
-            aria-label="Cerrar menú"
+            aria-label="Close menu"
           >
             <CloseIcon size={14} />
           </button>
@@ -133,7 +133,7 @@ export default function SideDrawer({
                 className="text-caption-italic mt-0.5"
                 style={{ color: "rgba(26, 20, 16, 0.67)", fontSize: 11 }}
               >
-                el de la mesa
+                current player
               </div>
             </div>
 
@@ -169,7 +169,7 @@ export default function SideDrawer({
           className="text-caption-italic text-text-mute mb-2.5"
           style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
         >
-          en la mesa
+          navigation
         </p>
 
         {/* Nav items */}

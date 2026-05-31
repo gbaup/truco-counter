@@ -2,27 +2,26 @@
 
 import { useTranslation } from "react-i18next";
 import Suit from "@/components/ui/Suit";
-import RelatoRow from "@/components/live/RelatoRow";
-import { Mano, TimeStyle } from "@/hooks/usePointLog";
+import MatchLogRow from "@/components/live/MatchLogRow";
+import { Hand, TimeStyle } from "@/hooks/usePointLog";
 import { useTick } from "@/lib/timeAgo";
 
 /**
- * RelatoSheet — bottom sheet con el relato del partido, mano por mano.
+ * MatchLogSheet — bottom sheet showing the match log, hand by hand.
  *
- * Patrón = el Bottom Sheet del design system (ver DESIGN.md § Bottom
- * Sheet): backdrop blur, esquinas superiores rounded-2xl, grabber.
- * El contador queda atenuado detrás.
+ * Pattern = the Bottom Sheet from the design system: backdrop blur,
+ * upper corners rounded-2xl, grabber. The counter dims behind it.
  *
- * El header de columnas ("Nosotros / la mano / Ellos") ancla qué lado
- * es cada equipo, así los renglones pueden ir sin repetir el nombre.
+ * The column header ("Us / hand / Them") anchors which side is which
+ * team so the rows don't need to repeat team names.
  */
 
-interface RelatoSheetProps {
+interface MatchLogSheetProps {
   open: boolean;
   onClose: () => void;
-  manos: Mano[];
+  hands: Hand[];
   pending?: { us: number; them: number; ts: number } | null;
-  live?: boolean; // hay partido en curso → mostrar dot "en vivo"
+  live?: boolean; // there is an ongoing match → show "live" dot
   timeStyle?: TimeStyle;
 }
 
@@ -49,18 +48,18 @@ function ColumnHead() {
   );
 }
 
-export default function RelatoSheet({
+export default function MatchLogSheet({
   open,
   onClose,
-  manos,
+  hands,
   pending = null,
   live = false,
   timeStyle = "rel",
-}: RelatoSheetProps) {
+}: MatchLogSheetProps) {
   const { t } = useTranslation();
   useTick(15000);
 
-  const empty = manos.length === 0 && !pending;
+  const empty = hands.length === 0 && !pending;
 
   return (
     <>
@@ -116,14 +115,14 @@ export default function RelatoSheet({
             <>
               <ColumnHead />
               {pending && (
-                <RelatoRow mano={pending} pending timeStyle={timeStyle} />
+                <MatchLogRow hand={pending} pending timeStyle={timeStyle} />
               )}
-              {manos.map((m, i) => (
-                <RelatoRow
-                  key={m.id}
-                  mano={m}
+              {hands.map((h, i) => (
+                <MatchLogRow
+                  key={h.id}
+                  hand={h}
                   timeStyle={timeStyle}
-                  last={i === manos.length - 1}
+                  last={i === hands.length - 1}
                 />
               ))}
             </>

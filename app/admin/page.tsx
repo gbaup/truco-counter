@@ -152,7 +152,7 @@ export default function AdminPage() {
             ))}
             {filteredList.length === 0 && searchQuery && (
               <p className="py-8 text-center font-serif text-sm italic text-text-mute">
-                Sin resultados para &quot;{searchQuery}&quot;
+                No results for &quot;{searchQuery}&quot;
               </p>
             )}
           </ul>

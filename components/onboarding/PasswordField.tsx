@@ -11,7 +11,7 @@ type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> & {
 };
 
 const PasswordField = forwardRef<HTMLInputElement, Props>(function PasswordField(
-  { label = "Contraseña", hint, ...rest },
+  { label = "Password", hint, ...rest },
   ref
 ) {
   const [show, setShow] = useState(false);
@@ -26,7 +26,7 @@ const PasswordField = forwardRef<HTMLInputElement, Props>(function PasswordField
       right={
         <button
           type="button"
-          aria-label={show ? "Ocultar contraseña" : "Mostrar contraseña"}
+          aria-label={show ? "Hide password" : "Show password"}
           onClick={() => setShow((s) => !s)}
           className="w-[30px] h-[30px] rounded-lg flex items-center justify-center text-text-dim"
         >

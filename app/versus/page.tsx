@@ -32,12 +32,12 @@ export default function VersusPage() {
           className="text-caption-italic text-text"
           style={{ fontFamily: "var(--font-crimson-pro), serif" }}
         >
-          rivalidades
+          rivalries
         </span>
         <button
           onClick={() => setDrawerOpen(true)}
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
-          aria-label="Menú"
+          aria-label="Menu"
         >
           <MenuIcon size={16} />
         </button>
@@ -47,22 +47,22 @@ export default function VersusPage() {
         {/* Player selectors */}
         <div className="grid grid-cols-2 gap-2.5">
           <UserDropdown
-            label="jugador 1"
+            label="player 1"
             value={player1}
             onChange={setPlayer1}
             users={users}
             disabledId={player2}
             variant="us"
-            placeholder="elegir"
+            placeholder="select"
           />
           <UserDropdown
-            label="jugador 2"
+            label="player 2"
             value={player2}
             onChange={setPlayer2}
             users={users}
             disabledId={player1}
             variant="them"
-            placeholder="elegir"
+            placeholder="select"
           />
         </div>
 

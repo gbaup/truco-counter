@@ -80,7 +80,7 @@ export default function CreatePlayerSheet({
             {t("create.preview")}
           </p>
           <p className="font-serif text-base font-bold leading-tight text-paper-ink">
-            {firstName || "Martín"} {lastName || "Pérez"}
+            {firstName || "John"} {lastName || "Doe"}
           </p>
           <p className="mt-0.5 font-display text-[11px] text-paper-ink/60">
             @{username || "apodo"}
@@ -93,21 +93,21 @@ export default function CreatePlayerSheet({
           label={t("create.firstName")}
           value={firstName}
           onChange={(v) => setFirstName(v.toLowerCase())}
-          placeholder="martín"
+          placeholder="john"
           maxLength={30}
         />
         <FieldInput
           label={t("create.lastName")}
           value={lastName}
           onChange={(v) => setLastName(v.toLowerCase())}
-          placeholder="pérez"
+          placeholder="doe"
           maxLength={30}
         />
         <FieldInput
           label={t("create.username")}
           value={username}
           onChange={(v) => setUsername(v.toLowerCase().replace(/\s/g, ""))}
-          placeholder="tincho"
+          placeholder="johnny"
           prefix="@"
           maxLength={20}
           error={errors.username}

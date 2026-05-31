@@ -3,68 +3,67 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
- * usePointLog — "el relato": agrupa los toques de puntaje en MANOS.
+ * usePointLog — groups score taps into HANDs (debounced windows).
  *
- * Una MANO es una ventana de tiempo (debounce) durante la cual se
- * acumulan TODOS los toques, de los DOS equipos. Esto es importante:
- * en truco una misma mano puede dar puntos a los dos (envido a uno,
- * truco al otro) → la entrada del relato guarda lo que sacó cada lado:
- * { us, them }. No es "+N de un equipo", es el resultado de la mano.
+ * A HAND is a time window (debounce) during which ALL taps from BOTH
+ * teams are accumulated. This matters because in truco a single hand
+ * can award points to both sides (envido to one, truco to the other)
+ * → each log entry stores what each side scored: { us, them }.
  *
- * Mecánica de la ventana (debounce con tope):
- *   - El primer toque ABRE la mano y arranca un timer de WINDOW_MS.
- *   - Cada toque siguiente reinicia el timer (se siguen agrupando).
- *   - Pero la mano nunca queda abierta más de MAX_WAIT_MS (tope), así
- *     una racha de toques lentos igual cierra y no fusiona dos manos.
- *   - Al cerrar, si el neto de la mano es 0 (ej: +1 y después −1), no
- *     se registra nada.
+ * Window mechanics (debounce with cap):
+ *   - The first tap OPENS the hand and starts a WINDOW_MS timer.
+ *   - Each subsequent tap resets the timer (keeps grouping).
+ *   - But the hand never stays open longer than MAX_WAIT_MS (cap), so
+ *     a slow burst of taps still closes and doesn't merge two hands.
+ *   - On close, if the net for the hand is 0 (e.g. +1 then −1), nothing
+ *     is recorded.
  *
- * Correcciones (−): mientras la ventana está ABIERTA, un − resta del
- * acumulado de ese equipo. Un − que llega con la ventana ya cerrada
- * queda fuera del alcance de este hook (manejalo como "deshacer
- * última mano" si lo necesitás; ver nota al final).
+ * Corrections (−): while the window is OPEN, a − subtracts from that
+ * team's accumulator. A − arriving after the window closes falls outside
+ * the scope of this hook (handle it as "undo last hand" if needed; see
+ * note at the bottom).
  *
- * Cliente-only: el relato vive en memoria + localStorage por matchId.
- * No toca la base ni el stream en vivo (ver IMPLEMENTATION.md § Alcance).
+ * Client-only: the log lives in memory + localStorage by matchId.
+ * Does not touch the database or live stream.
  */
 
-const WINDOW_MS = 2500; // se cierra la mano tras 2.5 s sin tocar
-const MAX_WAIT_MS = 6000; // tope: nunca deja la mano abierta más de 6 s
+const WINDOW_MS = 2500; // close the hand after 2.5 s of inactivity
+const MAX_WAIT_MS = 6000; // cap: never leave a hand open longer than 6 s
 
 export type TimeStyle = "rel" | "hora";
 
 export type Side = "us" | "them";
 
-export interface Mano {
+export interface Hand {
   id: string;
   us: number;
   them: number;
-  ts: number; // epoch ms — cuándo arrancó la mano (para el "hace …")
+  ts: number; // epoch ms — when the hand started (used for "X ago" display)
 }
 
-interface PendingMano {
+interface PendingHand {
   us: number;
   them: number;
   ts: number;
 }
 
-const STORAGE_PREFIX = "truco-relato:";
+const STORAGE_PREFIX = "truco-matchlog:";
 const key = (matchId?: string) => `${STORAGE_PREFIX}${matchId ?? "free"}`;
 
-function load(matchId?: string): Mano[] {
+function load(matchId?: string): Hand[] {
   try {
     const raw = localStorage.getItem(key(matchId));
-    return raw ? (JSON.parse(raw) as Mano[]) : [];
+    return raw ? (JSON.parse(raw) as Hand[]) : [];
   } catch {
     return [];
   }
 }
 
-function save(matchId: string | undefined, manos: Mano[]) {
+function save(matchId: string | undefined, hands: Hand[]) {
   try {
-    localStorage.setItem(key(matchId), JSON.stringify(manos));
+    localStorage.setItem(key(matchId), JSON.stringify(hands));
   } catch {
-    /* almacenamiento lleno / no disponible — el relato es best-effort */
+    /* storage full / unavailable — match log is best-effort */
   }
 }
 
@@ -77,34 +76,34 @@ export function clearPointLog(matchId?: string) {
 }
 
 export interface PointLog {
-  /** Manos cerradas, más reciente primero. */
-  manos: Mano[];
-  /** La mano en curso (ventana abierta), o null. */
-  pending: PendingMano | null;
-  /** Llamar en cada toque, junto al increment/decrement del score. */
+  /** Closed hands, most recent first. */
+  hands: Hand[];
+  /** The hand currently in progress (window open), or null. */
+  pending: PendingHand | null;
+  /** Call on every tap, alongside the score increment/decrement. */
   register: (side: Side, dir: 1 | -1) => void;
-  /** Borrar todo (al terminar/cancelar el partido). */
+  /** Clear everything (when finishing or cancelling a match). */
   reset: () => void;
 }
 
 export function usePointLog(matchId?: string): PointLog {
   const [prevMatchId, setPrevMatchId] = useState<string | undefined>(matchId);
-  const [manos, setManos] = useState<Mano[]>(() =>
+  const [hands, setHands] = useState<Hand[]>(() =>
     typeof window === "undefined" ? [] : load(matchId)
   );
-  const [pending, setPending] = useState<PendingMano | null>(null);
+  const [pending, setPending] = useState<PendingHand | null>(null);
 
-  const pendingRef = useRef<PendingMano | null>(null);
+  const pendingRef = useRef<PendingHand | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Re-hidratar state cuando cambia el matchId (render-phase — sin tocar refs).
+  // Re-hydrate state when matchId changes (render-phase — no ref mutation).
   if (prevMatchId !== matchId) {
     setPrevMatchId(matchId);
-    setManos(typeof window === "undefined" ? [] : load(matchId));
+    setHands(typeof window === "undefined" ? [] : load(matchId));
     setPending(null);
   }
 
-  // Limpiar timer y pending ref cuando cambia el matchId (solo refs, sin setState).
+  // Clear timer and pending ref when matchId changes (refs only, no setState).
   useEffect(() => {
     pendingRef.current = null;
     if (timerRef.current) {
@@ -122,8 +121,8 @@ export function usePointLog(matchId?: string): PointLog {
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
-      if (!p || (p.us <= 0 && p.them <= 0)) return; // mano nula → no se anota
-      const mano: Mano = {
+      if (!p || (p.us <= 0 && p.them <= 0)) return; // null hand — nothing to record
+      const hand: Hand = {
         id:
           typeof crypto !== "undefined" && crypto.randomUUID
             ? crypto.randomUUID()
@@ -132,8 +131,8 @@ export function usePointLog(matchId?: string): PointLog {
         them: Math.max(0, p.them),
         ts: p.ts,
       };
-      setManos((prev) => {
-        const next = [mano, ...prev];
+      setHands((prev) => {
+        const next = [hand, ...prev];
         save(mid, next);
         return next;
       });
@@ -145,7 +144,7 @@ export function usePointLog(matchId?: string): PointLog {
     (side: Side, dir: 1 | -1) => {
       const now = Date.now();
       const prev = pendingRef.current ?? { us: 0, them: 0, ts: now };
-      const p: PendingMano = { ...prev, [side]: prev[side] + dir };
+      const p: PendingHand = { ...prev, [side]: prev[side] + dir };
       pendingRef.current = p;
       setPending(p);
 
@@ -162,25 +161,25 @@ export function usePointLog(matchId?: string): PointLog {
     timerRef.current = null;
     pendingRef.current = null;
     setPending(null);
-    setManos([]);
+    setHands([]);
     clearPointLog(matchId);
   }, [matchId]);
 
-  // Cerrar la mano abierta si el componente se desmonta.
+  // Flush the open hand if the component unmounts.
   useEffect(() => {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, []);
 
-  return { manos, pending, register, reset };
+  return { hands, pending, register, reset };
 }
 
 /**
- * NOTA — "deshacer última mano":
- * Este hook agrupa toques dentro de la ventana. Si querés que un − con
- * la ventana ya cerrada edite la última mano cerrada, envolvé `register`
- * en el consumer: si pending es null y dir === -1, hacé pop/patch del
- * primer elemento de `manos` en vez de abrir una mano nueva. Se dejó
- * afuera para mantener el hook simple y predecible.
+ * NOTE — "undo last hand":
+ * This hook groups taps within the window. If you want a − arriving after
+ * the window closes to edit the last closed hand, wrap `register` in the
+ * consumer: if pending is null and dir === -1, pop/patch the first element
+ * of `hands` instead of opening a new hand. Left out intentionally to keep
+ * this hook simple and predictable.
  */

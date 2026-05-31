@@ -1,34 +1,34 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import { Mano, TimeStyle } from "@/hooks/usePointLog";
+import { Hand, TimeStyle } from "@/hooks/usePointLog";
 import { clockTime, timeAgo, useTick } from "@/lib/timeAgo";
 
 /**
- * RelatoPeek — barra discreta sobre los controles que muestra la última
- * mano (de los dos lados) y abre el relato al tocarla.
+ * MatchLogPeek — a subtle bar above the controls showing the last hand
+ * (both sides) that opens the match log when tapped.
  *
- * Va dentro de MatchCounter, posicionada por encima de <Controls/>.
- * Si no hay manos todavía, no se renderiza.
+ * Sits inside MatchCounter, positioned above <Controls/>.
+ * Renders nothing if there are no hands yet.
  */
 
-interface RelatoPeekProps {
-  lastMano: Mano | null;
+interface MatchLogPeekProps {
+  lastHand: Hand | null;
   onOpen: () => void;
   timeStyle?: TimeStyle;
 }
 
-export default function RelatoPeek({
-  lastMano,
+export default function MatchLogPeek({
+  lastHand,
   onOpen,
   timeStyle = "rel",
-}: RelatoPeekProps) {
+}: MatchLogPeekProps) {
   const { t } = useTranslation();
   useTick(15000);
-  if (!lastMano) return null;
+  if (!lastHand) return null;
 
   const time =
-    timeStyle === "hora" ? clockTime(lastMano.ts) : timeAgo(lastMano.ts);
+    timeStyle === "hora" ? clockTime(lastHand.ts) : timeAgo(lastHand.ts, t);
 
   return (
     <button
@@ -37,20 +37,20 @@ export default function RelatoPeek({
       className="flex w-full items-center gap-[9px] rounded-[13px] border border-border bg-surface/95 px-3 py-[9px] shadow-[0_8px_20px_-10px_rgba(0,0,0,0.6)] backdrop-blur active:scale-[0.99] transition-transform"
     >
       <span className="flex min-w-0 flex-1 items-center gap-[7px] text-left">
-        {lastMano.us > 0 && (
+        {lastHand.us > 0 && (
           <span className="font-display font-extrabold text-sm text-us">
-            +{lastMano.us}{" "}
+            +{lastHand.us}{" "}
             <span className="font-serif font-normal not-italic text-xs italic">
               {t("relato.usAbbr")}
             </span>
           </span>
         )}
-        {lastMano.us > 0 && lastMano.them > 0 && (
+        {lastHand.us > 0 && lastHand.them > 0 && (
           <span className="text-text-mute">·</span>
         )}
-        {lastMano.them > 0 && (
+        {lastHand.them > 0 && (
           <span className="font-display font-extrabold text-sm text-them">
-            +{lastMano.them}{" "}
+            +{lastHand.them}{" "}
             <span className="font-serif font-normal text-xs italic">{t("relato.them")}</span>
           </span>
         )}

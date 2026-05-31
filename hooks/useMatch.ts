@@ -140,7 +140,7 @@ export function useMatch() {
         finishMatch,
         incrementScore,
         decrementScore,
-        manos: pointLog.manos,
+        hands: pointLog.hands,
         pending: pointLog.pending,
     };
 }

@@ -58,7 +58,7 @@ export const POST = withAuth(async (request, session: Session) => {
             return NextResponse.json(
                 {
                     success: false,
-                    error: "Uno o más jugadores ya están en una partida activa.",
+                    error: "One or more players are already in an active match.",
                     code: "PLAYERS_BUSY"
                 },
                 { status: 409 }

@@ -171,6 +171,12 @@
         "gateSub": "No podés armar otra hasta que este partido termine",
         "watch": "Mirar en vivo"
     },
+    "timeAgo": {
+        "justNow": "recién",
+        "seconds": "hace {{s}} s",
+        "minutes": "hace {{m}} min",
+        "hours": "hace {{h}} h"
+    },
     "relato": {
         "title": "el relato",
         "subtitle": "mano por mano, cómo se fue dando",

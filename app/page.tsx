@@ -9,7 +9,7 @@ import SideDrawer from "@/components/SideDrawer";
 import WinnerScreen from "@/components/WinnerScreen";
 import ConfirmationExitModal from "@/components/ConfirmationExitModal";
 import LiveGate from "@/components/live/LiveGate";
-import RelatoSheet from "@/components/live/RelatoSheet";
+import MatchLogSheet from "@/components/live/MatchLogSheet";
 import { useMatch } from "@/hooks/useMatch";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useLiveMatch } from "@/contexts/LiveMatchContext";
@@ -37,13 +37,13 @@ export default function Home() {
     finishMatch,
     incrementScore,
     decrementScore,
-    manos,
+    hands,
     pending,
   } = useMatch();
 
   const [showExitModal, setShowExitModal] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [relatoOpen, setRelatoOpen] = useState(false);
+  const [matchLogOpen, setMatchLogOpen] = useState(false);
 
   const resolved = resolveWinner(matchState);
   const winner = resolved?.team ?? null;
@@ -62,7 +62,7 @@ export default function Home() {
       if (e instanceof Error) {
         toast.error(e.message);
       } else {
-        toast.error("Error al iniciar el partido");
+        toast.error("Failed to start match");
       }
     }
   };
@@ -78,7 +78,7 @@ export default function Home() {
   const live = !isFreePlay ? (liveData?.live ?? null) : null;
   const liveDot = live !== null;
 
-  const counterBlurred = !!winner || relatoOpen;
+  const counterBlurred = !!winner || matchLogOpen;
 
   return (
     <div className="min-h-screen bg-background">
@@ -119,8 +119,8 @@ export default function Home() {
               onDecrement={decrementScore}
               onExit={() => setShowExitModal(true)}
               onMenuOpen={() => setDrawerOpen(true)}
-              onRelatoOpen={() => setRelatoOpen(true)}
-              manos={manos}
+              onMatchLogOpen={() => setMatchLogOpen(true)}
+              hands={hands}
               liveDot={liveDot}
             />
           </div>
@@ -135,10 +135,10 @@ export default function Home() {
               onExit={() => finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" })}
             />
           )}
-          <RelatoSheet
-            open={relatoOpen}
-            onClose={() => setRelatoOpen(false)}
-            manos={manos}
+          <MatchLogSheet
+            open={matchLogOpen}
+            onClose={() => setMatchLogOpen(false)}
+            hands={hands}
             pending={pending}
             live={liveDot}
           />

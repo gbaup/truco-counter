@@ -1,12 +1,12 @@
 "use client";
 
 import { PublicUser } from "@/types/database";
-import { Mano } from "@/hooks/usePointLog";
+import { Hand } from "@/hooks/usePointLog";
 import TeamCounter from "./TeamCounter";
 import Controls from "./Controls";
 import Logo from "@/components/ui/Logo";
 import { MenuIcon } from "@/components/ui/icons";
-import RelatoPeek from "@/components/live/RelatoPeek";
+import MatchLogPeek from "@/components/live/MatchLogPeek";
 import { useTranslation } from "react-i18next";
 import { LiveDot } from "@/components/live/LiveBadge";
 import { splitScore } from "@/lib/domain/match-display";
@@ -23,8 +23,8 @@ interface MatchCounterProps {
   onDecrement: (team: 1 | 2) => void;
   onExit: () => void;
   onMenuOpen: () => void;
-  onRelatoOpen: () => void;
-  manos: Mano[];
+  onMatchLogOpen: () => void;
+  hands: Hand[];
   liveDot?: boolean;
   timeStyle?: TimeStyle;
 }
@@ -39,8 +39,8 @@ export default function MatchCounter({
   onDecrement,
   onExit,
   onMenuOpen,
-  onRelatoOpen,
-  manos,
+  onMatchLogOpen,
+  hands,
   liveDot = false,
   timeStyle = "rel",
 }: MatchCounterProps) {
@@ -74,7 +74,7 @@ export default function MatchCounter({
         <button
           onClick={onMenuOpen}
           className="relative w-[30px] h-[30px] rounded-full border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface"
-          aria-label="Menú"
+          aria-label="Menu"
         >
           <MenuIcon size={14} />
           {liveDot && (
@@ -105,11 +105,11 @@ export default function MatchCounter({
         />
       </div>
 
-      {/* Relato peek */}
+      {/* Match log peek */}
       <div className="relative px-3.5 pb-1.5">
-        <RelatoPeek
-          lastMano={manos[0] ?? null}
-          onOpen={onRelatoOpen}
+        <MatchLogPeek
+          lastHand={hands[0] ?? null}
+          onOpen={onMatchLogOpen}
           timeStyle={timeStyle}
         />
       </div>

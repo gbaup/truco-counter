@@ -33,15 +33,15 @@ export default function ChangePasswordPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!currentPwd || !newPwd || !confirmPwd) {
-      setError("Completá todos los campos");
+      setError("Please fill in all fields");
       return;
     }
     if (newPwd !== confirmPwd) {
-      setError("Las contraseñas no coinciden");
+      setError("Passwords do not match");
       return;
     }
     if (newPwd.length < 6) {
-      setError("Mínimo 6 caracteres");
+      setError("Minimum 6 characters");
       return;
     }
     setSaving(true);
@@ -52,15 +52,15 @@ export default function ChangePasswordPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ current: currentPwd, next: newPwd }),
       });
-      toast.success("¡Contraseña actualizada! Bienvenido.");
+      toast.success("Password updated! Welcome.");
       router.replace("/");
     } catch (e: unknown) {
       if (e instanceof Error && e.message === "wrong_password") {
-        setError("Contraseña inicial incorrecta");
+        setError("Incorrect initial password");
       } else if (e instanceof Error && e.message === "too_short") {
-        setError("Mínimo 6 caracteres");
+        setError("Minimum 6 characters");
       } else {
-        setError("Algo salió mal · probá de nuevo");
+        setError("Something went wrong · please try again");
       }
     } finally {
       setSaving(false);
@@ -75,15 +75,15 @@ export default function ChangePasswordPage() {
           <p
             className="font-serif text-[11px] italic tracking-[0.18em] text-text-mute"
           >
-            primer ingreso
+            first login
           </p>
           <h1
             className="mt-1 font-serif text-[22px] font-bold text-text"
           >
-            Elegí tu contraseña
+            Choose your password
           </h1>
           <p className="mt-1 font-serif text-[13px] italic text-text-dim">
-            La contraseña inicial es temporal · cambiala ahora
+            Your initial password is temporary · set a new one now
           </p>
         </div>
       </div>
@@ -93,17 +93,17 @@ export default function ChangePasswordPage() {
         className="w-full max-w-sm flex flex-col gap-3"
       >
         <PasswordField
-          label={`Contraseña inicial (${INITIAL_USER_PASSWORD})`}
+          label={`Initial password (${INITIAL_USER_PASSWORD})`}
           value={currentPwd}
           onChange={setCurrentPwd}
         />
         <PasswordField
-          label="Nueva contraseña"
+          label="New password"
           value={newPwd}
           onChange={setNewPwd}
         />
         <PasswordField
-          label="Confirmar contraseña"
+          label="Confirm password"
           value={confirmPwd}
           onChange={setConfirmPwd}
         />
@@ -117,7 +117,7 @@ export default function ChangePasswordPage() {
           disabled={saving || !currentPwd || !newPwd || !confirmPwd}
           className="mt-1 w-full rounded-2xl bg-us py-4 text-sm font-bold text-white shadow-[0_8px_20px_-10px_theme(colors.us)] disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-transform"
         >
-          {saving ? "Guardando…" : "Cambiar contraseña"}
+          {saving ? "Saving…" : "Change password"}
         </button>
       </form>
     </div>
