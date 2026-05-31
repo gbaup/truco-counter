@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useActiveGroup } from "@/hooks/useActiveGroup";
 import { useLiveMatch } from "@/hooks/useLiveMatch";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import LiveMatchView from "@/components/live/LiveMatchView";
@@ -11,8 +10,7 @@ import SideDrawer from "@/components/SideDrawer";
 export default function LivePage() {
   const router = useRouter();
   const { data: me } = useCurrentUser();
-  const { activeGroupId } = useActiveGroup();
-  const { data: liveData, isLoading } = useLiveMatch(activeGroupId ?? undefined);
+  const { data: liveData, isLoading } = useLiveMatch();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {

@@ -1,5 +1,15 @@
 import { PublicUser } from "./database";
 
+export interface LiveMatchData {
+  matchId: string;
+  scoreUs: number;
+  scoreThem: number;
+  max: number;
+  teamUs: string[];
+  teamThem: string[];
+  scorer: string;
+}
+
 export interface RosterEntry {
     username: string;
     name: string;

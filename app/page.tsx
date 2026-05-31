@@ -11,15 +11,14 @@ import ConfirmationExitModal from "@/components/ConfirmationExitModal";
 import LiveGate from "@/components/live/LiveGate";
 import { useMatch } from "@/hooks/useMatch";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useActiveGroup } from "@/hooks/useActiveGroup";
 import { useLiveMatch } from "@/hooks/useLiveMatch";
+import { resolveWinner } from "@/lib/domain/match";
 import { PublicUser } from "@/types/database";
 
 export default function Home() {
   const router = useRouter();
   const { data: me } = useCurrentUser();
-  const { activeGroupId } = useActiveGroup();
-  const { data: liveData } = useLiveMatch(activeGroupId ?? undefined);
+  const { data: liveData } = useLiveMatch();
 
   useEffect(() => {
     if (me && !me.passwordChanged) {
@@ -42,18 +41,9 @@ export default function Home() {
   const [showExitModal, setShowExitModal] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const winner =
-    matchState.score1 >= matchState.maxPoints
-      ? ("us" as const)
-      : matchState.score2 >= matchState.maxPoints
-        ? ("them" as const)
-        : null;
-
-  const winnerNames = winner
-    ? (winner === "us" ? matchState.team1 : matchState.team2).map(
-        (u) => u.name ?? u.username
-      )
-    : [];
+  const resolved = resolveWinner(matchState);
+  const winner = resolved?.team ?? null;
+  const winnerNames = resolved?.names ?? [];
 
   if (!isLoaded || isGroupsPending) return null;
 

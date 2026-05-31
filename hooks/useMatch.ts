@@ -10,6 +10,17 @@ import {
 } from "@/lib/persistence/matchStorage";
 import { useActiveGroup } from "./useActiveGroup";
 
+function useScoreSync(matchState: MatchState, isFreePlay: boolean) {
+    const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    useEffect(() => {
+        if (!matchState.matchId || isFreePlay || matchState.view !== "match") return;
+        if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+        syncTimerRef.current = setTimeout(() => {
+            updateMatch(matchState.matchId!, { score1: matchState.score1, score2: matchState.score2 }).catch(() => {});
+        }, 300);
+    }, [matchState.score1, matchState.score2, matchState.matchId, matchState.view, isFreePlay]);
+}
+
 export function useMatch() {
     const { activeGroupId, isFreePlay, isGroupsPending } = useActiveGroup();
     const [matchState, setMatchState] = useState<MatchState>({
@@ -24,7 +35,6 @@ export function useMatch() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isStarting, setIsStarting] = useState(false);
-    const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         const saved = loadMatch();
@@ -36,13 +46,7 @@ export function useMatch() {
         if (isLoaded) persistMatch(matchState);
     }, [matchState, isLoaded]);
 
-    useEffect(() => {
-        if (!matchState.matchId || isFreePlay || matchState.view !== "match") return;
-        if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
-        syncTimerRef.current = setTimeout(() => {
-            updateMatch(matchState.matchId!, { score1: matchState.score1, score2: matchState.score2 }).catch(() => {});
-        }, 300);
-    }, [matchState.score1, matchState.score2, matchState.matchId, matchState.view, isFreePlay]);
+    useScoreSync(matchState, isFreePlay);
 
     const startMatch = async (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => {
         if (isStarting) return;

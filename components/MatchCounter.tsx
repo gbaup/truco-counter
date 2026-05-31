@@ -7,6 +7,7 @@ import Logo from "@/components/ui/Logo";
 import { MenuIcon } from "@/components/ui/icons";
 import { useTranslation } from "react-i18next";
 import { LiveDot } from "@/components/live/LiveBadge";
+import { splitScore } from "@/lib/domain/match";
 
 interface MatchCounterProps {
   team1: PublicUser[];
@@ -34,15 +35,9 @@ export default function MatchCounter({
   liveDot = false,
 }: MatchCounterProps) {
   const { t } = useTranslation();
-  const half = maxPoints / 2;
 
-  const getSplit = (score: number) => ({
-    malas: Math.min(score, half),
-    buenas: Math.max(0, score - half),
-  });
-
-  const team1Split = getSplit(score1);
-  const team2Split = getSplit(score2);
+  const team1Split = splitScore(score1, maxPoints);
+  const team2Split = splitScore(score2, maxPoints);
 
   return (
     <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">

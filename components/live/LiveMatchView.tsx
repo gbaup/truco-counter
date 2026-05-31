@@ -5,6 +5,8 @@ import Suit from "@/components/ui/Suit";
 import PaperPanel from "@/components/ui/PaperPanel";
 import { Tally } from "@/components/ui/Palito";
 import { LiveBadge, LiveDot } from "./LiveBadge";
+import { CloseIcon, MenuIcon, LockIcon } from "@/components/ui/icons";
+import { splitScore } from "@/lib/domain/match";
 
 type LiveMatchViewProps = {
   scoreUs: number;
@@ -16,22 +18,6 @@ type LiveMatchViewProps = {
   onExit: () => void;
   onOpenMenu: () => void;
 };
-
-const CloseIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
-    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-const MenuIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
-    <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
-  </svg>
-);
-const LockIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
-    <rect x="3.5" y="11" width="17" height="10" rx="2" /><path d="M7.5 11V7a4.5 4.5 0 0 1 9 0v4" />
-  </svg>
-);
 
 function TeamColumn({
   label,
@@ -50,9 +36,7 @@ function TeamColumn({
 }) {
   const colorClass = team === "us" ? "text-us" : "text-them";
   const color = team === "us" ? "var(--color-us)" : "var(--color-them)";
-  const half = max / 2;
-  const malas = Math.min(score, half);
-  const buenas = Math.max(0, score - half);
+  const { malas, buenas } = splitScore(score, max);
   return (
     <div className="flex-1 flex flex-col gap-1.5">
       <div className="flex items-center justify-between px-1">
@@ -93,11 +77,11 @@ export default function LiveMatchView({
 
       <div className="relative flex items-center justify-between px-3.5 pt-14 pb-1">
         <button onClick={onExit} className="flex h-9 w-9 items-center justify-center rounded-full bg-surface border border-border text-text-dim">
-          <CloseIcon />
+          <CloseIcon size={20} />
         </button>
         <LiveBadge />
         <button onClick={onOpenMenu} className="relative flex h-9 w-9 items-center justify-center rounded-full bg-surface border border-border text-text">
-          <MenuIcon />
+          <MenuIcon size={22} />
           <span className="absolute -top-0.5 -right-0.5">
             <LiveDot size={11} ring />
           </span>
@@ -121,7 +105,7 @@ export default function LiveMatchView({
 
       <div className="relative px-3.5 pb-7 pt-3">
         <div className="flex items-center justify-center gap-2.5 rounded-[14px] border border-border bg-surface px-4 py-3 text-text-dim">
-          <LockIcon />
+          <LockIcon size={15} />
           <span className="text-[13px] italic" style={{ fontFamily: "var(--font-crimson-pro), serif" }}>
             {t("live.watchingHint", { scorer })}
           </span>

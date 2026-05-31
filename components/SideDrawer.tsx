@@ -31,7 +31,7 @@ export default function SideDrawer({
   const [internalOpen, setInternalOpen] = useState(false);
   const { data: me } = useCurrentUser();
   const { activeGroupId, activeGroup, setActiveGroup, groups, isFreePlay } = useActiveGroup();
-  const { data: liveData } = useLiveMatch(!isFreePlay ? (activeGroupId ?? undefined) : undefined);
+  const { data: liveData } = useLiveMatch();
   const live = liveData?.live ?? null;
   const username = me?.username ?? null;
   const role = (me?.role as UserRole) ?? null;
