@@ -77,20 +77,22 @@ export function useMatch() {
     const incrementScore = (team: 1 | 2) => {
         const currentScore = team === 1 ? matchState.score1 : matchState.score2;
         if (currentScore >= matchState.maxPoints) return;
-        setMatchState((prev) => ({
-            ...prev,
-            [team === 1 ? "score1" : "score2"]: currentScore + 1,
-        }));
+        setMatchState((prev) => {
+            const s = team === 1 ? prev.score1 : prev.score2;
+            if (s >= prev.maxPoints) return prev;
+            return { ...prev, [team === 1 ? "score1" : "score2"]: s + 1 };
+        });
         pointLog.register(team === 1 ? "us" : "them", +1);
     };
 
     const decrementScore = (team: 1 | 2) => {
         const currentScore = team === 1 ? matchState.score1 : matchState.score2;
         if (currentScore <= 0) return;
-        setMatchState((prev) => ({
-            ...prev,
-            [team === 1 ? "score1" : "score2"]: currentScore - 1,
-        }));
+        setMatchState((prev) => {
+            const s = team === 1 ? prev.score1 : prev.score2;
+            if (s <= 0) return prev;
+            return { ...prev, [team === 1 ? "score1" : "score2"]: s - 1 };
+        });
         pointLog.register(team === 1 ? "us" : "them", -1);
     };
 

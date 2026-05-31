@@ -36,7 +36,7 @@ export default function LiveGate({ live, onWatch, onMenuOpen }: { live: LiveMatc
         <button
           onClick={onMenuOpen}
           className="relative w-[30px] h-[30px] rounded-full border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface"
-          aria-label="Menú"
+          aria-label="Menu"
         >
           <MenuIcon size={14} />
           <span className="absolute -top-0.5 -right-0.5">

@@ -36,7 +36,7 @@ export function LiveMatchProvider({ children }: { children: ReactNode }) {
     };
 
     es.onerror = () => {
-      setSnapshot((prev) => prev ?? { groupId, payload: { live: null } });
+      setSnapshot({ groupId, payload: { live: null } });
     };
 
     return () => es.close();

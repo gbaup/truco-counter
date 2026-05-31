@@ -61,13 +61,13 @@ function ScoreSide({ name, score, isWin, suit, color }: { name: string; score: n
   );
 }
 
-function FinalScore({ winner, scoreUs, scoreThem }: { winner: "us" | "them"; scoreUs: number; scoreThem: number }) {
+function FinalScore({ winner, scoreUs, scoreThem, nameUs, nameThem }: { winner: "us" | "them"; scoreUs: number; scoreThem: number; nameUs: string; nameThem: string }) {
   const usWin = winner === "us";
   return (
     <div className="flex w-full items-center">
-      <ScoreSide name="Nosotros" score={scoreUs} isWin={usWin} suit="espada" color="var(--color-us)" />
+      <ScoreSide name={nameUs} score={scoreUs} isWin={usWin} suit="espada" color="var(--color-us)" />
       <div className="px-0.5 text-[26px] text-text-mute -translate-y-1.5" style={{ fontFamily: "var(--font-crimson-pro), serif" }}>—</div>
-      <ScoreSide name="Ellos" score={scoreThem} isWin={!usWin} suit="basto" color="var(--color-them)" />
+      <ScoreSide name={nameThem} score={scoreThem} isWin={!usWin} suit="basto" color="var(--color-them)" />
     </div>
   );
 }
@@ -112,7 +112,9 @@ export default function WinnerScreen({
 }: WinnerScreenProps) {
   const { t } = useTranslation();
   const color = winner === "us" ? "var(--color-us)" : "var(--color-them)";
-  const teamLabel = winner === "us" ? "Nosotros" : "Ellos";
+  const nameUs = t("matchSetup.team1");
+  const nameThem = t("matchSetup.team2");
+  const teamLabel = winner === "us" ? nameUs : nameThem;
   const diff = Math.abs(scoreUs - scoreThem);
 
   return (
@@ -140,7 +142,7 @@ export default function WinnerScreen({
         </div>
 
         <div className="my-[6px] mt-[18px] border-y border-border px-1.5 pb-3 pt-3.5" style={{ animation: "winRise 0.5s ease both", animationDelay: "0.18s" }}>
-          <FinalScore winner={winner} scoreUs={scoreUs} scoreThem={scoreThem} />
+          <FinalScore winner={winner} scoreUs={scoreUs} scoreThem={scoreThem} nameUs={nameUs} nameThem={nameThem} />
           <div className="mt-1.5 text-center text-[11px] italic text-text-mute" style={{ fontFamily: "var(--font-crimson-pro), serif" }}>
             {t("win.playedTo", { max, diff })}
           </div>

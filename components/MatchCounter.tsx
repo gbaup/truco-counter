@@ -10,8 +10,7 @@ import MatchLogPeek from "@/components/live/MatchLogPeek";
 import { useTranslation } from "react-i18next";
 import { LiveDot } from "@/components/live/LiveBadge";
 import { splitScore } from "@/lib/domain/match-display";
-
-type TimeStyle = "rel" | "hora";
+import { TimeStyle } from "@/hooks/usePointLog";
 
 interface MatchCounterProps {
   team1: PublicUser[];
