@@ -6,17 +6,21 @@ import { toast } from "sonner";
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
 import SideDrawer from "@/components/SideDrawer";
-import WinnerModal from "@/components/WinnerModal";
+import WinnerScreen from "@/components/WinnerScreen";
 import ConfirmationExitModal from "@/components/ConfirmationExitModal";
+import LiveGate from "@/components/live/LiveGate";
 import { useMatch } from "@/hooks/useMatch";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useActiveGroup } from "@/hooks/useActiveGroup";
+import { useLiveMatch } from "@/hooks/useLiveMatch";
 import { PublicUser } from "@/types/database";
 
 export default function Home() {
   const router = useRouter();
   const { data: me } = useCurrentUser();
+  const { activeGroupId } = useActiveGroup();
+  const { data: liveData } = useLiveMatch(activeGroupId ?? undefined);
 
-  // Self-registered users always have passwordChanged=true, so this redirect never fires for them.
   useEffect(() => {
     if (me && !me.passwordChanged) {
       router.replace("/change-password");
@@ -26,7 +30,6 @@ export default function Home() {
   const {
     matchState,
     isLoaded,
-    isSaving,
     isStarting,
     isFreePlay,
     isGroupsPending,
@@ -41,10 +44,16 @@ export default function Home() {
 
   const winner =
     matchState.score1 >= matchState.maxPoints
-      ? "Nosotros"
+      ? ("us" as const)
       : matchState.score2 >= matchState.maxPoints
-        ? "Ellos"
+        ? ("them" as const)
         : null;
+
+  const winnerNames = winner
+    ? (winner === "us" ? matchState.team1 : matchState.team2).map(
+        (u) => u.name ?? u.username
+      )
+    : [];
 
   if (!isLoaded || isGroupsPending) return null;
 
@@ -64,6 +73,17 @@ export default function Home() {
     }
   };
 
+  const handleRematch = async () => {
+    const t1 = matchState.team1;
+    const t2 = matchState.team2;
+    const max = matchState.maxPoints;
+    await finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" });
+    await handleStartMatch(t1, t2, max);
+  };
+
+  const live = !isFreePlay ? (liveData?.live ?? null) : null;
+  const liveDot = live !== null;
+
   return (
     <div className="min-h-screen bg-background">
       <SideDrawer
@@ -73,35 +93,48 @@ export default function Home() {
       />
 
       {matchState.view === "setup" ? (
-        <MatchSetup
-          onStartMatch={handleStartMatch}
-          isStarting={isStarting}
-          freePlay={isFreePlay}
-          onMenuOpen={() => setDrawerOpen(true)}
-        />
-      ) : (
-        <main className="w-full">
-          <MatchCounter
-            {...matchState}
-            onIncrement={incrementScore}
-            onDecrement={decrementScore}
-            onExit={() => setShowExitModal(true)}
+        live ? (
+          <LiveGate
+            live={live}
+            onWatch={() => router.push("/live")}
             onMenuOpen={() => setDrawerOpen(true)}
           />
-          <WinnerModal
-            open={!!winner}
-            winner={winner}
-            onFinish={() =>
-              finishMatch({
-                score1: matchState.score1,
-                score2: matchState.score2,
-                status: "finished",
-              })
-            }
-            isLoading={isSaving}
+        ) : (
+          <MatchSetup
+            onStartMatch={handleStartMatch}
+            isStarting={isStarting}
+            freePlay={isFreePlay}
+            onMenuOpen={() => setDrawerOpen(true)}
           />
+        )
+      ) : (
+        <main className="relative w-full min-h-screen">
+          <div
+            className="transition-[filter] duration-300"
+            style={winner ? { filter: "blur(7px) saturate(0.9)", transform: "scale(1.06)", transformOrigin: "center" } : undefined}
+          >
+            <MatchCounter
+              {...matchState}
+              onIncrement={incrementScore}
+              onDecrement={decrementScore}
+              onExit={() => setShowExitModal(true)}
+              onMenuOpen={() => setDrawerOpen(true)}
+              liveDot={liveDot}
+            />
+          </div>
+          {winner && (
+            <WinnerScreen
+              winner={winner}
+              scoreUs={matchState.score1}
+              scoreThem={matchState.score2}
+              max={matchState.maxPoints}
+              winners={winnerNames}
+              onRematch={handleRematch}
+              onExit={() => finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" })}
+            />
+          )}
           <ConfirmationExitModal
-            open={showExitModal}
+            open={showExitModal && !winner}
             onConfirm={() => {
               setShowExitModal(false);
               finishMatch({

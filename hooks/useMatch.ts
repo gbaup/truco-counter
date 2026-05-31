@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PublicUser } from "@/types/database";
 import { MatchState } from "@/types/game";
 import { createMatch, updateMatch, saveMatch } from "@/services/matchService";
@@ -24,6 +24,7 @@ export function useMatch() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isStarting, setIsStarting] = useState(false);
+    const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         const saved = loadMatch();
@@ -35,6 +36,14 @@ export function useMatch() {
         if (isLoaded) persistMatch(matchState);
     }, [matchState, isLoaded]);
 
+    useEffect(() => {
+        if (!matchState.matchId || isFreePlay || matchState.view !== "match") return;
+        if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+        syncTimerRef.current = setTimeout(() => {
+            updateMatch(matchState.matchId!, { score1: matchState.score1, score2: matchState.score2 }).catch(() => {});
+        }, 300);
+    }, [matchState.score1, matchState.score2, matchState.matchId, matchState.view, isFreePlay]);
+
     const startMatch = async (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => {
         if (isStarting) return;
         setIsStarting(true);
@@ -43,7 +52,7 @@ export function useMatch() {
                 setMatchState({ view: "match", team1: [], team2: [], maxPoints, score1: 0, score2: 0 });
                 return;
             }
-            const match = await createMatch({ team1, team2, status: "ongoing", groupId: activeGroupId ?? undefined });
+            const match = await createMatch({ team1, team2, status: "ongoing", groupId: activeGroupId ?? undefined, maxPoints });
             setMatchState({
                 view: "match",
                 team1, team2, maxPoints,

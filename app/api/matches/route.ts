@@ -9,7 +9,7 @@ import { getSession } from "@/lib/auth";
 export const POST = withAuth(async (request, session: Session) => {
     try {
         const body: CreateMatchDto = await request.json();
-        const { score1, score2, team1, team2, winner_team, status, groupId } = body;
+        const { score1, score2, team1, team2, winner_team, status, groupId, maxPoints } = body;
 
         if (!team1 || team1.length === 0 || !team2 || team2.length === 0) {
             return NextResponse.json(
@@ -93,6 +93,7 @@ export const POST = withAuth(async (request, session: Session) => {
                         status: matchStatus,
                         created_by: session.userId,
                         group_id: groupId ?? null,
+                        max_points: maxPoints ?? null,
                         match_participants: {
                             create: [
                                 ...team1Ids.map((id) => ({ user_id: id, team: 1 })),
@@ -120,6 +121,7 @@ export const POST = withAuth(async (request, session: Session) => {
                     status: matchStatus,
                     created_by: session.userId,
                     group_id: groupId ?? null,
+                    max_points: maxPoints ?? null,
                     match_participants: {
                         create: [
                             ...team1Ids.map((id) => ({ user_id: id, team: 1 })),

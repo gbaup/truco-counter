@@ -6,6 +6,7 @@ import Controls from "./Controls";
 import Logo from "@/components/ui/Logo";
 import { MenuIcon } from "@/components/ui/icons";
 import { useTranslation } from "react-i18next";
+import { LiveDot } from "@/components/live/LiveBadge";
 
 interface MatchCounterProps {
   team1: PublicUser[];
@@ -17,6 +18,7 @@ interface MatchCounterProps {
   onDecrement: (team: 1 | 2) => void;
   onExit: () => void;
   onMenuOpen: () => void;
+  liveDot?: boolean;
 }
 
 export default function MatchCounter({
@@ -29,6 +31,7 @@ export default function MatchCounter({
   onDecrement,
   onExit,
   onMenuOpen,
+  liveDot = false,
 }: MatchCounterProps) {
   const { t } = useTranslation();
   const half = maxPoints / 2;
@@ -65,10 +68,15 @@ export default function MatchCounter({
 
         <button
           onClick={onMenuOpen}
-          className="w-[30px] h-[30px] rounded-full border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface"
+          className="relative w-[30px] h-[30px] rounded-full border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface"
           aria-label="Menú"
         >
           <MenuIcon size={14} />
+          {liveDot && (
+            <span className="absolute -top-0.5 -right-0.5">
+              <LiveDot size={9} ring />
+            </span>
+          )}
         </button>
       </div>
 

@@ -122,3 +122,13 @@ body {
   font-weight: 600;
   letter-spacing: 0.12em;
 }
+
+/* ───────── En vivo */
+@keyframes lvBlink { 0%, 100% { opacity: 1 } 50% { opacity: .3 } }
+
+/* ───────── Final del partido */
+@keyframes winPop  { 0%{transform:scale(.9) translateY(12px)} 58%{transform:scale(1.015) translateY(0)} 100%{transform:scale(1) translateY(0)} }
+@keyframes winRise { from{transform:translateY(10px)} to{transform:translateY(0)} }
+@keyframes winGlow { 0%,100%{opacity:.55;transform:scale(1)} 50%{opacity:.9;transform:scale(1.08)} }
+@keyframes winShine{ 0%{transform:translateX(-120%) skewX(-18deg)} 100%{transform:translateX(260%) skewX(-18deg)} }
+@keyframes winFall { 0%{transform:translateY(-30px) rotate(0);opacity:0} 12%{opacity:.85} 100%{transform:translateY(640px) rotate(320deg);opacity:0} }

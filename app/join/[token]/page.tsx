@@ -14,7 +14,12 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
       groups: {
         include: {
           _count: { select: { memberships: true } },
-          memberships: { select: { user_id: true } },
+          memberships: {
+            select: { user_id: true, users: { select: { name: true, username: true } } },
+            take: 5,
+            orderBy: { joined_at: "asc" as const },
+          },
+          admin: { select: { name: true, username: true } },
         },
       },
     },
@@ -89,5 +94,15 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
     );
   }
 
-  return <JoinButton token={token} groupName={group.name} />;
+  const roster = group.memberships
+    .map((m) => m.users?.name ?? m.users?.username ?? null)
+    .filter((n): n is string => n !== null);
+
+  return (
+    <JoinButton
+      token={token}
+      group={{ name: group.name, memberCount: group._count.memberships, roster }}
+      inviter={group.admin?.name ?? group.admin?.username ?? ""}
+    />
+  );
 }

@@ -12,6 +12,8 @@ import RoleBadge from "@/components/admin/RoleBadge";
 import GroupSelector from "@/components/ui/GroupSelector";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useActiveGroup } from "@/hooks/useActiveGroup";
+import { useLiveMatch } from "@/hooks/useLiveMatch";
+import { LiveDot, MiniScore } from "@/components/live/LiveBadge";
 import { MenuIcon, CloseIcon, ArrowRightIcon, LockIcon } from "@/components/ui/icons";
 import { UserRole } from "@/types/auth";
 
@@ -29,6 +31,8 @@ export default function SideDrawer({
   const [internalOpen, setInternalOpen] = useState(false);
   const { data: me } = useCurrentUser();
   const { activeGroupId, activeGroup, setActiveGroup, groups, isFreePlay } = useActiveGroup();
+  const { data: liveData } = useLiveMatch(!isFreePlay ? (activeGroupId ?? undefined) : undefined);
+  const live = liveData?.live ?? null;
   const username = me?.username ?? null;
   const role = (me?.role as UserRole) ?? null;
   const isGroupAdmin = activeGroup?.admin_id === me?.userId;
@@ -56,10 +60,15 @@ export default function SideDrawer({
       {!isControlled && (
         <button
           onClick={toggleMenu}
-          className="fixed top-4 right-4 z-50 w-9 h-9 rounded-md bg-surface border border-border text-text flex items-center justify-center transition-colors hover:bg-surface-elevated"
+          className="fixed top-4 right-4 z-50 relative w-9 h-9 rounded-md bg-surface border border-border text-text flex items-center justify-center transition-colors hover:bg-surface-elevated"
           aria-label="Toggle menu"
         >
           <MenuIcon size={16} />
+          {live && (
+            <span className="absolute -top-0.5 -right-0.5">
+              <LiveDot size={9} ring />
+            </span>
+          )}
         </button>
       )}
 
@@ -178,6 +187,24 @@ export default function SideDrawer({
                   <span className="text-sm text-text font-medium">{label}</span>
                   <LockIcon size={12} className="text-text-mute" />
                 </div>
+              );
+            }
+
+            if (href === "/" && live) {
+              return (
+                <Link
+                  key="live-home"
+                  href="/live"
+                  onClick={closeMenu}
+                  className="flex items-center gap-2.5 px-3.5 py-3 rounded-md border text-sm font-bold bg-danger/10 border-danger/45 text-danger"
+                >
+                  <LiveDot size={9} />
+                  <span className="flex-1">{label}</span>
+                  <span className="flex items-center gap-1.5">
+                    <MiniScore us={live.scoreUs} them={live.scoreThem} />
+                    <ArrowRightIcon size={14} />
+                  </span>
+                </Link>
               );
             }
 

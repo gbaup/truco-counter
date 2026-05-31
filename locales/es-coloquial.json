@@ -145,6 +145,34 @@
             "loading": "Escribiendo historia..."
         }
     },
+    "win": {
+        "over": "se acabó",
+        "wonBy": "ganó ",
+        "playedTo": "se jugó a {{max}} · ganó por {{diff}}",
+        "rematch": "revancha",
+        "exit": "levantarse"
+    },
+    "invite": {
+        "overline": "te invitaron",
+        "joiningTo": "te estás sumando a",
+        "inMesa": "{{count}} en la mesa",
+        "invitedBy": "te sumó para anotar partidos, ver el ranking y la historia de la mesa.",
+        "join": "Sumarme a {{group}}",
+        "joining": "sumándote…",
+        "notYou": "¿no sos vos?",
+        "otherAccount": "entrar con otra"
+    },
+    "live": {
+        "badge": "en vivo",
+        "playingTo": "se juega a {{max}}",
+        "watchingHint": "estás mirando — anota {{scorer}}",
+        "gateHeadline": "tu mesa ya está jugando",
+        "gateSub": "no podés armar otra hasta que termine esta",
+        "watch": "mirar en vivo"
+    },
+    "nav": {
+        "setup": "Armar mesa"
+    },
     "sideDrawer": {
         "home": "Armar mesa",
         "profile": "Mi perfil",
