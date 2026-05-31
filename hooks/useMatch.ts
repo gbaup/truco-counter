@@ -9,6 +9,7 @@ import {
     clearMatch,
 } from "@/lib/persistence/matchStorage";
 import { useActiveGroup } from "./useActiveGroup";
+import { usePointLog } from "./usePointLog";
 
 function useScoreSync(matchState: MatchState, isFreePlay: boolean) {
     const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -48,6 +49,8 @@ export function useMatch() {
 
     useScoreSync(matchState, isFreePlay);
 
+    const pointLog = usePointLog(matchState.matchId);
+
     const startMatch = async (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => {
         if (isStarting) return;
         setIsStarting(true);
@@ -72,25 +75,23 @@ export function useMatch() {
     };
 
     const incrementScore = (team: 1 | 2) => {
-        setMatchState((prev) => {
-            const currentScore = team === 1 ? prev.score1 : prev.score2;
-            if (currentScore >= prev.maxPoints) return prev;
-            return {
-                ...prev,
-                [team === 1 ? 'score1' : 'score2']: currentScore + 1
-            };
-        });
+        const currentScore = team === 1 ? matchState.score1 : matchState.score2;
+        if (currentScore >= matchState.maxPoints) return;
+        setMatchState((prev) => ({
+            ...prev,
+            [team === 1 ? "score1" : "score2"]: currentScore + 1,
+        }));
+        pointLog.register(team === 1 ? "us" : "them", +1);
     };
 
     const decrementScore = (team: 1 | 2) => {
-        setMatchState((prev) => {
-            const currentScore = team === 1 ? prev.score1 : prev.score2;
-            if (currentScore <= 0) return prev;
-            return {
-                ...prev,
-                [team === 1 ? 'score1' : 'score2']: currentScore - 1
-            };
-        });
+        const currentScore = team === 1 ? matchState.score1 : matchState.score2;
+        if (currentScore <= 0) return;
+        setMatchState((prev) => ({
+            ...prev,
+            [team === 1 ? "score1" : "score2"]: currentScore - 1,
+        }));
+        pointLog.register(team === 1 ? "us" : "them", -1);
     };
 
     const finishMatch = async (result: { score1: number; score2: number; status?: "finished" | "cancelled" }) => {
@@ -124,6 +125,7 @@ export function useMatch() {
             view: "setup",
             team1: [], team2: [], maxPoints: 30, score1: 0, score2: 0,
         });
+        pointLog.reset();
         clearMatch();
     };
 
@@ -137,6 +139,8 @@ export function useMatch() {
         startMatch,
         finishMatch,
         incrementScore,
-        decrementScore
+        decrementScore,
+        manos: pointLog.manos,
+        pending: pointLog.pending,
     };
 }

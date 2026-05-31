@@ -9,6 +9,7 @@ import SideDrawer from "@/components/SideDrawer";
 import WinnerScreen from "@/components/WinnerScreen";
 import ConfirmationExitModal from "@/components/ConfirmationExitModal";
 import LiveGate from "@/components/live/LiveGate";
+import RelatoSheet from "@/components/live/RelatoSheet";
 import { useMatch } from "@/hooks/useMatch";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useLiveMatch } from "@/hooks/useLiveMatch";
@@ -36,10 +37,13 @@ export default function Home() {
     finishMatch,
     incrementScore,
     decrementScore,
+    manos,
+    pending,
   } = useMatch();
 
   const [showExitModal, setShowExitModal] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [relatoOpen, setRelatoOpen] = useState(false);
 
   const resolved = resolveWinner(matchState);
   const winner = resolved?.team ?? null;
@@ -74,6 +78,8 @@ export default function Home() {
   const live = !isFreePlay ? (liveData?.live ?? null) : null;
   const liveDot = live !== null;
 
+  const counterBlurred = !!winner || relatoOpen;
+
   return (
     <div className="min-h-screen bg-background">
       <SideDrawer
@@ -101,7 +107,11 @@ export default function Home() {
         <main className="relative w-full min-h-screen">
           <div
             className="transition-[filter] duration-300"
-            style={winner ? { filter: "blur(7px) saturate(0.9)", transform: "scale(1.06)", transformOrigin: "center" } : undefined}
+            style={
+              counterBlurred
+                ? { filter: "blur(7px) saturate(0.9)", transform: "scale(1.06)", transformOrigin: "center" }
+                : undefined
+            }
           >
             <MatchCounter
               {...matchState}
@@ -109,6 +119,8 @@ export default function Home() {
               onDecrement={decrementScore}
               onExit={() => setShowExitModal(true)}
               onMenuOpen={() => setDrawerOpen(true)}
+              onRelatoOpen={() => setRelatoOpen(true)}
+              manos={manos}
               liveDot={liveDot}
             />
           </div>
@@ -123,6 +135,13 @@ export default function Home() {
               onExit={() => finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" })}
             />
           )}
+          <RelatoSheet
+            open={relatoOpen}
+            onClose={() => setRelatoOpen(false)}
+            manos={manos}
+            pending={pending}
+            live={liveDot}
+          />
           <ConfirmationExitModal
             open={showExitModal && !winner}
             onConfirm={() => {

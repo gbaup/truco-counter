@@ -126,6 +126,9 @@ body {
 /* ───────── En vivo */
 @keyframes lvBlink { 0%, 100% { opacity: 1 } 50% { opacity: .3 } }
 
+/* ───────── El relato */
+@keyframes relato-bar { from { width: 100%; } to { width: 0%; } }
+
 /* ───────── Final del partido */
 @keyframes winPop  { 0%{transform:scale(.9) translateY(12px)} 58%{transform:scale(1.015) translateY(0)} 100%{transform:scale(1) translateY(0)} }
 @keyframes winRise { from{transform:translateY(10px)} to{transform:translateY(0)} }

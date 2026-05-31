@@ -1,13 +1,17 @@
 "use client";
 
 import { PublicUser } from "@/types/database";
+import { Mano } from "@/hooks/usePointLog";
 import TeamCounter from "./TeamCounter";
 import Controls from "./Controls";
 import Logo from "@/components/ui/Logo";
 import { MenuIcon } from "@/components/ui/icons";
+import RelatoPeek from "@/components/live/RelatoPeek";
 import { useTranslation } from "react-i18next";
 import { LiveDot } from "@/components/live/LiveBadge";
 import { splitScore } from "@/lib/domain/match";
+
+type TimeStyle = "rel" | "hora";
 
 interface MatchCounterProps {
   team1: PublicUser[];
@@ -19,7 +23,10 @@ interface MatchCounterProps {
   onDecrement: (team: 1 | 2) => void;
   onExit: () => void;
   onMenuOpen: () => void;
+  onRelatoOpen: () => void;
+  manos: Mano[];
   liveDot?: boolean;
+  timeStyle?: TimeStyle;
 }
 
 export default function MatchCounter({
@@ -32,7 +39,10 @@ export default function MatchCounter({
   onDecrement,
   onExit,
   onMenuOpen,
+  onRelatoOpen,
+  manos,
   liveDot = false,
+  timeStyle = "rel",
 }: MatchCounterProps) {
   const { t } = useTranslation();
 
@@ -92,6 +102,15 @@ export default function MatchCounter({
           malas={team2Split.malas}
           buenas={team2Split.buenas}
           variant="secondary"
+        />
+      </div>
+
+      {/* Relato peek */}
+      <div className="relative px-3.5 pb-1.5">
+        <RelatoPeek
+          lastMano={manos[0] ?? null}
+          onOpen={onRelatoOpen}
+          timeStyle={timeStyle}
         />
       </div>
 
