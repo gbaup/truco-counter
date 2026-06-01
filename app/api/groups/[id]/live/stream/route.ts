@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { withGroupMemberAuth } from "@/lib/withAuth";
+import { withGroupMemberFeatureAuth } from "@/lib/withAuth";
 import { Session } from "@/types/auth";
 import { formatLivePayload } from "@/lib/domain/match";
 
@@ -18,7 +18,8 @@ async function getMatchPayload(groupId: string) {
   return formatLivePayload(match);
 }
 
-export const GET = withGroupMemberAuth<{ params: Promise<{ id: string }> }>(
+export const GET = withGroupMemberFeatureAuth<{ params: Promise<{ id: string }> }>(
+  "liveMatch",
   async (request: Request, _session: Session, { params }) => {
     const { id: groupId } = await params;
     const encoder = new TextEncoder();

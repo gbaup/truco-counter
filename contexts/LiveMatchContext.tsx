@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useActiveGroup } from "@/hooks/useActiveGroup";
+import { useGroupFeatures } from "@/hooks/useGroupFeatures";
 import { LiveMatchData } from "@/types/match";
 
 type LiveMatchPayload = { live: LiveMatchData | null };
@@ -21,8 +22,9 @@ export function useLiveMatch(): LiveMatchContextValue {
 }
 
 export function LiveMatchProvider({ children }: { children: ReactNode }) {
-  const { activeGroupId, isFreePlay } = useActiveGroup();
-  const groupId = !isFreePlay ? (activeGroupId ?? undefined) : undefined;
+  const { activeGroupId } = useActiveGroup();
+  const { liveMatch } = useGroupFeatures();
+  const groupId = liveMatch ? (activeGroupId ?? undefined) : undefined;
 
   const [snapshot, setSnapshot] = useState<{ groupId: string; payload: LiveMatchPayload } | null>(null);
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { Session, UserRole } from "@/types/auth";
 import { prisma } from "@/lib/prisma";
+import { parseGroupFeatures, type GroupFeatures } from "@/lib/domain/groupFeatures";
 
 type AuthedHandler<TContext extends Record<string, unknown>> = (
   request: Request,
@@ -95,5 +96,25 @@ export function withGroupAdminAuth<TContext extends Record<string, unknown> = Re
   return withAuthCore(handler, async (session, context) => {
     const { id: groupId } = await (context.params as Promise<{ id: string }>);
     return assertGroupAdmin(groupId, session.userId);
+  });
+}
+
+export function withGroupMemberFeatureAuth<TContext extends Record<string, unknown> = Record<string, unknown>>(
+  feature: keyof GroupFeatures,
+  handler: AuthedHandler<TContext>
+) {
+  return withAuthCore(handler, async (session, context) => {
+    const { id: groupId } = await (context.params as Promise<{ id: string }>);
+    const memberRejection = await assertGroupMember(groupId, session.userId);
+    if (memberRejection) return memberRejection;
+    const group = await prisma.groups.findUnique({ where: { id: groupId }, select: { features: true } });
+    if (!group) {
+      return NextResponse.json({ success: false, error: "Group not found" }, { status: 404 });
+    }
+    const features = parseGroupFeatures(group.features);
+    if (!features[feature]) {
+      return NextResponse.json({ success: false, error: "Feature disabled" }, { status: 403 });
+    }
+    return null;
   });
 }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withAuth } from "@/lib/withAuth";
 import { Session } from "@/types/auth";
+import { parseGroupFeatures } from "@/lib/domain/groupFeatures";
 
 export const GET = withAuth(async (_request: Request, session: Session) => {
   try {
@@ -22,6 +23,7 @@ export const GET = withAuth(async (_request: Request, session: Session) => {
       name: g.name,
       admin_id: g.admin_id,
       created_at: g.created_at,
+      features: parseGroupFeatures(g.features),
       member_count: g._count.memberships,
       joined_at,
     }));

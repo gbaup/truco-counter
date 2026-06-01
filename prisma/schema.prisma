@@ -65,6 +65,7 @@ model groups {
   name          String
   admin_id      String              @db.Uuid
   created_at    DateTime?           @default(now()) @db.Timestamptz(6)
+  features      Json                @default("{}")
   admin         users               @relation(fields: [admin_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   memberships   group_memberships[]
   invite_tokens invite_tokens[]

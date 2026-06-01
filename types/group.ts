@@ -1,8 +1,11 @@
+import type { GroupFeatures } from "@/lib/domain/groupFeatures";
+
 export interface Group {
   id: string;
   name: string;
   admin_id: string;
   created_at: string | null;
+  features: GroupFeatures;
 }
 
 export interface GroupMembership {

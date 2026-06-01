@@ -26,6 +26,7 @@ interface MatchCounterProps {
   hands: Hand[];
   liveDot?: boolean;
   timeStyle?: TimeStyle;
+  showMatchLog?: boolean;
 }
 
 export default function MatchCounter({
@@ -42,6 +43,7 @@ export default function MatchCounter({
   hands,
   liveDot = false,
   timeStyle = "rel",
+  showMatchLog = true,
 }: MatchCounterProps) {
   const { t } = useTranslation();
 
@@ -105,13 +107,15 @@ export default function MatchCounter({
       </div>
 
       {/* Match log peek */}
-      <div className="relative px-3.5 pb-1.5">
-        <MatchLogPeek
-          lastHand={hands[0] ?? null}
-          onOpen={onMatchLogOpen}
-          timeStyle={timeStyle}
-        />
-      </div>
+      {showMatchLog && (
+        <div className="relative px-3.5 pb-1.5">
+          <MatchLogPeek
+            lastHand={hands[0] ?? null}
+            onOpen={onMatchLogOpen}
+            timeStyle={timeStyle}
+          />
+        </div>
+      )}
 
       {/* Controls */}
       <div className="relative">

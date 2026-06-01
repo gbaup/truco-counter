@@ -1,3 +1,4 @@
+import { parseGroupFeatures } from "@/lib/domain/groupFeatures";
 import type { GroupMember, GroupWithMembers } from "@/types/group";
 
 type MembershipWithUser = {
@@ -13,6 +14,7 @@ type GroupWithMemberships = {
   name: string;
   admin_id: string;
   created_at: Date | null;
+  features: unknown;
   _count: { memberships: number };
   memberships: MembershipWithUser[];
 };
@@ -36,6 +38,7 @@ export function toGroupDetail(group: GroupWithMemberships): GroupWithMembers {
     name: group.name,
     admin_id: group.admin_id,
     created_at: group.created_at?.toISOString() ?? null,
+    features: parseGroupFeatures(group.features),
     member_count: group._count.memberships,
     members: group.memberships.map(toGroupMember),
   };

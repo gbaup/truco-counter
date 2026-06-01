@@ -13,6 +13,8 @@ import GroupSelector from "@/components/ui/GroupSelector";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useActiveGroup } from "@/hooks/useActiveGroup";
 import { useLiveMatch } from "@/contexts/LiveMatchContext";
+import { useGroupFeatures } from "@/hooks/useGroupFeatures";
+import { FREE_PLAY_PAGES } from "@/lib/domain/groupFeatures";
 import { LiveDot, MiniScore } from "@/components/live/LiveBadge";
 import { MenuIcon, CloseIcon, ArrowRightIcon, LockIcon } from "@/components/ui/icons";
 import { UserRole } from "@/types/auth";
@@ -32,7 +34,8 @@ export default function SideDrawer({
   const { data: me } = useCurrentUser();
   const { activeGroupId, activeGroup, setActiveGroup, groups, isFreePlay } = useActiveGroup();
   const { data: liveData } = useLiveMatch();
-  const live = liveData?.live ?? null;
+  const { liveMatch } = useGroupFeatures();
+  const live = liveMatch ? (liveData?.live ?? null) : null;
   const username = me?.username ?? null;
   const role = (me?.role as UserRole) ?? null;
   const isGroupAdmin = activeGroup?.admin_id === me?.userId;
@@ -43,8 +46,6 @@ export default function SideDrawer({
   const isOpen = isControlled ? externalOpen : internalOpen;
   const toggleMenu = onToggle ?? (() => setInternalOpen((v) => !v));
   const closeMenu = externalClose ?? (() => setInternalOpen(false));
-
-  const FREE_PLAY_ALLOWED = new Set(["/", "/settings"]);
 
   const navItems = [
     { href: "/", label: t("sideDrawer.home") },
@@ -176,7 +177,7 @@ export default function SideDrawer({
         <nav className="flex flex-col gap-0.5">
           {navItems.map(({ href, label }) => {
             const isActive = pathname === href;
-            const isLocked = isFreePlay && !FREE_PLAY_ALLOWED.has(href);
+            const isLocked = isFreePlay && !FREE_PLAY_PAGES.has(href);
 
             if (isLocked) {
               return (
