@@ -5,12 +5,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useRegister } from "@/hooks/useRegister";
 import { useTranslation } from "react-i18next";
 import { useForm, useWatch } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
 import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
 import { toast } from "sonner";
 import Link from "next/link";
 import { joinGroup } from "@/services/auth";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { queryKeys } from "@/hooks/queryKeys";
 import OnboardingField from "@/components/onboarding/OnboardingField";
 import PasswordField from "@/components/onboarding/PasswordField";
 
@@ -27,6 +29,7 @@ export default function RegisterForm() {
   const { t } = useTranslation();
   const { isLoading, handleRegister } = useRegister();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const { data: currentUser, isLoading: isCheckingAuth } = useCurrentUser();
   const inviteToken = searchParams.get("token");
 
@@ -60,6 +63,11 @@ export default function RegisterForm() {
     });
 
     if (!success) return;
+
+    // Auth cookie is now set — invalidate cached queries so the home page
+    // fetches fresh data with the new session instead of using stale nulls.
+    await queryClient.invalidateQueries({ queryKey: queryKeys.currentUser });
+    await queryClient.invalidateQueries({ queryKey: ["groups", "me"] });
 
     if (inviteToken) {
       const joinResult = await joinGroup(inviteToken);
