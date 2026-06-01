@@ -73,7 +73,7 @@ export default function MatchCounter({
         <button
           onClick={onMenuOpen}
           className="relative w-[30px] h-[30px] rounded-full border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface"
-          aria-label="Menu"
+          aria-label={t("matchCounter.menuAriaLabel")}
         >
           <MenuIcon size={14} />
           {liveDot && (

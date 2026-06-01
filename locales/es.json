@@ -4,7 +4,8 @@
         "save": "Guardar",
         "saving": "Guardando…",
         "errorTryAgain": "Algo salió mal · probá de nuevo",
-        "comingSoon": "próximamente"
+        "comingSoon": "próximamente",
+        "failedToStartMatch": "No se pudo iniciar el partido"
     },
     "roleBadge": {
         "admin": "ADMIN"
@@ -107,6 +108,11 @@
             "joinTitle": "Unirme a un grupo",
             "joinSub": "Te pasaron un link o un código.",
             "footnote": "Podés cambiar de grupo cuando quieras."
+        },
+        "passwordField": {
+            "defaultLabel": "Contraseña",
+            "showAriaLabel": "Mostrar contraseña",
+            "hideAriaLabel": "Ocultar contraseña"
         }
     },
     "landing": {
@@ -120,6 +126,10 @@
         "maxPoints": "Puntaje máximo",
         "pool": "Disponibles",
         "equalPlayers": "Los equipos deben tener la misma cantidad de jugadores",
+        "menuAriaLabel": "Menú",
+        "addToTeam": "Agregar a {{team}}",
+        "tapAPlayer": "↓ elegí un jugador",
+        "addButton": "+ agregar",
         "button": {
             "start": "Empezar partido",
             "loading": "Comenzando...",
@@ -129,7 +139,8 @@
     "matchCounter": {
         "team1": "Nosotros",
         "team2": "Ellos",
-        "playing": "Se juega a {{max}}"
+        "playing": "Se juega a {{max}}",
+        "menuAriaLabel": "Menú"
     },
     "confirmationExitModal": {
         "title": "¿Salir del partido?",
@@ -204,7 +215,11 @@
         "admin": "Administración",
         "logout": "Cerrar sesión",
         "group": "Grupo activo",
-        "changeGroup": "Cambiar grupo"
+        "changeGroup": "Cambiar grupo",
+        "toggleMenuAriaLabel": "Abrir menú",
+        "closeMenuAriaLabel": "Cerrar menú",
+        "currentPlayer": "jugador actual",
+        "navigationLabel": "navegación"
     },
     "settings": {
         "account": {
@@ -250,6 +265,28 @@
             "savedToast": "Contraseña actualizada"
         }
     },
+    "changePassword": {
+        "overline": "primer ingreso",
+        "headline": "Elegí tu contraseña",
+        "description": "Tu contraseña inicial es provisoria · cambiala ahora",
+        "fields": {
+            "initial": "Contraseña inicial ({{initial}})",
+            "new": "Nueva contraseña",
+            "confirm": "Confirmar contraseña"
+        },
+        "button": {
+            "save": "Cambiar contraseña",
+            "saving": "Guardando…"
+        },
+        "success": "¡Contraseña actualizada! Bienvenido.",
+        "errors": {
+            "required": "Completá todos los campos",
+            "mismatch": "Las contraseñas no coinciden",
+            "tooShort": "Mínimo 6 caracteres",
+            "wrongInitial": "Contraseña inicial incorrecta",
+            "generic": "Algo salió mal · probá de nuevo"
+        }
+    },
     "nickname": {
         "overline": {
             "self": "Cambiar apodo",
@@ -279,7 +316,9 @@
         },
         "scope": {
             "all": "Todos los jugadores"
-        }
+        },
+        "menuAriaLabel": "Menú",
+        "noResults": "Sin resultados para «{{query}}»"
     },
     "create": {
         "overline": "Nuevo jugador",
@@ -293,7 +332,10 @@
         "submit": "Crear jugador",
         "savedToast": "@{{name}} agregado al grupo",
         "errorCreating": "no se pudo crear · probá de nuevo",
-        "usernameTaken": "ya hay un @{{name}} en el grupo"
+        "usernameTaken": "ya hay un @{{name}} en el grupo",
+        "firstNamePlaceholder": "Ana",
+        "lastNamePlaceholder": "García",
+        "usernamePlaceholder": "ana"
     },
     "matchHistory": {
         "title": "Historial de Partidas",
@@ -338,6 +380,18 @@
         "placeholder": "Nombre del grupo",
         "hint": "1-30 caracteres · como quieras llamar al grupo",
         "savedToast": "Ahora se llama {{name}}"
+    },
+    "versus": {
+        "pageLabel": "rivalidades",
+        "menuAriaLabel": "Abrir menú",
+        "player1": "Jugador 1",
+        "player2": "Jugador 2",
+        "selectPlaceholder": "elegir",
+        "selectPlayers": "Elegí dos jugadores para ver el historial",
+        "wins": "victorias",
+        "tie": "empate",
+        "matchCount_one": "{{count}} partida en total",
+        "matchCount_other": "{{count}} partidas en total"
     },
     "statistics": {
         "glickoDescription": "Ajusta por incertidumbre e inactividad",

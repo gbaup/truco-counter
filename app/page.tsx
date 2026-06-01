@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { twMerge } from "tailwind-merge";
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
 import SideDrawer from "@/components/SideDrawer";
@@ -41,6 +43,8 @@ export default function Home() {
     pending,
   } = useMatch();
 
+  const { t } = useTranslation();
+
   const [showExitModal, setShowExitModal] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [matchLogOpen, setMatchLogOpen] = useState(false);
@@ -62,7 +66,7 @@ export default function Home() {
       if (e instanceof Error) {
         toast.error(e.message);
       } else {
-        toast.error("Failed to start match");
+        toast.error(t("common.failedToStartMatch"));
       }
     }
   };
@@ -106,7 +110,7 @@ export default function Home() {
       ) : (
         <main className="relative w-full min-h-screen">
           <div
-            className="transition-[filter] duration-300"
+            className={twMerge("transition-[filter] duration-300", counterBlurred && "pointer-events-none")}
             style={
               counterBlurred
                 ? { filter: "blur(7px) saturate(0.9)", transform: "scale(1.06)", transformOrigin: "center" }

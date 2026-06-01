@@ -124,7 +124,7 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen, freeP
         <button
           onClick={onMenuOpen}
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
-          aria-label="Menú"
+          aria-label={t("matchSetup.menuAriaLabel")}
         >
           <MenuIcon size={16} />
         </button>
@@ -185,10 +185,10 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen, freeP
                         <button
                           onClick={(e) => { e.stopPropagation(); toggleAdd(team); }}
                           aria-pressed={isActive}
-                          aria-label={`Add to ${label}`}
+                          aria-label={t("matchSetup.addToTeam", { team: label })}
                           className={twMerge("px-2.5 py-1.5 rounded-sm text-[11px] italic text-center transition-all duration-200", isActive ? addActive : addResting)}
                         >
-                          {isActive ? "↓ tap a player" : "+ add"}
+                          {isActive ? t("matchSetup.tapAPlayer") : t("matchSetup.addButton")}
                         </button>
                       )}
                     </div>

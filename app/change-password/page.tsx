@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import Logo from "@/components/ui/Logo";
 import { getMe } from "@/services/auth";
 import { fetchJSON } from "@/lib/fetchJSON";
@@ -10,6 +11,7 @@ import { INITIAL_USER_PASSWORD } from "@/lib/constants";
 
 export default function ChangePasswordPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [currentPwd, setCurrentPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
@@ -33,15 +35,15 @@ export default function ChangePasswordPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!currentPwd || !newPwd || !confirmPwd) {
-      setError("Please fill in all fields");
+      setError(t("changePassword.errors.required"));
       return;
     }
     if (newPwd !== confirmPwd) {
-      setError("Passwords do not match");
+      setError(t("changePassword.errors.mismatch"));
       return;
     }
     if (newPwd.length < 6) {
-      setError("Minimum 6 characters");
+      setError(t("changePassword.errors.tooShort"));
       return;
     }
     setSaving(true);
@@ -52,15 +54,15 @@ export default function ChangePasswordPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ current: currentPwd, next: newPwd }),
       });
-      toast.success("Password updated! Welcome.");
+      toast.success(t("changePassword.success"));
       router.replace("/");
     } catch (e: unknown) {
       if (e instanceof Error && e.message === "wrong_password") {
-        setError("Incorrect initial password");
+        setError(t("changePassword.errors.wrongInitial"));
       } else if (e instanceof Error && e.message === "too_short") {
-        setError("Minimum 6 characters");
+        setError(t("changePassword.errors.tooShort"));
       } else {
-        setError("Something went wrong · please try again");
+        setError(t("changePassword.errors.generic"));
       }
     } finally {
       setSaving(false);
@@ -75,15 +77,15 @@ export default function ChangePasswordPage() {
           <p
             className="font-serif text-[11px] italic tracking-[0.18em] text-text-mute"
           >
-            first login
+            {t("changePassword.overline")}
           </p>
           <h1
             className="mt-1 font-serif text-[22px] font-bold text-text"
           >
-            Choose your password
+            {t("changePassword.headline")}
           </h1>
           <p className="mt-1 font-serif text-[13px] italic text-text-dim">
-            Your initial password is temporary · set a new one now
+            {t("changePassword.description")}
           </p>
         </div>
       </div>
@@ -93,17 +95,17 @@ export default function ChangePasswordPage() {
         className="w-full max-w-sm flex flex-col gap-3"
       >
         <PasswordField
-          label={`Initial password (${INITIAL_USER_PASSWORD})`}
+          label={t("changePassword.fields.initial", { initial: INITIAL_USER_PASSWORD })}
           value={currentPwd}
           onChange={setCurrentPwd}
         />
         <PasswordField
-          label="New password"
+          label={t("changePassword.fields.new")}
           value={newPwd}
           onChange={setNewPwd}
         />
         <PasswordField
-          label="Confirm password"
+          label={t("changePassword.fields.confirm")}
           value={confirmPwd}
           onChange={setConfirmPwd}
         />
@@ -117,7 +119,7 @@ export default function ChangePasswordPage() {
           disabled={saving || !currentPwd || !newPwd || !confirmPwd}
           className="mt-1 w-full rounded-2xl bg-us py-4 text-sm font-bold text-white shadow-[0_8px_20px_-10px_theme(colors.us)] disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-transform"
         >
-          {saving ? "Saving…" : "Change password"}
+          {saving ? t("changePassword.button.saving") : t("changePassword.button.save")}
         </button>
       </form>
     </div>

@@ -1,6 +1,6 @@
 # Review PR Comments
 
-Fetch all review comments on a feature PR, present them in caveman-review format, then launch two parallel adversarial judges on the PR diff to validate human findings and surface issues reviewers missed.
+Fetch all review comments on a feature PR, present them in caveman-review format, then launch two parallel adversarial judges to analyze the quality and validity of those comments.
 
 ## Usage
 
@@ -23,7 +23,7 @@ gh pr view --json number,title,headRefName,baseRefName
 
 Confirm the PR targets `develop`. If it targets a different base, note it and continue anyway.
 
-Resolve the repo slug for later API calls:
+Resolve the repo slug:
 
 ```bash
 gh repo view --json owner,name | jq -r '"\(.owner.login)/\(.name)"'
@@ -31,9 +31,9 @@ gh repo view --json owner,name | jq -r '"\(.owner.login)/\(.name)"'
 
 ---
 
-## Step 2 — Fetch comments and diff in parallel
+## Step 2 — Fetch review comments
 
-Launch these three calls simultaneously:
+Run in parallel:
 
 ```bash
 # Inline review comments (file + line level)
@@ -47,18 +47,20 @@ gh api repos/{OWNER_REPO}/pulls/{PR_NUMBER}/comments --paginate \
       resolved: false,
       created_at
     }]'
-```
 
-```bash
 # Top-level review summaries
 gh api repos/{OWNER_REPO}/pulls/{PR_NUMBER}/reviews --paginate \
   | jq '[.[] | {id, state, body, user: .user.login, submitted_at}]'
 ```
 
+For each inline comment, also fetch the relevant code context (the specific file section being discussed):
+
 ```bash
-# Full PR diff for adversarial review
-gh pr diff {PR_NUMBER}
+gh api repos/{OWNER_REPO}/pulls/{PR_NUMBER}/comments --paginate \
+  | jq '[.[] | {path, diff_hunk, body}]'
 ```
+
+The `diff_hunk` field contains the surrounding code lines — use this as the code context for each comment when sending to judges.
 
 ---
 
@@ -105,88 +107,84 @@ Rules:
 
 ---
 
-## Step 5 — Launch two parallel adversarial judges
+## Step 5 — Launch two parallel judges to analyze the comments
 
-After presenting human comments, launch **Judge A and Judge B simultaneously** (async, never sequential). Neither judge knows the other exists. The orchestrator (you) never reviews code itself — only coordinates and synthesizes.
+After presenting human comments, launch **Judge A and Judge B simultaneously** (async, never sequential). Neither judge knows the other exists. The orchestrator (you) never analyzes comments itself — only coordinates and synthesizes.
+
+Each judge receives the full list of PR comments plus the `diff_hunk` context for each inline comment.
 
 ### Judge Prompt (identical for both)
 
 ```
-You are an adversarial code reviewer. Your ONLY job is to find problems in this diff.
+You are an adversarial reviewer of code review comments. Your job is to analyze each comment and assess whether it is valid, justified, and actionable.
 
-## Target
-PR diff:
+## PR Comments to Analyze
 
-<paste full gh pr diff output here>
+<paste full list of comments here, each with its diff_hunk context>
 
-## Review Criteria
-- Correctness: Does the code do what it claims? Logic errors, wrong conditions, off-by-ones?
-- Edge cases: Unhandled inputs, states, or async scenarios?
-- Error handling: Are errors caught, propagated, and surfaced — not silently swallowed?
-- Performance: N+1 queries, unnecessary re-renders, repeated expensive work?
-- Security: Injection risks, exposed secrets, missing auth/authz checks?
-- Naming & conventions: Does it follow the project's established patterns?
-- Regressions: Does any changed code silently break existing behavior?
+For each comment, evaluate:
+
+1. **Validity**: Is the issue described actually present in the code shown?
+2. **Severity accuracy**: Is the severity the reviewer implied (bug vs nit vs question) correct?
+3. **Fix correctness**: If a fix is suggested, is it actually the right fix?
+4. **Clarity**: Is the comment clear enough to act on?
 
 ## Output Format — MANDATORY
 
-Use caveman-review format. One line per finding:
+One line per comment, using this format:
 
-<file>:L<line>: <severity> <problem>. <fix>.
+<file>:L<line>: <verdict> <assessment>. <note if needed>.
 
-Severity prefixes:
-- 🔴 bug: — broken behavior, will cause incident
-- 🟡 risk: — works but fragile (race, null, swallowed error)
-- 🔵 nit: — style, naming, micro-optim (author can ignore)
-- ❓ q: — genuine question, not a suggestion
+Verdict prefixes:
+- ✅ valid: — issue is real, severity is accurate, fix is sound
+- ⚠️ overblown: — issue exists but severity is overstated
+- ❌ invalid: — issue is not actually present in the code shown
+- 🔀 wrong-fix: — issue is real but suggested fix is incorrect or incomplete
+- ❓ unclear: — not enough context to assess
 
 Rules:
-- No hedging ("maybe", "perhaps", "I think") — use ❓ q: if unsure
-- No praise, no "looks good overall"
-- No restating what the code does — reviewer can read the diff
-- Exact file paths and line numbers from the diff
-- CVE-class security bugs: break terse mode, write a full paragraph with context, then resume terse
+- No hedging — use ❓ unclear: if you genuinely can't tell from the diff_hunk
+- No restating what the comment says — assess it
+- If a comment is ❌ invalid, briefly explain what the code actually does
+- If a comment is ✅ valid with nothing to add, just write "valid: confirmed."
 
-If you find NO issues, return exactly:
-VERDICT: CLEAN — No issues found.
+If ALL comments are valid: return exactly:
+VERDICT: ALL VALID — No issues with the review comments.
 ```
 
 ---
 
-## Step 6 — Synthesize judge findings with human comments
+## Step 6 — Synthesize both judges' assessments
 
-After both judges return, compare all three sources (human comments, Judge A, Judge B):
-
-```
-CONFIRMED   → flagged by BOTH judges AND matches a human comment  → highest priority
-AI-ONLY     → flagged by BOTH judges, NOT in human comments       → humans missed this
-HUMAN+AI    → flagged by one judge AND matches a human comment    → moderate confidence
-HUMAN-ONLY  → in human comments, NOT flagged by either judge      → may still be valid; show but label
-SUSPECT     → flagged by ONLY ONE judge, NOT in human comments    → flag for triage
-```
-
-Print a second header:
+After both judges return, compare their verdicts per comment:
 
 ```
-## Adversarial Review — Judge Synthesis
+CONFIRMED VALID     → both judges say ✅ valid          → high confidence, proceed with fix
+CONFIRMED INVALID   → both judges say ❌ invalid         → push back on reviewer
+CONFIRMED OVERBLOWN → both judges say ⚠️ overblown       → downgrade severity
+CONFIRMED WRONG-FIX → both judges say 🔀 wrong-fix       → do not apply suggested fix blindly
+DISAGREEMENT        → judges give different verdicts     → flag for manual decision
+UNCLEAR             → one or both judges say ❓ unclear   → needs more context
+```
+
+Print a synthesis header:
+
+```
+## Comment Analysis — Judge Synthesis
 ```
 
 Then a verdict table:
 
 ```markdown
-| Finding | File | Human | Judge A | Judge B | Severity | Status |
-|---------|------|-------|---------|---------|----------|--------|
-| null deref on `user` | auth.ts:L42 | ✅ | ✅ | ✅ | 🔴 bug | CONFIRMED |
-| no retry on 429 | api.ts:L88 | ❌ | ✅ | ✅ | 🟡 risk | AI-ONLY |
-| `tmp` naming | useMatch.ts:L15 | ✅ | ❌ | ✅ | 🔵 nit | HUMAN+AI |
-| unused import | api.ts:L3 | ✅ | ❌ | ❌ | 🔵 nit | HUMAN-ONLY |
-| missing await | db.ts:L77 | ❌ | ✅ | ❌ | 🟡 risk | SUSPECT (A only) |
+| Comment | File | Judge A | Judge B | Status |
+|---------|------|---------|---------|--------|
+| null deref on `user` | auth.ts:L42 | ✅ valid | ✅ valid | CONFIRMED VALID |
+| rename `tmp` | useMatch.ts:L15 | ⚠️ overblown | ⚠️ overblown | CONFIRMED OVERBLOWN |
+| use `useCallback` here | Counter.tsx:L88 | ✅ valid | ❌ invalid | DISAGREEMENT |
+| missing error boundary | App.tsx:L5 | ❓ unclear | ❓ unclear | UNCLEAR |
 ```
 
-Rules:
-- Sort by severity (🔴 → 🟡 → 🔵), then by status priority (CONFIRMED → AI-ONLY → HUMAN+AI → HUMAN-ONLY → SUSPECT)
-- SUSPECT findings (only one judge, no human comment) are listed but labeled — user decides
-- Collapse findings that point at the same file:line with similar descriptions
+For DISAGREEMENT rows: include a one-line note explaining what each judge said.
 
 ---
 
@@ -196,12 +194,9 @@ End with:
 
 ```
 ### Summary
-Human: X 🔴  Y 🟡  Z 🔵  W ❓
-AI-detected (missed by reviewers): A 🔴  B 🟡  C 🔵
+Comments: X ✅ confirmed valid  ·  Y ❌ invalid  ·  Z ⚠️ overblown  ·  W 🔀 wrong-fix  ·  V ❓ unclear  ·  U disagreement
 
-CONFIRMED: N  ·  AI-ONLY: N  ·  HUMAN-ONLY: N  ·  SUSPECT: N
-
-Overall: <needs changes / mostly clean / LGTM>
+Overall: <safe to act on all / review some before acting / push back on reviewer>
 ```
 
-If judges both return `VERDICT: CLEAN` and human comments are all nits: print `JUDGMENT: APPROVED ✅` instead.
+If all comments are confirmed valid: print `JUDGMENT: APPROVED ✅ — All review comments are sound. Proceed with fixes.`

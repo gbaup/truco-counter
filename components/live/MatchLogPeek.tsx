@@ -40,7 +40,7 @@ export default function MatchLogPeek({
         {lastHand.us > 0 && (
           <span className="font-display font-extrabold text-sm text-us">
             +{lastHand.us}{" "}
-            <span className="font-serif font-normal not-italic text-xs italic">
+            <span className="font-serif font-normal text-xs italic">
               {t("relato.usAbbr")}
             </span>
           </span>

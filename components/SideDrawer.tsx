@@ -60,8 +60,8 @@ export default function SideDrawer({
       {!isControlled && (
         <button
           onClick={toggleMenu}
-          className="fixed top-4 right-4 z-50 relative w-9 h-9 rounded-md bg-surface border border-border text-text flex items-center justify-center transition-colors hover:bg-surface-elevated"
-          aria-label="Toggle menu"
+          className="fixed top-4 right-4 z-50 w-9 h-9 rounded-md bg-surface border border-border text-text flex items-center justify-center transition-colors hover:bg-surface-elevated"
+          aria-label={t("sideDrawer.toggleMenuAriaLabel")}
         >
           <MenuIcon size={16} />
           {live && (
@@ -96,7 +96,7 @@ export default function SideDrawer({
           <button
             onClick={closeMenu}
             className="w-8 h-8 rounded-full bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
-            aria-label="Close menu"
+            aria-label={t("sideDrawer.closeMenuAriaLabel")}
           >
             <CloseIcon size={14} />
           </button>
@@ -133,7 +133,7 @@ export default function SideDrawer({
                 className="text-caption-italic mt-0.5"
                 style={{ color: "rgba(26, 20, 16, 0.67)", fontSize: 11 }}
               >
-                current player
+                {t("sideDrawer.currentPlayer")}
               </div>
             </div>
 
@@ -169,7 +169,7 @@ export default function SideDrawer({
           className="text-caption-italic text-text-mute mb-2.5"
           style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
         >
-          navigation
+          {t("sideDrawer.navigationLabel")}
         </p>
 
         {/* Nav items */}
