@@ -1,14 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PublicUser } from "@/types/database";
 import { MatchState } from "@/types/game";
 import { createMatch, updateMatch, saveMatch } from "@/services/matchService";
-import { determineWinner } from "@/lib/domain/match";
+import { determineWinner } from "@/lib/domain/match-display";
 import {
     loadMatch,
     saveMatch as persistMatch,
     clearMatch,
 } from "@/lib/persistence/matchStorage";
 import { useActiveGroup } from "./useActiveGroup";
+import { usePointLog } from "./usePointLog";
+
+function useScoreSync(matchState: MatchState, isFreePlay: boolean) {
+    const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    useEffect(() => {
+        if (!matchState.matchId || isFreePlay || matchState.view !== "match") return;
+        if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+        syncTimerRef.current = setTimeout(() => {
+            updateMatch(matchState.matchId!, { score1: matchState.score1, score2: matchState.score2 }).catch(() => {});
+        }, 300);
+    }, [matchState.score1, matchState.score2, matchState.matchId, matchState.view, isFreePlay]);
+}
 
 export function useMatch() {
     const { activeGroupId, isFreePlay, isGroupsPending } = useActiveGroup();
@@ -35,6 +47,10 @@ export function useMatch() {
         if (isLoaded) persistMatch(matchState);
     }, [matchState, isLoaded]);
 
+    useScoreSync(matchState, isFreePlay);
+
+    const pointLog = usePointLog(matchState.matchId);
+
     const startMatch = async (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => {
         if (isStarting) return;
         setIsStarting(true);
@@ -43,7 +59,7 @@ export function useMatch() {
                 setMatchState({ view: "match", team1: [], team2: [], maxPoints, score1: 0, score2: 0 });
                 return;
             }
-            const match = await createMatch({ team1, team2, status: "ongoing", groupId: activeGroupId ?? undefined });
+            const match = await createMatch({ team1, team2, status: "ongoing", groupId: activeGroupId ?? undefined, maxPoints });
             setMatchState({
                 view: "match",
                 team1, team2, maxPoints,
@@ -59,25 +75,25 @@ export function useMatch() {
     };
 
     const incrementScore = (team: 1 | 2) => {
+        const currentScore = team === 1 ? matchState.score1 : matchState.score2;
+        if (currentScore >= matchState.maxPoints) return;
         setMatchState((prev) => {
-            const currentScore = team === 1 ? prev.score1 : prev.score2;
-            if (currentScore >= prev.maxPoints) return prev;
-            return {
-                ...prev,
-                [team === 1 ? 'score1' : 'score2']: currentScore + 1
-            };
+            const s = team === 1 ? prev.score1 : prev.score2;
+            if (s >= prev.maxPoints) return prev;
+            return { ...prev, [team === 1 ? "score1" : "score2"]: s + 1 };
         });
+        pointLog.register(team === 1 ? "us" : "them", +1);
     };
 
     const decrementScore = (team: 1 | 2) => {
+        const currentScore = team === 1 ? matchState.score1 : matchState.score2;
+        if (currentScore <= 0) return;
         setMatchState((prev) => {
-            const currentScore = team === 1 ? prev.score1 : prev.score2;
-            if (currentScore <= 0) return prev;
-            return {
-                ...prev,
-                [team === 1 ? 'score1' : 'score2']: currentScore - 1
-            };
+            const s = team === 1 ? prev.score1 : prev.score2;
+            if (s <= 0) return prev;
+            return { ...prev, [team === 1 ? "score1" : "score2"]: s - 1 };
         });
+        pointLog.register(team === 1 ? "us" : "them", -1);
     };
 
     const finishMatch = async (result: { score1: number; score2: number; status?: "finished" | "cancelled" }) => {
@@ -111,6 +127,7 @@ export function useMatch() {
             view: "setup",
             team1: [], team2: [], maxPoints: 30, score1: 0, score2: 0,
         });
+        pointLog.reset();
         clearMatch();
     };
 
@@ -124,6 +141,8 @@ export function useMatch() {
         startMatch,
         finishMatch,
         incrementScore,
-        decrementScore
+        decrementScore,
+        hands: pointLog.hands,
+        pending: pointLog.pending,
     };
 }

@@ -12,6 +12,8 @@ import RoleBadge from "@/components/admin/RoleBadge";
 import GroupSelector from "@/components/ui/GroupSelector";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useActiveGroup } from "@/hooks/useActiveGroup";
+import { useLiveMatch } from "@/contexts/LiveMatchContext";
+import { LiveDot, MiniScore } from "@/components/live/LiveBadge";
 import { MenuIcon, CloseIcon, ArrowRightIcon, LockIcon } from "@/components/ui/icons";
 import { UserRole } from "@/types/auth";
 
@@ -29,6 +31,8 @@ export default function SideDrawer({
   const [internalOpen, setInternalOpen] = useState(false);
   const { data: me } = useCurrentUser();
   const { activeGroupId, activeGroup, setActiveGroup, groups, isFreePlay } = useActiveGroup();
+  const { data: liveData } = useLiveMatch();
+  const live = liveData?.live ?? null;
   const username = me?.username ?? null;
   const role = (me?.role as UserRole) ?? null;
   const isGroupAdmin = activeGroup?.admin_id === me?.userId;
@@ -57,9 +61,14 @@ export default function SideDrawer({
         <button
           onClick={toggleMenu}
           className="fixed top-4 right-4 z-50 w-9 h-9 rounded-md bg-surface border border-border text-text flex items-center justify-center transition-colors hover:bg-surface-elevated"
-          aria-label="Toggle menu"
+          aria-label={t("sideDrawer.toggleMenuAriaLabel")}
         >
           <MenuIcon size={16} />
+          {live && (
+            <span className="absolute -top-0.5 -right-0.5">
+              <LiveDot size={9} ring />
+            </span>
+          )}
         </button>
       )}
 
@@ -87,7 +96,7 @@ export default function SideDrawer({
           <button
             onClick={closeMenu}
             className="w-8 h-8 rounded-full bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
-            aria-label="Cerrar menú"
+            aria-label={t("sideDrawer.closeMenuAriaLabel")}
           >
             <CloseIcon size={14} />
           </button>
@@ -124,7 +133,7 @@ export default function SideDrawer({
                 className="text-caption-italic mt-0.5"
                 style={{ color: "rgba(26, 20, 16, 0.67)", fontSize: 11 }}
               >
-                el de la mesa
+                {t("sideDrawer.currentPlayer")}
               </div>
             </div>
 
@@ -160,7 +169,7 @@ export default function SideDrawer({
           className="text-caption-italic text-text-mute mb-2.5"
           style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
         >
-          en la mesa
+          {t("sideDrawer.navigationLabel")}
         </p>
 
         {/* Nav items */}
@@ -178,6 +187,24 @@ export default function SideDrawer({
                   <span className="text-sm text-text font-medium">{label}</span>
                   <LockIcon size={12} className="text-text-mute" />
                 </div>
+              );
+            }
+
+            if (href === "/" && live) {
+              return (
+                <Link
+                  key="live-home"
+                  href="/live"
+                  onClick={closeMenu}
+                  className="flex items-center gap-2.5 px-3.5 py-3 rounded-md border text-sm font-bold bg-danger/10 border-danger/45 text-danger"
+                >
+                  <LiveDot size={9} />
+                  <span className="flex-1">{label}</span>
+                  <span className="flex items-center gap-1.5">
+                    <MiniScore us={live.scoreUs} them={live.scoreThem} />
+                    <ArrowRightIcon size={14} />
+                  </span>
+                </Link>
               );
             }
 

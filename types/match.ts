@@ -1,5 +1,15 @@
 import { PublicUser } from "./database";
 
+export interface LiveMatchData {
+  matchId: string;
+  scoreUs: number;
+  scoreThem: number;
+  max: number;
+  teamUs: string[];
+  teamThem: string[];
+  scorer: string;
+}
+
 export interface RosterEntry {
     username: string;
     name: string;
@@ -32,6 +42,7 @@ export interface CreateMatchDto {
     team2: PublicUser[];
     status?: "ongoing" | "finished";
     groupId?: string;
+    maxPoints?: number;
 }
 
 export interface UpdateMatchDto {

@@ -1,11 +1,16 @@
 "use client";
 
 import { PublicUser } from "@/types/database";
+import { Hand } from "@/hooks/usePointLog";
 import TeamCounter from "./TeamCounter";
 import Controls from "./Controls";
 import Logo from "@/components/ui/Logo";
 import { MenuIcon } from "@/components/ui/icons";
+import MatchLogPeek from "@/components/live/MatchLogPeek";
 import { useTranslation } from "react-i18next";
+import { LiveDot } from "@/components/live/LiveBadge";
+import { splitScore } from "@/lib/domain/match-display";
+import { TimeStyle } from "@/hooks/usePointLog";
 
 interface MatchCounterProps {
   team1: PublicUser[];
@@ -17,6 +22,10 @@ interface MatchCounterProps {
   onDecrement: (team: 1 | 2) => void;
   onExit: () => void;
   onMenuOpen: () => void;
+  onMatchLogOpen: () => void;
+  hands: Hand[];
+  liveDot?: boolean;
+  timeStyle?: TimeStyle;
 }
 
 export default function MatchCounter({
@@ -29,17 +38,15 @@ export default function MatchCounter({
   onDecrement,
   onExit,
   onMenuOpen,
+  onMatchLogOpen,
+  hands,
+  liveDot = false,
+  timeStyle = "rel",
 }: MatchCounterProps) {
   const { t } = useTranslation();
-  const half = maxPoints / 2;
 
-  const getSplit = (score: number) => ({
-    malas: Math.min(score, half),
-    buenas: Math.max(0, score - half),
-  });
-
-  const team1Split = getSplit(score1);
-  const team2Split = getSplit(score2);
+  const team1Split = splitScore(score1, maxPoints);
+  const team2Split = splitScore(score2, maxPoints);
 
   return (
     <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
@@ -65,10 +72,15 @@ export default function MatchCounter({
 
         <button
           onClick={onMenuOpen}
-          className="w-[30px] h-[30px] rounded-full border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface"
-          aria-label="Menú"
+          className="relative w-[30px] h-[30px] rounded-full border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface"
+          aria-label={t("matchCounter.menuAriaLabel")}
         >
           <MenuIcon size={14} />
+          {liveDot && (
+            <span className="absolute -top-0.5 -right-0.5">
+              <LiveDot size={9} ring />
+            </span>
+          )}
         </button>
       </div>
 
@@ -89,6 +101,15 @@ export default function MatchCounter({
           malas={team2Split.malas}
           buenas={team2Split.buenas}
           variant="secondary"
+        />
+      </div>
+
+      {/* Match log peek */}
+      <div className="relative px-3.5 pb-1.5">
+        <MatchLogPeek
+          lastHand={hands[0] ?? null}
+          onOpen={onMatchLogOpen}
+          timeStyle={timeStyle}
         />
       </div>
 

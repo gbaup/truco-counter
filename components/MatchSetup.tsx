@@ -28,8 +28,8 @@ interface TeamConfig {
   panelResting: string;
   panelActive: string;
   chipClass: string;
-  sumarResting: string;
-  sumarActive: string;
+  addResting: string;
+  addActive: string;
   poolChipActive: string;
 }
 
@@ -42,8 +42,8 @@ const TEAM_CONFIGS: Omit<TeamConfig, "label" | "list">[] = [
     panelResting: "bg-surface border border-us/40",
     panelActive: "bg-us/[0.07] border-2 border-us ring-4 ring-us/[0.08]",
     chipClass: "bg-us/20 text-us",
-    sumarResting: "border border-dashed border-us/60 text-us opacity-60",
-    sumarActive: "bg-us/10 border border-us/60 text-us font-semibold",
+    addResting: "border border-dashed border-us/60 text-us opacity-60",
+    addActive: "bg-us/10 border border-us/60 text-us font-semibold",
     poolChipActive: "bg-us/10 border-us/35 text-us hover:bg-us/20 cursor-pointer",
   },
   {
@@ -54,8 +54,8 @@ const TEAM_CONFIGS: Omit<TeamConfig, "label" | "list">[] = [
     panelResting: "bg-surface border border-them/40",
     panelActive: "bg-them/[0.07] border-2 border-them ring-4 ring-them/[0.08]",
     chipClass: "bg-them/20 text-them",
-    sumarResting: "border border-dashed border-them/60 text-them opacity-60",
-    sumarActive: "bg-them/10 border border-them/60 text-them font-semibold",
+    addResting: "border border-dashed border-them/60 text-them opacity-60",
+    addActive: "bg-them/10 border border-them/60 text-them font-semibold",
     poolChipActive: "bg-them/10 border-them/35 text-them hover:bg-them/20 cursor-pointer",
   },
 ];
@@ -81,7 +81,7 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen, freeP
     if (list.length < 3) setList(activeTeam, [...list, user]);
   };
 
-  const toggleSumar = (team: 1 | 2) =>
+  const toggleAdd = (team: 1 | 2) =>
     setActiveTeam((prev) => (prev === team ? null : team));
 
   const canStart = freePlay || (team1.length === team2.length && team1.length >= 2);
@@ -124,7 +124,7 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen, freeP
         <button
           onClick={onMenuOpen}
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
-          aria-label="Menú"
+          aria-label={t("matchSetup.menuAriaLabel")}
         >
           <MenuIcon size={16} />
         </button>
@@ -139,7 +139,7 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen, freeP
         {!freePlay && (
           <>
             <div className="grid grid-cols-2 gap-2.5">
-              {teamConfigs.map(({ team, label, color, colorClass, suitKind, panelResting, panelActive, chipClass, sumarResting, sumarActive }) => {
+              {teamConfigs.map(({ team, label, color, colorClass, suitKind, panelResting, panelActive, chipClass, addResting, addActive }) => {
                 const isActive = activeTeam === team;
                 const list = getList(team);
 
@@ -180,15 +180,15 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen, freeP
                         </button>
                       ))}
 
-                      {/* + sumar */}
+                      {/* + add */}
                       {list.length < 3 && (
                         <button
-                          onClick={(e) => { e.stopPropagation(); toggleSumar(team); }}
+                          onClick={(e) => { e.stopPropagation(); toggleAdd(team); }}
                           aria-pressed={isActive}
-                          aria-label={`Sumar a ${label}`}
-                          className={twMerge("px-2.5 py-1.5 rounded-sm text-[11px] italic text-center transition-all duration-200", isActive ? sumarActive : sumarResting)}
+                          aria-label={t("matchSetup.addToTeam", { team: label })}
+                          className={twMerge("px-2.5 py-1.5 rounded-sm text-[11px] italic text-center transition-all duration-200", isActive ? addActive : addResting)}
                         >
-                          {isActive ? "↓ tocá un jugador" : "+ sumar"}
+                          {isActive ? t("matchSetup.tapAPlayer") : t("matchSetup.addButton")}
                         </button>
                       )}
                     </div>

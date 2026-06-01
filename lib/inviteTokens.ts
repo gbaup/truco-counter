@@ -36,7 +36,12 @@ export async function validateToken(token: string) {
       groups: {
         include: {
           _count: { select: { memberships: true } },
-          admin: { select: { name: true } },
+          admin: { select: { name: true, username: true } },
+          memberships: {
+            select: { users: { select: { name: true, username: true } } },
+            take: 5,
+            orderBy: { joined_at: "asc" },
+          },
         },
       },
     },

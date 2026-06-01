@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import I18nProvider from "@/components/I18nProvider";
 import QueryProvider from "@/components/QueryProvider";
+import { LiveMatchProvider } from "@/contexts/LiveMatchContext";
 import { twMerge } from "tailwind-merge";
 
 const inter = Inter({
@@ -47,7 +48,9 @@ export default function RootLayout({
       >
         <QueryProvider>
           <I18nProvider>
-            {children}
+            <LiveMatchProvider>
+              {children}
+            </LiveMatchProvider>
           </I18nProvider>
         </QueryProvider>
         <Toaster richColors position="top-right" />

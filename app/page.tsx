@@ -3,20 +3,26 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { twMerge } from "tailwind-merge";
 import MatchSetup from "@/components/MatchSetup";
 import MatchCounter from "@/components/MatchCounter";
 import SideDrawer from "@/components/SideDrawer";
-import WinnerModal from "@/components/WinnerModal";
+import WinnerScreen from "@/components/WinnerScreen";
 import ConfirmationExitModal from "@/components/ConfirmationExitModal";
+import LiveGate from "@/components/live/LiveGate";
+import MatchLogSheet from "@/components/live/MatchLogSheet";
 import { useMatch } from "@/hooks/useMatch";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useLiveMatch } from "@/contexts/LiveMatchContext";
+import { resolveWinner } from "@/lib/domain/match-display";
 import { PublicUser } from "@/types/database";
 
 export default function Home() {
   const router = useRouter();
   const { data: me } = useCurrentUser();
+  const { data: liveData } = useLiveMatch();
 
-  // Self-registered users always have passwordChanged=true, so this redirect never fires for them.
   useEffect(() => {
     if (me && !me.passwordChanged) {
       router.replace("/change-password");
@@ -26,7 +32,6 @@ export default function Home() {
   const {
     matchState,
     isLoaded,
-    isSaving,
     isStarting,
     isFreePlay,
     isGroupsPending,
@@ -34,17 +39,19 @@ export default function Home() {
     finishMatch,
     incrementScore,
     decrementScore,
+    hands,
+    pending,
   } = useMatch();
+
+  const { t } = useTranslation();
 
   const [showExitModal, setShowExitModal] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [matchLogOpen, setMatchLogOpen] = useState(false);
 
-  const winner =
-    matchState.score1 >= matchState.maxPoints
-      ? "Nosotros"
-      : matchState.score2 >= matchState.maxPoints
-        ? "Ellos"
-        : null;
+  const resolved = resolveWinner(matchState);
+  const winner = resolved?.team ?? null;
+  const winnerNames = resolved?.names ?? [];
 
   if (!isLoaded || isGroupsPending) return null;
 
@@ -59,10 +66,23 @@ export default function Home() {
       if (e instanceof Error) {
         toast.error(e.message);
       } else {
-        toast.error("Error al iniciar el partido");
+        toast.error(t("common.failedToStartMatch"));
       }
     }
   };
+
+  const handleRematch = async () => {
+    const t1 = matchState.team1;
+    const t2 = matchState.team2;
+    const max = matchState.maxPoints;
+    await finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" });
+    await handleStartMatch(t1, t2, max);
+  };
+
+  const live = !isFreePlay ? (liveData?.live ?? null) : null;
+  const liveDot = live !== null;
+
+  const counterBlurred = !!winner || matchLogOpen;
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,35 +93,61 @@ export default function Home() {
       />
 
       {matchState.view === "setup" ? (
-        <MatchSetup
-          onStartMatch={handleStartMatch}
-          isStarting={isStarting}
-          freePlay={isFreePlay}
-          onMenuOpen={() => setDrawerOpen(true)}
-        />
-      ) : (
-        <main className="w-full">
-          <MatchCounter
-            {...matchState}
-            onIncrement={incrementScore}
-            onDecrement={decrementScore}
-            onExit={() => setShowExitModal(true)}
+        live ? (
+          <LiveGate
+            live={live}
+            onWatch={() => router.push("/live")}
             onMenuOpen={() => setDrawerOpen(true)}
           />
-          <WinnerModal
-            open={!!winner}
-            winner={winner}
-            onFinish={() =>
-              finishMatch({
-                score1: matchState.score1,
-                score2: matchState.score2,
-                status: "finished",
-              })
+        ) : (
+          <MatchSetup
+            onStartMatch={handleStartMatch}
+            isStarting={isStarting}
+            freePlay={isFreePlay}
+            onMenuOpen={() => setDrawerOpen(true)}
+          />
+        )
+      ) : (
+        <main className="relative w-full min-h-screen">
+          <div
+            className={twMerge("transition-[filter] duration-300", counterBlurred && "pointer-events-none")}
+            style={
+              counterBlurred
+                ? { filter: "blur(7px) saturate(0.9)", transform: "scale(1.06)", transformOrigin: "center" }
+                : undefined
             }
-            isLoading={isSaving}
+          >
+            <MatchCounter
+              {...matchState}
+              onIncrement={incrementScore}
+              onDecrement={decrementScore}
+              onExit={() => setShowExitModal(true)}
+              onMenuOpen={() => setDrawerOpen(true)}
+              onMatchLogOpen={() => setMatchLogOpen(true)}
+              hands={hands}
+              liveDot={liveDot}
+            />
+          </div>
+          {winner && (
+            <WinnerScreen
+              winner={winner}
+              scoreUs={matchState.score1}
+              scoreThem={matchState.score2}
+              max={matchState.maxPoints}
+              winners={winnerNames}
+              onRematch={handleRematch}
+              onExit={() => finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" })}
+            />
+          )}
+          <MatchLogSheet
+            open={matchLogOpen}
+            onClose={() => setMatchLogOpen(false)}
+            hands={hands}
+            pending={pending}
+            live={liveDot}
           />
           <ConfirmationExitModal
-            open={showExitModal}
+            open={showExitModal && !winner}
             onConfirm={() => {
               setShowExitModal(false);
               finishMatch({

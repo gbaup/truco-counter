@@ -99,7 +99,7 @@ export default function AdminPage() {
         <button
           onClick={() => setDrawerOpen(true)}
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
-          aria-label="Menú"
+          aria-label={t("admin.menuAriaLabel")}
         >
           <MenuIcon size={16} />
         </button>
@@ -152,7 +152,7 @@ export default function AdminPage() {
             ))}
             {filteredList.length === 0 && searchQuery && (
               <p className="py-8 text-center font-serif text-sm italic text-text-mute">
-                Sin resultados para &quot;{searchQuery}&quot;
+                {t("admin.noResults", { query: searchQuery })}
               </p>
             )}
           </ul>
