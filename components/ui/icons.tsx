@@ -66,9 +66,7 @@ export function SearchIcon({ size = 24, className }: IconProps) {
 
 export function FilterIcon({ size = 24, className }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M3 6h18M6 12h12M10 18h4" />
-    </svg>
+    <Icon icon="ph:funnel-simple" width={size} height={size} className={className} />
   );
 }
 
