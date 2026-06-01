@@ -12,8 +12,6 @@ export const GET = withAdminAuth(async () => {
       name: true,
       last_name: true,
       username: true,
-      rating: true,
-      rating_deviation: true,
       role: true,
     },
     orderBy: { username: "asc" },
@@ -54,9 +52,6 @@ export const POST = withAdminAuth(async (request) => {
       password: passwordHash,
       role: "user",
       password_changed: false,
-      rating: 1500,
-      rating_deviation: 350,
-      elo_rating: 1200,
     },
   });
 

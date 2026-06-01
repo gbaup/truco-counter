@@ -42,7 +42,7 @@ export default function StatisticsPage() {
     effectiveTab === "glicko"
       ? [...userStats].sort((a, b) => glickoScore(b.rating, b.rating_deviation) - glickoScore(a.rating, a.rating_deviation))
       : effectiveTab === "elo"
-        ? [...userStats].sort((a, b) => b.elo_rating - a.elo_rating)
+        ? [...userStats].sort((a, b) => (b.elo_rating ?? 0) - (a.elo_rating ?? 0))
         : [...userStats].sort((a, b) => classicScore(b.wins, b.losses) - classicScore(a.wins, a.losses));
 
   const top = sorted[0] ?? null;
@@ -56,7 +56,7 @@ export default function StatisticsPage() {
 
   const displayScore = (s: UserStats) => {
     if (effectiveTab === "glicko") return Math.round(glickoScore(s.rating, s.rating_deviation));
-    if (effectiveTab === "elo") return Math.round(s.elo_rating);
+    if (effectiveTab === "elo") return Math.round(s.elo_rating ?? 0);
     return classicScore(s.wins, s.losses);
   };
 

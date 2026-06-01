@@ -134,9 +134,6 @@ export async function GET(request: Request) {
           password: passwordPlaceholder,
           password_changed: true,
           google_id: googleUser.id,
-          rating: 1500,
-          rating_deviation: 350,
-          elo_rating: 1200,
         },
       });
 

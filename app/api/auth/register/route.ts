@@ -90,9 +90,6 @@ export async function POST(request: Request) {
         email: email ? email.trim().toLowerCase() : null,
         password: hashedPassword,
         password_changed: true,
-        rating: 1500,
-        rating_deviation: 350,
-        elo_rating: 1200,
       },
     });
 

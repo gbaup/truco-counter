@@ -20,10 +20,8 @@ export async function applyRatingsToMatch(
   matchId: string,
   groupId?: string | null,
 ): Promise<void> {
-  if (groupId) {
-    return applyGroupRatings(tx, team1UserIds, team2UserIds, winnerTeam, matchCreatedAt, matchId, groupId);
-  }
-  return applyGlobalRatings(tx, team1UserIds, team2UserIds, winnerTeam, matchCreatedAt, matchId);
+  if (!groupId) return;
+  return applyGroupRatings(tx, team1UserIds, team2UserIds, winnerTeam, matchCreatedAt, matchId, groupId);
 }
 
 type RatingData = { rating: number; rating_deviation: number; elo_rating: number; last_decay_at: Date };
@@ -96,31 +94,6 @@ async function applyRatingCalculations(
         }),
       ]);
     }),
-  );
-}
-
-async function applyGlobalRatings(
-  tx: Prisma.TransactionClient,
-  team1UserIds: string[],
-  team2UserIds: string[],
-  winnerTeam: 1 | 2,
-  matchCreatedAt: Date,
-  matchId: string,
-): Promise<void> {
-  const allIds = [...team1UserIds, ...team2UserIds];
-  const participants = await tx.users.findMany({
-    where: { id: { in: allIds } },
-    select: { id: true, rating: true, rating_deviation: true, elo_rating: true, last_decay_at: true },
-  });
-  const byId = new Map(participants.map((p) => [p.id, p]));
-  const { decayed, eloById } = await loadDecayedRatings(
-    allIds, byId,
-    (lastDecayAt) => tx.matches.count({ where: missedMatchesWhere(lastDecayAt, matchCreatedAt) }),
-  );
-  await applyRatingCalculations(
-    tx, team1UserIds, team2UserIds, winnerTeam, matchId, matchCreatedAt,
-    decayed, eloById,
-    (id, data) => tx.users.update({ where: { id }, data }),
   );
 }
 

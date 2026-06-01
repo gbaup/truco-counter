@@ -32,18 +32,6 @@ export default function AdminUserRow({ user, onEdit }: AdminUserRowProps) {
         </p>
       </div>
 
-      {/* Rating */}
-      <div className="shrink-0 text-right">
-        <p
-          className="font-serif text-[9px] italic text-text-mute"
-        >
-          glicko
-        </p>
-        <p className="font-display text-[14px] font-extrabold text-text">
-          {Math.round(user.rating)}
-        </p>
-      </div>
-
       {/* Edit button — only rendered when the caller provides the handler */}
       {onEdit && (
         <button

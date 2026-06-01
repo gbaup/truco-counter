@@ -14,8 +14,6 @@ export interface AdminUser {
   name: string;
   last_name: string;
   username: string;
-  rating: number;
-  rating_deviation: number;
   role: UserRole;
 }
 
@@ -24,9 +22,9 @@ export interface UserStats {
   username: string;
   wins: number;
   losses: number;
-  rating: number;
-  rating_deviation: number;
-  elo_rating: number;
+  rating?: number;
+  rating_deviation?: number;
+  elo_rating?: number;
 }
 
 export interface VersusStats {
