@@ -1,8 +1,15 @@
+export interface GroupFeatures {
+  liveMatch: boolean;
+  pointsLogs: boolean;
+  glickoRanking: boolean;
+}
+
 export interface Group {
   id: string;
   name: string;
   admin_id: string;
   created_at: string | null;
+  features: Partial<GroupFeatures>;
 }
 
 export interface GroupMembership {

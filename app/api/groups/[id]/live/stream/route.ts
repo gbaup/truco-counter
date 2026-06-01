@@ -21,6 +21,12 @@ async function getMatchPayload(groupId: string) {
 export const GET = withGroupMemberAuth<{ params: Promise<{ id: string }> }>(
   async (request: Request, _session: Session, { params }) => {
     const { id: groupId } = await params;
+
+    const group = await prisma.groups.findUnique({ where: { id: groupId }, select: { features: true } });
+    const features = (group?.features ?? {}) as { liveMatch?: boolean };
+    if (!features.liveMatch) {
+      return new Response("Feature disabled", { status: 403 });
+    }
     const encoder = new TextEncoder();
 
     const stream = new ReadableStream({

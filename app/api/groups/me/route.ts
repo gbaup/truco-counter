@@ -22,6 +22,7 @@ export const GET = withAuth(async (_request: Request, session: Session) => {
       name: g.name,
       admin_id: g.admin_id,
       created_at: g.created_at,
+      features: g.features ?? {},
       member_count: g._count.memberships,
       joined_at,
     }));

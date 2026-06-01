@@ -15,6 +15,7 @@ import MatchLogSheet from "@/components/live/MatchLogSheet";
 import { useMatch } from "@/hooks/useMatch";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useLiveMatch } from "@/contexts/LiveMatchContext";
+import { useGroupFeatures } from "@/hooks/useGroupFeatures";
 import { resolveWinner } from "@/lib/domain/match-display";
 import { PublicUser } from "@/types/database";
 
@@ -28,6 +29,8 @@ export default function Home() {
       router.replace("/change-password");
     }
   }, [me, router]);
+
+  const features = useGroupFeatures();
 
   const {
     matchState,
@@ -79,7 +82,7 @@ export default function Home() {
     await handleStartMatch(t1, t2, max);
   };
 
-  const live = !isFreePlay ? (liveData?.live ?? null) : null;
+  const live = !isFreePlay && features.liveMatch ? (liveData?.live ?? null) : null;
   const liveDot = live !== null;
 
   const counterBlurred = !!winner || matchLogOpen;
@@ -126,6 +129,7 @@ export default function Home() {
               onMatchLogOpen={() => setMatchLogOpen(true)}
               hands={hands}
               liveDot={liveDot}
+              showMatchLog={features.pointsLogs}
             />
           </div>
           {winner && (
@@ -139,13 +143,15 @@ export default function Home() {
               onExit={() => finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" })}
             />
           )}
-          <MatchLogSheet
-            open={matchLogOpen}
-            onClose={() => setMatchLogOpen(false)}
-            hands={hands}
-            pending={pending}
-            live={liveDot}
-          />
+          {features.pointsLogs && (
+            <MatchLogSheet
+              open={matchLogOpen}
+              onClose={() => setMatchLogOpen(false)}
+              hands={hands}
+              pending={pending}
+              live={liveDot}
+            />
+          )}
           <ConfirmationExitModal
             open={showExitModal && !winner}
             onConfirm={() => {

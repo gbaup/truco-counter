@@ -14,6 +14,7 @@ import { UserRole } from "@/types/auth";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useUserStats } from "@/hooks/useUserStats";
 import { queryKeys } from "@/hooks/queryKeys";
+import { useGroupFeatures } from "@/hooks/useGroupFeatures";
 import { glickoScore, classicScore } from "@/lib/domain/ratings";
 import { twMerge } from "tailwind-merge";
 
@@ -24,7 +25,10 @@ export default function StatisticsPage() {
   const queryClient = useQueryClient();
   const { data: userStats = [], isPending: statsLoading } = useUserStats();
   const { data: me, isPending: meLoading } = useCurrentUser();
+  const { glickoRanking } = useGroupFeatures();
   const [tab, setTab] = useState<Tab>("glicko");
+  const effectiveTab: Tab = !glickoRanking && tab === "glicko" ? "elo" : tab;
+  const availableTabs: Tab[] = glickoRanking ? ["glicko", "elo", "classic"] : ["elo", "classic"];
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<"idle" | "success" | "error">("idle");
@@ -35,28 +39,28 @@ export default function StatisticsPage() {
   const currentUserRole = me?.role as UserRole | undefined;
 
   const sorted =
-    tab === "glicko"
+    effectiveTab === "glicko"
       ? [...userStats].sort((a, b) => glickoScore(b.rating, b.rating_deviation) - glickoScore(a.rating, a.rating_deviation))
-      : tab === "elo"
+      : effectiveTab === "elo"
         ? [...userStats].sort((a, b) => b.elo_rating - a.elo_rating)
         : [...userStats].sort((a, b) => classicScore(b.wins, b.losses) - classicScore(a.wins, a.losses));
 
   const top = sorted[0] ?? null;
 
   const tabDescription =
-    tab === "glicko"
+    effectiveTab === "glicko"
       ? t("statistics.glickoDescription")
-      : tab === "elo"
+      : effectiveTab === "elo"
         ? t("statistics.eloDescription")
         : t("statistics.classicDescription");
 
   const displayScore = (s: UserStats) => {
-    if (tab === "glicko") return Math.round(glickoScore(s.rating, s.rating_deviation));
-    if (tab === "elo") return Math.round(s.elo_rating);
+    if (effectiveTab === "glicko") return Math.round(glickoScore(s.rating, s.rating_deviation));
+    if (effectiveTab === "elo") return Math.round(s.elo_rating);
     return classicScore(s.wins, s.losses);
   };
 
-  const ratingLabel = tab === "classic" ? "Pts" : "Rating";
+  const ratingLabel = effectiveTab === "classic" ? "Pts" : "Rating";
 
   async function handleSync() {
     setSyncing(true);
@@ -103,13 +107,13 @@ export default function StatisticsPage() {
 
         {/* Tab switcher */}
         <div className="bg-surface rounded-md border border-border p-1 flex gap-1">
-          {(["glicko", "elo", "classic"] as Tab[]).map((t_) => (
+          {availableTabs.map((t_) => (
             <button
               key={t_}
               onClick={() => setTab(t_)}
               className={twMerge(
                 "flex-1 py-2 rounded-sm text-sm font-semibold transition-colors",
-                tab === t_
+                effectiveTab === t_
                   ? "bg-us text-white"
                   : "text-text-dim hover:text-text",
               )}
@@ -213,7 +217,7 @@ export default function StatisticsPage() {
                   className="text-label-overline mt-1"
                   style={{ color: "rgba(26,20,16,0.5)", fontSize: 9 }}
                 >
-                  {tab === "glicko" ? "GLICKO" : tab === "elo" ? "ELO" : "PTS"}
+                  {effectiveTab === "glicko" ? "GLICKO" : effectiveTab === "elo" ? "ELO" : "PTS"}
                 </p>
               </div>
             </div>
@@ -259,7 +263,7 @@ export default function StatisticsPage() {
         </div>
 
         {/* Admin sync */}
-        {currentUserRole === UserRole.admin && (
+        {glickoRanking && currentUserRole === UserRole.admin && (
           <div className="flex flex-col items-end gap-1 pt-1">
             <button
               onClick={handleSync}
