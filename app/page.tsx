@@ -82,7 +82,7 @@ export default function Home() {
     await handleStartMatch(t1, t2, max);
   };
 
-  const live = !isFreePlay && features.liveMatch ? (liveData?.live ?? null) : null;
+  const live = features.liveMatch ? (liveData?.live ?? null) : null;
   const liveDot = live !== null;
 
   const counterBlurred = !!winner || matchLogOpen;

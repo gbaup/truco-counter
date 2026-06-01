@@ -22,9 +22,9 @@ export function useLiveMatch(): LiveMatchContextValue {
 }
 
 export function LiveMatchProvider({ children }: { children: ReactNode }) {
-  const { activeGroupId, isFreePlay } = useActiveGroup();
+  const { activeGroupId } = useActiveGroup();
   const { liveMatch } = useGroupFeatures();
-  const groupId = !isFreePlay && liveMatch ? (activeGroupId ?? undefined) : undefined;
+  const groupId = liveMatch ? (activeGroupId ?? undefined) : undefined;
 
   const [snapshot, setSnapshot] = useState<{ groupId: string; payload: LiveMatchPayload } | null>(null);
 

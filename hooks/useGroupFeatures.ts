@@ -1,17 +1,9 @@
 "use client";
 
 import { useActiveGroup } from "@/hooks/useActiveGroup";
-import type { GroupFeatures } from "@/types/group";
+import { getGroupFeatures } from "@/lib/domain/groupFeatures";
 
-export function useGroupFeatures(): Record<keyof GroupFeatures, boolean> {
+export function useGroupFeatures() {
   const { activeGroup, isFreePlay } = useActiveGroup();
-  if (isFreePlay) {
-    return { liveMatch: false, pointsLogs: true, glickoRanking: false };
-  }
-  const f = (activeGroup?.features ?? {}) as Partial<GroupFeatures>;
-  return {
-    liveMatch: f.liveMatch === true,
-    pointsLogs: f.pointsLogs === true,
-    glickoRanking: f.glickoRanking === true,
-  };
+  return getGroupFeatures({ isFreePlay, activeGroup });
 }

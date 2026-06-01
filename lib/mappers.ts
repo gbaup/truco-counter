@@ -1,4 +1,5 @@
-import type { GroupFeatures, GroupMember, GroupWithMembers } from "@/types/group";
+import { parseGroupFeatures } from "@/lib/domain/groupFeatures";
+import type { GroupMember, GroupWithMembers } from "@/types/group";
 
 type MembershipWithUser = {
   users: { id: string; username: string; name: string; last_name: string } | null;
@@ -37,7 +38,7 @@ export function toGroupDetail(group: GroupWithMemberships): GroupWithMembers {
     name: group.name,
     admin_id: group.admin_id,
     created_at: group.created_at?.toISOString() ?? null,
-    features: (group.features ?? {}) as Partial<GroupFeatures>,
+    features: parseGroupFeatures(group.features),
     member_count: group._count.memberships,
     members: group.memberships.map(toGroupMember),
   };

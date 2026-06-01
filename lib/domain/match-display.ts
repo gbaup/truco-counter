@@ -1,4 +1,4 @@
-import { MatchState } from "@/types/game";
+import { MatchState, TeamId, TeamSide } from "@/types/game";
 
 export function splitScore(
   score: number,
@@ -10,7 +10,7 @@ export function splitScore(
 
 export function resolveWinner(
   matchState: MatchState
-): { team: "us" | "them"; names: string[] } | null {
+): { team: TeamSide; names: string[] } | null {
   if (matchState.score1 >= matchState.maxPoints) {
     return {
       team: "us",
@@ -30,7 +30,7 @@ export function determineWinner(
   score1: number,
   score2: number,
   maxPoints: number
-): 1 | 2 | null {
+): TeamId | null {
   if (score1 >= maxPoints) return 1;
   if (score2 >= maxPoints) return 2;
   return null;

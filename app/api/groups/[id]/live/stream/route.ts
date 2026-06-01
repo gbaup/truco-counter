@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { withGroupMemberAuth } from "@/lib/withAuth";
+import { withGroupMemberFeatureAuth } from "@/lib/withAuth";
 import { Session } from "@/types/auth";
 import { formatLivePayload } from "@/lib/domain/match";
 
@@ -18,15 +18,10 @@ async function getMatchPayload(groupId: string) {
   return formatLivePayload(match);
 }
 
-export const GET = withGroupMemberAuth<{ params: Promise<{ id: string }> }>(
+export const GET = withGroupMemberFeatureAuth<{ params: Promise<{ id: string }> }>(
+  "liveMatch",
   async (request: Request, _session: Session, { params }) => {
     const { id: groupId } = await params;
-
-    const group = await prisma.groups.findUnique({ where: { id: groupId }, select: { features: true } });
-    const features = (group?.features ?? {}) as { liveMatch?: boolean };
-    if (!features.liveMatch) {
-      return new Response("Feature disabled", { status: 403 });
-    }
     const encoder = new TextEncoder();
 
     const stream = new ReadableStream({
