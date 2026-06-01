@@ -24,7 +24,11 @@ export const FREE_PLAY_PAGES = new Set(["/", "/settings"]);
 
 export function parseGroupFeatures(raw: unknown): GroupFeatures {
   const result = GroupFeaturesSchema.safeParse(raw);
-  return result.success ? result.data : DEFAULT_FEATURES;
+  if (!result.success) {
+    console.error("parseGroupFeatures: invalid features value, falling back to defaults", result.error);
+    return DEFAULT_FEATURES;
+  }
+  return result.data;
 }
 
 export function getGroupFeatures(context: {

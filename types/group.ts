@@ -1,5 +1,4 @@
 import type { GroupFeatures } from "@/lib/domain/groupFeatures";
-export type { GroupFeatures };
 
 export interface Group {
   id: string;

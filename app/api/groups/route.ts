@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withAuth } from "@/lib/withAuth";
 import { Session } from "@/types/auth";
+import { parseGroupFeatures } from "@/lib/domain/groupFeatures";
 
 export const POST = withAuth(async (request: Request, session: Session) => {
   try {
@@ -27,7 +28,7 @@ export const POST = withAuth(async (request: Request, session: Session) => {
       return created;
     });
 
-    return NextResponse.json({ success: true, group }, { status: 201 });
+    return NextResponse.json({ success: true, group: { ...group, features: parseGroupFeatures(group.features) } }, { status: 201 });
   } catch (error) {
     console.error("Error creating group:", error);
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });

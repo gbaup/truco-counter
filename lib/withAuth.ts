@@ -108,7 +108,10 @@ export function withGroupMemberFeatureAuth<TContext extends Record<string, unkno
     const memberRejection = await assertGroupMember(groupId, session.userId);
     if (memberRejection) return memberRejection;
     const group = await prisma.groups.findUnique({ where: { id: groupId }, select: { features: true } });
-    const features = parseGroupFeatures(group?.features);
+    if (!group) {
+      return NextResponse.json({ success: false, error: "Group not found" }, { status: 404 });
+    }
+    const features = parseGroupFeatures(group.features);
     if (!features[feature]) {
       return NextResponse.json({ success: false, error: "Feature disabled" }, { status: 403 });
     }
