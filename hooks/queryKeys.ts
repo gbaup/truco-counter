@@ -1,5 +1,6 @@
 export const queryKeys = {
   currentUser: ["currentUser"] as const,
+  myGroups: ["groups", "me"] as const,
   users: Object.assign(
     (groupId?: string) =>
       groupId ? (["users", groupId] as const) : (["users"] as const),
@@ -32,3 +33,14 @@ export const queryKeys = {
     { all: ["groupMembers"] as const }
   ),
 };
+
+export function getGroupChangeKeys() {
+  return [
+    queryKeys.users.all,
+    queryKeys.userStats.all,
+    queryKeys.matches.all,
+    queryKeys.versusStats.all,
+    queryKeys.groupMembers.all,
+    queryKeys.adminUsers,
+  ] as const;
+}

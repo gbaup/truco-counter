@@ -14,7 +14,6 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useActiveGroup } from "@/hooks/useActiveGroup";
 import { useLiveMatch } from "@/contexts/LiveMatchContext";
 import { useGroupFeatures } from "@/hooks/useGroupFeatures";
-import { FREE_PLAY_PAGES } from "@/lib/domain/groupFeatures";
 import { LiveDot, MiniScore } from "@/components/live/LiveBadge";
 import { MenuIcon, CloseIcon, ArrowRightIcon, LockIcon } from "@/components/ui/icons";
 import { UserRole } from "@/types/auth";
@@ -49,10 +48,10 @@ export default function SideDrawer({
 
   const navItems = [
     { href: "/", label: t("sideDrawer.home") },
-    { href: "/profile", label: t("sideDrawer.profile") },
-    { href: "/statistics", label: t("sideDrawer.statistics") },
-    { href: "/versus", label: t("sideDrawer.versus") },
-    { href: "/history", label: t("sideDrawer.history") },
+    { href: "/profile", label: t("sideDrawer.profile"), requiresGroup: true },
+    { href: "/statistics", label: t("sideDrawer.statistics"), requiresGroup: true },
+    { href: "/versus", label: t("sideDrawer.versus"), requiresGroup: true },
+    { href: "/history", label: t("sideDrawer.history"), requiresGroup: true },
     { href: "/settings", label: t("sideDrawer.settings") },
   ];
 
@@ -175,9 +174,9 @@ export default function SideDrawer({
 
         {/* Nav items */}
         <nav className="flex flex-col gap-0.5">
-          {navItems.map(({ href, label }) => {
+          {navItems.map(({ href, label, requiresGroup }) => {
             const isActive = pathname === href;
-            const isLocked = isFreePlay && !FREE_PLAY_PAGES.has(href);
+            const isLocked = isFreePlay && !!requiresGroup;
 
             if (isLocked) {
               return (
@@ -191,7 +190,7 @@ export default function SideDrawer({
               );
             }
 
-            if (href === "/" && live) {
+            if (href === "/" && live && username !== null && live.scorer !== username) {
               return (
                 <Link
                   key="live-home"
@@ -228,8 +227,8 @@ export default function SideDrawer({
           })}
         </nav>
 
-        {/* Admin section */}
-        {(role === UserRole.admin || isGroupAdmin) && (
+        {/* Admin section. Note: only group admins can see this. Global admins section to be implemented. */}
+        {isGroupAdmin && (
           <div className="mt-4">
             <p
               className="text-caption-italic text-text-mute mb-1.5"

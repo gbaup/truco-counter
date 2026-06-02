@@ -124,3 +124,9 @@ export function UsersIcon({ size = 24, className }: IconProps) {
     <Icon icon="ph:users-three" width={size} height={size} className={className} />
   );
 }
+
+export function RematchIcon({ size = 24, className }: IconProps) {
+  return (
+    <Icon icon="ph:arrows-clockwise" width={size} height={size} className={className} />
+  );
+}

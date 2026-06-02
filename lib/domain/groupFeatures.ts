@@ -20,8 +20,6 @@ export const FREE_PLAY_FEATURES: GroupFeatures = {
   glickoRanking: false,
 };
 
-export const FREE_PLAY_PAGES = new Set(["/", "/settings"]);
-
 export function parseGroupFeatures(raw: unknown): GroupFeatures {
   const result = GroupFeaturesSchema.safeParse(raw);
   if (!result.success) {

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { UserStats, VersusStats } from "@/types/database";
+import { UserStats, GroupUserStats, VersusStats } from "@/types/database";
 
 export type Scope = { type: "global" } | { type: "group"; groupId: string };
 
@@ -9,10 +9,13 @@ function deserializeBigints<T>(data: T): T {
     );
 }
 
-export async function getUserStats(scope: Scope = { type: "global" }): Promise<UserStats[]> {
+export async function getUserStats(scope: { type: "global" }): Promise<UserStats[]>;
+export async function getUserStats(scope: { type: "group"; groupId: string }): Promise<GroupUserStats[]>;
+export async function getUserStats(scope?: Scope): Promise<UserStats[] | GroupUserStats[]>;
+export async function getUserStats(scope: Scope = { type: "global" }): Promise<UserStats[] | GroupUserStats[]> {
     if (scope.type === "global") {
         const data = await prisma.$queryRaw<UserStats[]>`
-            SELECT user_id, username, wins, losses, rating, rating_deviation, elo_rating
+            SELECT user_id, username, wins, losses
             FROM user_stats
         `;
         return deserializeBigints(data);

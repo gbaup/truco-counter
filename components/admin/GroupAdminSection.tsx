@@ -8,7 +8,6 @@ import { useGroupShareLink } from "@/hooks/useGroupShareLink";
 import { useUpdateGroupName } from "@/hooks/useUpdateGroupName";
 import ChangeGroupNameSheet from "@/components/ui/ChangeGroupNameSheet";
 import { UsersIcon, PencilIcon, CopyIcon, CheckIcon, RefreshIcon } from "@/components/ui/icons";
-import GroupSelector from "@/components/ui/GroupSelector";
 
 interface MyGroup extends Group {
   member_count: number;
@@ -18,10 +17,9 @@ interface MyGroup extends Group {
 interface Props {
   adminedGroups: MyGroup[];
   selectedGroupId: string | null;
-  onSelectGroup: (id: string) => void;
 }
 
-export default function GroupAdminSection({ adminedGroups, selectedGroupId, onSelectGroup }: Props) {
+export default function GroupAdminSection({ adminedGroups, selectedGroupId }: Props) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -47,15 +45,6 @@ export default function GroupAdminSection({ adminedGroups, selectedGroupId, onSe
 
   return (
     <div className="px-5 pt-5 pb-4 border-b border-border">
-      {adminedGroups.length > 1 && (
-        <GroupSelector
-          groups={adminedGroups}
-          value={selectedGroupId}
-          onChange={(id) => { if (id) onSelectGroup(id); }}
-          className="mb-3"
-        />
-      )}
-
       <div className="rounded-2xl bg-surface border border-border p-3.5 shadow-card">
         <div className="flex items-center gap-3">
           <div
@@ -120,12 +109,18 @@ export default function GroupAdminSection({ adminedGroups, selectedGroupId, onSe
         </button>
       </div>
 
+      {adminedGroups.length > 1 && (
+        <p className="font-serif text-[11px] mt-1 italic text-text-mute">
+          {t("admin.groupAdmin.multipleGroups")}
+        </p>
+      )}
+
       <ChangeGroupNameSheet
         key={selectedGroupId ?? "none"}
         open={editing}
         currentName={groupName}
         onClose={() => setEditing(false)}
-        onSave={(name) => updateName.mutateAsync({ groupId: selectedGroupId!, name })}
+        onSave={(name) => { if (!selectedGroupId) return Promise.resolve(); return updateName.mutateAsync({ groupId: selectedGroupId, name }); }}
         onSaved={() => setEditing(false)}
       />
     </div>

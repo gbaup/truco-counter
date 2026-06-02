@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { USERNAME_RE, NAME_RE, EMAIL_RE } from "@/lib/validators";
+import { createUserWithPassword } from "@/lib/createUser";
 
 export async function POST(request: Request) {
   if (process.env.NEXT_PUBLIC_ENABLE_REGISTRATION === "false") {
@@ -80,20 +80,12 @@ export async function POST(request: Request) {
       }
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await prisma.users.create({
-      data: {
-        name: name.trim().toLowerCase(),
-        last_name: lastName.trim().toLowerCase(),
-        username: normalizedUsername,
-        email: email ? email.trim().toLowerCase() : null,
-        password: hashedPassword,
-        password_changed: true,
-        rating: 1500,
-        rating_deviation: 350,
-        elo_rating: 1200,
-      },
+    const user = await createUserWithPassword({
+      name: name.trim().toLowerCase(),
+      lastName: lastName.trim().toLowerCase(),
+      username: normalizedUsername,
+      email: email ? email.trim().toLowerCase() : null,
+      password,
     });
 
     const token = await signToken({ userId: user.id, username: user.username, role: user.role });

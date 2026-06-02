@@ -1,4 +1,5 @@
-export function glickoScore(rating: number, ratingDeviation: number): number {
+export function glickoScore(rating: number | undefined, ratingDeviation: number | undefined): number {
+  if (rating === undefined || ratingDeviation === undefined) return 0;
   return rating - ratingDeviation;
 }
 

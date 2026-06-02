@@ -312,7 +312,8 @@
             "copy": "copiar",
             "copied": "¡copiado!",
             "revoke": "revocar y generar nuevo",
-            "revoking": "generando..."
+            "revoking": "generando...",
+            "multipleGroups": "¿Otro grupo? Cambiá desde el menú lateral."
         },
         "scope": {
             "all": "todos los jugadores"

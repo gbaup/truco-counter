@@ -129,7 +129,7 @@ export default function ProfilePage() {
                   glicko
                 </p>
                 <p className="text-display-xl font-display text-paper-ink mt-0.5">
-                  {stats ? Math.round(stats.rating) : "—"}
+                  {stats?.rating !== undefined ? Math.round(stats.rating) : "—"}
                 </p>
               </>
             )}
@@ -183,7 +183,7 @@ export default function ProfilePage() {
               elo
             </p>
             <p className="font-display font-extrabold text-[18px] text-text">
-              {stats ? Math.round(stats.elo_rating) : "—"}
+              {stats?.elo_rating !== undefined ? Math.round(stats.elo_rating) : "—"}
             </p>
           </div>
           {glickoRanking && (
@@ -197,7 +197,7 @@ export default function ProfilePage() {
                   {t("profile.rd")}
                 </p>
                 <p className="font-display font-extrabold text-[18px] text-text-dim">
-                  {stats ? Math.round(stats.rating_deviation) : "—"}
+                  {stats?.rating_deviation !== undefined ? Math.round(stats.rating_deviation) : "—"}
                 </p>
               </div>
             </>

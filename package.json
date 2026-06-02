@@ -9,7 +9,7 @@
     "lint": "eslint",
     "prepare": "husky",
     "postinstall": "prisma generate",
-    "seed:glicko": "tsx prisma/seed-glicko.ts"
+    "recalculate:ratings": "tsx prisma/recalculate-ratings.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",

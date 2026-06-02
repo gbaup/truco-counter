@@ -7,7 +7,7 @@ import SideDrawer from "@/components/SideDrawer";
 import PaperPanel from "@/components/ui/PaperPanel";
 import Suit from "@/components/ui/Suit";
 import Logo from "@/components/ui/Logo";
-import { UserStats } from "@/types/database";
+import { GroupUserStats } from "@/types/database";
 import { MenuIcon } from "@/components/ui/icons";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { UserRole } from "@/types/auth";
@@ -23,7 +23,8 @@ type Tab = "glicko" | "elo" | "classic";
 export default function StatisticsPage() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { data: userStats = [], isPending: statsLoading } = useUserStats();
+  const { data: rawStats = [], isPending: statsLoading } = useUserStats();
+  const userStats = rawStats as GroupUserStats[];
   const { data: me, isPending: meLoading } = useCurrentUser();
   const { glickoRanking } = useGroupFeatures();
   const [tab, setTab] = useState<Tab>("glicko");
@@ -42,7 +43,7 @@ export default function StatisticsPage() {
     effectiveTab === "glicko"
       ? [...userStats].sort((a, b) => glickoScore(b.rating, b.rating_deviation) - glickoScore(a.rating, a.rating_deviation))
       : effectiveTab === "elo"
-        ? [...userStats].sort((a, b) => b.elo_rating - a.elo_rating)
+        ? [...userStats].sort((a, b) => (b.elo_rating ?? 0) - (a.elo_rating ?? 0))
         : [...userStats].sort((a, b) => classicScore(b.wins, b.losses) - classicScore(a.wins, a.losses));
 
   const top = sorted[0] ?? null;
@@ -54,9 +55,9 @@ export default function StatisticsPage() {
         ? t("statistics.eloDescription")
         : t("statistics.classicDescription");
 
-  const displayScore = (s: UserStats) => {
+  const displayScore = (s: GroupUserStats) => {
     if (effectiveTab === "glicko") return Math.round(glickoScore(s.rating, s.rating_deviation));
-    if (effectiveTab === "elo") return Math.round(s.elo_rating);
+    if (effectiveTab === "elo") return Math.round(s.elo_rating ?? 0);
     return classicScore(s.wins, s.losses);
   };
 
