@@ -133,7 +133,7 @@ export default function Home() {
       />
 
       {matchState.view === "setup" ? (
-        live ? (
+        live && live.scorer !== me?.username ? (
           <LiveGate
             live={live}
             onWatch={() => router.push("/live")}
