@@ -13,7 +13,7 @@ type WinnerScreenProps = {
   max: number;
   winners: string[];
   confetti?: boolean;
-  isLoading?: boolean;
+  loadingButton?: "rematch" | "exit";
   onRematch: () => void;
   onExit: () => void;
 };
@@ -105,7 +105,7 @@ function SuitConfetti({ color }: { color: string }) {
 }
 
 export default function WinnerScreen({
-  winner, scoreUs, scoreThem, max, winners, confetti = true, isLoading = false, onRematch, onExit,
+  winner, scoreUs, scoreThem, max, winners, confetti = true, loadingButton, onRematch, onExit,
 }: WinnerScreenProps) {
   const { t } = useTranslation();
   const color = winner === "us" ? "var(--color-us)" : "var(--color-them)";
@@ -156,30 +156,28 @@ export default function WinnerScreen({
         <div className="flex flex-col gap-2.5" style={{ animation: "winRise 0.5s ease both", animationDelay: "0.3s" }}>
           <button
             onClick={onRematch}
-            disabled={isLoading}
+            disabled={!!loadingButton}
             className={twMerge(
               "relative flex items-center justify-center gap-2 overflow-hidden rounded-[14px] py-[15px] text-[15px] font-bold text-white transition-opacity",
-              isLoading && "opacity-50 cursor-not-allowed"
+              loadingButton && "opacity-50 cursor-not-allowed"
             )}
             style={{ background: color, boxShadow: `0 10px 24px -10px ${color}` }}
           >
-            <RematchIcon className={twMerge(isLoading && "h-5 w-5 animate-spin")} /> {t("win.rematch")}
-            {!isLoading && <span className="absolute left-0 top-0 h-full w-[35%]" style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)", animation: "winShine 3.6s ease-in-out infinite", animationDelay: "1s" }} />}
+            <RematchIcon className={twMerge(loadingButton === "rematch" && "animate-spin")} /> {t("win.rematch")}
+            {!loadingButton && <span className="absolute left-0 top-0 h-full w-[35%]" style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)", animation: "winShine 3.6s ease-in-out infinite", animationDelay: "1s" }} />}
           </button>
           <button
             onClick={onExit}
-            disabled={isLoading}
+            disabled={!!loadingButton}
             className={twMerge(
               "rounded-[14px] border flex items-center justify-center border-border py-3.5 text-[14px] font-semibold text-text-dim transition-opacity",
-              isLoading && "opacity-50 cursor-not-allowed"
+              loadingButton && "opacity-50 cursor-not-allowed"
             )}
           >
-            {isLoading ? (
+            {loadingButton === "exit" ? (
               <SpinnerIcon className="h-5 w-5 animate-spin" />
             ) : (
-              <>
-                {t("win.exit")}
-              </>
+              t("win.exit")
             )}
           </button>
         </div>

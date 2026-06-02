@@ -51,7 +51,8 @@ export default function Home() {
   const [showExitModal, setShowExitModal] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [matchLogOpen, setMatchLogOpen] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionAction, setTransitionAction] = useState<"rematch" | "finish" | null>(null);
+  const isTransitioning = transitionAction !== null;
 
   const resolved = resolveWinner(matchState);
   const winner = resolved?.team ?? null;
@@ -99,22 +100,22 @@ export default function Home() {
     const t1 = matchState.team1;
     const t2 = matchState.team2;
     const max = matchState.maxPoints;
-    setIsTransitioning(true);
+    setTransitionAction("rematch");
     try {
       await finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" });
       await handleStartMatch(t1, t2, max);
     } finally {
-      setIsTransitioning(false);
+      setTransitionAction(null);
     }
   };
 
   const handleFinish = async () => {
     if (isTransitioning) return;
-    setIsTransitioning(true);
+    setTransitionAction("finish");
     try {
       await finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" });
     } finally {
-      setIsTransitioning(false);
+      setTransitionAction(null);
     }
   };
 
@@ -200,7 +201,7 @@ export default function Home() {
             scoreThem={winnerDataRef.current.scoreThem}
             max={winnerDataRef.current.max}
             winners={winnerDataRef.current.winnerNames}
-            isLoading={isTransitioning}
+            loadingButton={transitionAction === "rematch" ? "rematch" : transitionAction === "finish" ? "exit" : undefined}
             onRematch={handleRematch}
             onExit={handleFinish}
           />
