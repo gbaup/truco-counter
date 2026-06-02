@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Suit from "@/components/ui/Suit";
 import PaperPanel from "@/components/ui/PaperPanel";
@@ -7,6 +8,9 @@ import { Tally } from "@/components/ui/Palito";
 import { LiveBadge, LiveDot } from "./LiveBadge";
 import { CloseIcon, MenuIcon, LockIcon } from "@/components/ui/icons";
 import { splitScore } from "@/lib/domain/match-display";
+import MatchLogPeek from "@/components/live/MatchLogPeek";
+import MatchLogSheet from "@/components/live/MatchLogSheet";
+import { Hand } from "@/types/match";
 
 type LiveMatchViewProps = {
   scoreUs: number;
@@ -15,6 +19,7 @@ type LiveMatchViewProps = {
   teamUs: string[];
   teamThem: string[];
   scorer: string;
+  hands: Hand[];
   onExit: () => void;
   onOpenMenu: () => void;
 };
@@ -65,9 +70,10 @@ function TeamColumn({
 }
 
 export default function LiveMatchView({
-  scoreUs, scoreThem, max, teamUs, teamThem, scorer, onExit, onOpenMenu,
+  scoreUs, scoreThem, max, teamUs, teamThem, scorer, hands, onExit, onOpenMenu,
 }: LiveMatchViewProps) {
   const { t } = useTranslation();
+  const [logOpen, setLogOpen] = useState(false);
   return (
     <div className="relative flex h-full w-full min-h-screen flex-col overflow-hidden bg-background text-text">
       <div
@@ -103,7 +109,13 @@ export default function LiveMatchView({
         <TeamColumn label={t("matchSetup.team2")} score={scoreThem} roster={teamThem} suit="basto" team="them" max={max} />
       </div>
 
-      <div className="relative px-3.5 pb-7 pt-3">
+      {hands.length > 0 && (
+        <div className="relative px-3.5 pb-1.5 pt-3">
+          <MatchLogPeek lastHand={hands[0]} onOpen={() => setLogOpen(true)} />
+        </div>
+      )}
+
+      <div className={`relative px-3.5 pb-7 ${hands.length > 0 ? "pt-1.5" : "pt-3"}`}>
         <div className="flex items-center justify-center gap-2.5 rounded-[14px] border border-border bg-surface px-4 py-3 text-text-dim">
           <LockIcon size={15} />
           <span className="text-[13px] italic" style={{ fontFamily: "var(--font-crimson-pro), serif" }}>
@@ -111,6 +123,13 @@ export default function LiveMatchView({
           </span>
         </div>
       </div>
+
+      <MatchLogSheet
+        open={logOpen}
+        onClose={() => setLogOpen(false)}
+        hands={hands}
+        live
+      />
     </div>
   );
 }

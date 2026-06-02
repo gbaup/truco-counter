@@ -1,5 +1,5 @@
 import { fetchJSON } from "@/lib/fetchJSON";
-import { CreateMatchDto, UpdateMatchDto, MatchHistoryItem } from "@/types/match";
+import { CreateMatchDto, UpdateMatchDto, MatchHistoryItem, Hand } from "@/types/match";
 
 export function createMatch(matchData: CreateMatchDto): Promise<{ id: string }> {
   return fetchJSON<{ id: string }>("/api/matches", {
@@ -19,6 +19,22 @@ export function updateMatch(id: string, matchData: UpdateMatchDto) {
 
 export function saveMatch(matchData: CreateMatchDto) {
   return createMatch({ ...matchData, status: "finished" });
+}
+
+export function postLiveHand(groupId: string, matchId: string, hand: Hand): Promise<void> {
+  return fetchJSON(`/api/groups/${groupId}/live/log`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "append", matchId, hand }),
+  });
+}
+
+export function clearLiveLog(groupId: string, matchId: string): Promise<void> {
+  return fetchJSON(`/api/groups/${groupId}/live/log`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "clear", matchId }),
+  });
 }
 
 export async function getMatches(userId?: string, groupId?: string): Promise<MatchHistoryItem[]> {

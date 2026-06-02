@@ -39,6 +39,7 @@ export default function LivePage() {
         teamUs={live.teamUs}
         teamThem={live.teamThem}
         scorer={live.scorer}
+        hands={live.hands}
         onExit={() => router.push("/")}
         onOpenMenu={() => setDrawerOpen(true)}
       />

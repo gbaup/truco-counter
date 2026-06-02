@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Hand } from "@/types/match";
+export type { Hand } from "@/types/match";
 
 /**
  * usePointLog — groups score taps into HANDs (debounced windows).
@@ -33,13 +35,6 @@ const MAX_WAIT_MS = 6000; // cap: never leave a hand open longer than 6 s
 export type TimeStyle = "rel" | "hora";
 
 export type Side = "us" | "them";
-
-export interface Hand {
-  id: string;
-  us: number;
-  them: number;
-  ts: number; // epoch ms — when the hand started (used for "X ago" display)
-}
 
 interface PendingHand {
   us: number;
@@ -86,7 +81,12 @@ export interface PointLog {
   reset: () => void;
 }
 
-export function usePointLog(matchId?: string): PointLog {
+export function usePointLog(matchId?: string, onHandCommit?: (hand: Hand) => void): PointLog {
+  const onHandCommitRef = useRef(onHandCommit);
+  useEffect(() => {
+    onHandCommitRef.current = onHandCommit;
+  });
+
   const [prevMatchId, setPrevMatchId] = useState<string | undefined>(matchId);
   const [hands, setHands] = useState<Hand[]>(() =>
     typeof window === "undefined" ? [] : load(matchId)
@@ -131,6 +131,7 @@ export function usePointLog(matchId?: string): PointLog {
         them: Math.max(0, p.them),
         ts: p.ts,
       };
+      onHandCommitRef.current?.(hand);
       setHands((prev) => {
         const next = [hand, ...prev];
         save(mid, next);

@@ -1,5 +1,12 @@
 import { PublicUser } from "./database";
 
+export interface Hand {
+  id: string;
+  us: number;
+  them: number;
+  ts: number;
+}
+
 export interface LiveMatchData {
   matchId: string;
   scoreUs: number;
@@ -8,6 +15,7 @@ export interface LiveMatchData {
   teamUs: string[];
   teamThem: string[];
   scorer: string;
+  hands: Hand[];
 }
 
 export interface RosterEntry {

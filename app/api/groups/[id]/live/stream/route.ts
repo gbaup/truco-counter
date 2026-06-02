@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { withGroupMemberFeatureAuth } from "@/lib/withAuth";
 import { Session } from "@/types/auth";
 import { formatLivePayload } from "@/lib/domain/match";
+import { getLog } from "@/lib/liveLog";
 
 async function getMatchPayload(groupId: string) {
   const match = await prisma.matches.findFirst({
@@ -15,7 +16,8 @@ async function getMatchPayload(groupId: string) {
     orderBy: { created_at: "desc" },
   });
 
-  return formatLivePayload(match);
+  const hands = match ? getLog(match.id) : [];
+  return formatLivePayload(match, hands);
 }
 
 export const GET = withGroupMemberFeatureAuth<{ params: Promise<{ id: string }> }>(
