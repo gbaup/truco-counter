@@ -54,7 +54,7 @@ export default function Home() {
 
   const resolved = resolveWinner(matchState);
   const winner = resolved?.team ?? null;
-  const winnerNames = resolved?.names ?? [];
+  const winnerNames = resolved?.usernames ?? [];
 
   if (!isLoaded || isGroupsPending) return null;
 

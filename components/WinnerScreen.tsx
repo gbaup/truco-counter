@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import Suit from "@/components/ui/Suit";
+import { RematchIcon } from "./ui/icons";
 
 type WinnerScreenProps = {
   winner: "us" | "them";
@@ -101,11 +102,7 @@ function SuitConfetti({ color }: { color: string }) {
   );
 }
 
-const RematchIcon = () => (
-  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 12a9 9 0 0 1 15-6.7L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-15 6.7L3 16" /><path d="M3 21v-5h5" />
-  </svg>
-);
+
 
 export default function WinnerScreen({
   winner, scoreUs, scoreThem, max, winners, confetti = true, onRematch, onExit,
@@ -150,7 +147,7 @@ export default function WinnerScreen({
 
         <div className="mb-[18px] mt-3 flex flex-wrap justify-center gap-1.5" style={{ animation: "winRise 0.5s ease both", animationDelay: "0.24s" }}>
           {winners.map((n) => (
-            <span key={n} className="rounded-[9px] px-2.5 py-[5px] text-[12px] font-semibold" style={{ background: `color-mix(in srgb, ${color} 12%, transparent)`, color, border: `1px solid color-mix(in srgb, ${color} 40%, transparent)` }}>
+            <span key={n} className="rounded-[9px] px-2.5 py-[5px] text-[12px] capitalize font-semibold" style={{ background: `color-mix(in srgb, ${color} 12%, transparent)`, color, border: `1px solid color-mix(in srgb, ${color} 40%, transparent)` }}>
               {n}
             </span>
           ))}
