@@ -1,5 +1,5 @@
 import { fetchJSON } from "@/lib/fetchJSON";
-import { PublicUser, UserStats, VersusStats } from "@/types/database";
+import { PublicUser, UserStats, GroupUserStats, VersusStats } from "@/types/database";
 
 export async function updateMyUsername(username: string): Promise<void> {
   await fetchJSON(`/api/users/me`, {
@@ -30,10 +30,12 @@ export async function getUsers(groupId?: string): Promise<PublicUser[]> {
   }
 }
 
-export async function getUserStats(groupId?: string): Promise<UserStats[]> {
+export async function getUserStats(groupId: string): Promise<GroupUserStats[]>;
+export async function getUserStats(groupId?: string): Promise<UserStats[] | GroupUserStats[]>;
+export async function getUserStats(groupId?: string): Promise<UserStats[] | GroupUserStats[]> {
   const url = groupId ? `/api/users/stats?groupId=${groupId}` : "/api/users/stats";
   try {
-    return await fetchJSON<UserStats[]>(url);
+    return await fetchJSON<UserStats[] | GroupUserStats[]>(url);
   } catch (error) {
     console.error("Error fetching user stats:", error);
     return [];

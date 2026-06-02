@@ -6,20 +6,21 @@ import { useCurrentUser } from "./useCurrentUser";
 import { useUserStats } from "./useUserStats";
 import { useMatches } from "./useMatches";
 import { winRate } from "@/lib/domain/ratings";
-import { UserStats } from "@/types/database";
+import { GroupUserStats } from "@/types/database";
 import { MatchHistoryItem } from "@/types/match";
 
 type Session = NonNullable<ReturnType<typeof useCurrentUser>["data"]>;
 
 type ProfileData =
   | { isLoading: true; me: null; stats: null; matches: MatchHistoryItem[]; winRate: number; streak: number }
-  | { isLoading: false; me: Session; stats: UserStats | null; matches: MatchHistoryItem[]; winRate: number; streak: number }
+  | { isLoading: false; me: Session; stats: GroupUserStats | null; matches: MatchHistoryItem[]; winRate: number; streak: number }
   | { isLoading: false; me: null; stats: null; matches: MatchHistoryItem[]; winRate: number; streak: number };
 
 export function useProfileData(): ProfileData {
   const router = useRouter();
   const { data: me, isPending: meLoading } = useCurrentUser();
-  const { data: allStats = [], isPending: statsLoading } = useUserStats();
+  const { data: rawStats = [], isPending: statsLoading } = useUserStats();
+  const allStats = rawStats as GroupUserStats[];
   const { data: matches = [], isPending: matchesLoading } = useMatches(me?.userId, { enabled: !!me?.userId });
 
   useEffect(() => {

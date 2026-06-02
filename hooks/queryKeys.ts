@@ -32,3 +32,14 @@ export const queryKeys = {
     { all: ["groupMembers"] as const }
   ),
 };
+
+export function getGroupChangeKeys() {
+  return [
+    queryKeys.users.all,
+    queryKeys.userStats.all,
+    queryKeys.matches.all,
+    queryKeys.versusStats.all,
+    queryKeys.groupMembers.all,
+    queryKeys.adminUsers,
+  ] as const;
+}

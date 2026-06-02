@@ -24,7 +24,6 @@ export async function applyRatingsToMatch(
   return applyGroupRatings(tx, team1UserIds, team2UserIds, winnerTeam, matchCreatedAt, matchId, groupId);
 }
 
-type RatingData = { rating: number; rating_deviation: number; elo_rating: number; last_decay_at: Date };
 type RatingRecord = { rating: number; rating_deviation: number; elo_rating: number; last_decay_at: Date | null };
 
 async function loadDecayedRatings(
@@ -52,9 +51,9 @@ async function applyRatingCalculations(
   winnerTeam: 1 | 2,
   matchId: string,
   matchCreatedAt: Date,
+  groupId: string,
   decayed: Map<string, { r: number; RD: number }>,
   eloById: Map<string, number>,
-  writeRatings: (id: string, data: RatingData) => Promise<unknown>,
 ): Promise<void> {
   const allIds = [...team1UserIds, ...team2UserIds];
   const resolvedTeam1Ids = team1UserIds.filter((id) => decayed.has(id));
@@ -82,11 +81,14 @@ async function applyRatingCalculations(
       const newElo = Math.round(updateElo(elo, isTeam1 ? eloAvg2 : eloAvg1, S) * 100) / 100;
       const eloChange = Math.round((newElo - elo) * 100) / 100;
       return Promise.all([
-        writeRatings(id, {
-          rating: Math.round(updated.r * 100) / 100,
-          rating_deviation: Math.round(updated.RD * 100) / 100,
-          elo_rating: newElo,
-          last_decay_at: matchCreatedAt,
+        tx.group_memberships.update({
+          where: { group_id_user_id: { group_id: groupId, user_id: id } },
+          data: {
+            rating: Math.round(updated.r * 100) / 100,
+            rating_deviation: Math.round(updated.RD * 100) / 100,
+            elo_rating: newElo,
+            last_decay_at: matchCreatedAt,
+          },
         }),
         tx.match_participants.update({
           where: { match_id_user_id: { match_id: matchId, user_id: id } },
@@ -118,10 +120,6 @@ async function applyGroupRatings(
   );
   await applyRatingCalculations(
     tx, team1UserIds, team2UserIds, winnerTeam, matchId, matchCreatedAt,
-    decayed, eloById,
-    (id, data) => tx.group_memberships.update({
-      where: { group_id_user_id: { group_id: groupId, user_id: id } },
-      data,
-    }),
+    groupId, decayed, eloById,
   );
 }

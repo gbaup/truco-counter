@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { withAdminAuth } from "@/lib/withAuth";
 import { USERNAME_RE, NAME_RE } from "@/lib/validators";
-import { INITIAL_USER_PASSWORD } from "@/lib/constants";
+import { createUserAsAdmin } from "@/lib/createUser";
 
 export const GET = withAdminAuth(async () => {
   const users = await prisma.users.findMany({
@@ -42,18 +41,7 @@ export const POST = withAdminAuth(async (request) => {
     return NextResponse.json({ field: "username", error: "taken" }, { status: 409 });
   }
 
-  const passwordHash = await bcrypt.hash(INITIAL_USER_PASSWORD, 10);
-
-  await prisma.users.create({
-    data: {
-      name: firstName,
-      last_name: lastName,
-      username,
-      password: passwordHash,
-      role: "user",
-      password_changed: false,
-    },
-  });
+  await createUserAsAdmin({ firstName, lastName, username });
 
   return NextResponse.json({ ok: true }, { status: 201 });
 });

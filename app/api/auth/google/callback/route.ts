@@ -3,31 +3,7 @@ import { signToken, getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { exchangeCode, fetchGoogleUser } from "@/lib/googleOAuth";
-import { randomBytes } from "crypto";
-import { USERNAME_RE } from "@/lib/validators";
-
-async function generateUsername(emailPrefix: string): Promise<string | null> {
-  const base = emailPrefix
-    .toLowerCase()
-    .replace(/[^a-z0-9_]/g, "")
-    .slice(0, 17);
-
-  // Try the clean prefix first (no suffix)
-  if (USERNAME_RE.test(base)) {
-    const existing = await prisma.users.findUnique({ where: { username: base } });
-    if (!existing) return base;
-  }
-
-  // Fall back to suffix on collision
-  for (let i = 0; i < 3; i++) {
-    const suffix = Math.floor(Math.random() * 900 + 100).toString();
-    const candidate = `${base.slice(0, 17)}${suffix}`;
-    if (!USERNAME_RE.test(candidate)) continue;
-    const existing = await prisma.users.findUnique({ where: { username: candidate } });
-    if (!existing) return candidate;
-  }
-  return null;
-}
+import { generateUsernameFromEmail, createUserFromGoogle } from "@/lib/createUser";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -113,7 +89,7 @@ export async function GET(request: Request) {
       }
 
       const emailPrefix = googleUser.email.split("@")[0];
-      const username = await generateUsername(emailPrefix);
+      const username = await generateUsernameFromEmail(emailPrefix);
 
       if (!username) {
         return redirect("/register?error=username_collision");
@@ -122,19 +98,12 @@ export async function GET(request: Request) {
       const name = (googleUser.given_name ?? emailPrefix).trim().toLowerCase();
       const lastName = (googleUser.family_name ?? "").trim().toLowerCase();
 
-      // Derive a random 16-byte password placeholder — user never needs to know it
-      const passwordPlaceholder = randomBytes(16).toString("hex");
-
-      const newUser = await prisma.users.create({
-        data: {
-          name,
-          last_name: lastName,
-          username,
-          email: googleUser.email.toLowerCase(),
-          password: passwordPlaceholder,
-          password_changed: true,
-          google_id: googleUser.id,
-        },
+      const newUser = await createUserFromGoogle({
+        name,
+        lastName,
+        username,
+        email: googleUser.email.toLowerCase(),
+        googleId: googleUser.id,
       });
 
       const token = await signToken({ userId: newUser.id, username: newUser.username, role: newUser.role });
