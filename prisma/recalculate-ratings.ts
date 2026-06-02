@@ -60,7 +60,7 @@ async function main() {
     );
 
     const matches = await prisma.matches.findMany({
-      where: { status: "finished", winner_team: { not: null }, group_id: group.id },
+      where: { status: "finished", group_id: group.id },
       include: {
         match_participants: { select: { user_id: true, team: true } },
       },
