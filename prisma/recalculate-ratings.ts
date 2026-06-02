@@ -123,8 +123,8 @@ async function main() {
       }
     }
 
-    await Promise.all(
-      [...state.entries()].map(([userId, s]) =>
+    await prisma.$transaction([
+      ...[...state.entries()].map(([userId, s]) =>
         prisma.group_memberships.update({
           where: { group_id_user_id: { group_id: group.id, user_id: userId } },
           data: {
@@ -135,16 +135,13 @@ async function main() {
           },
         }),
       ),
-    );
-
-    await Promise.all(
-      ratingChanges.map(({ matchId, userId, change, eloChange }) =>
+      ...ratingChanges.map(({ matchId, userId, change, eloChange }) =>
         prisma.match_participants.update({
           where: { match_id_user_id: { match_id: matchId, user_id: userId } },
           data: { rating_change: change, elo_rating_change: eloChange },
         }),
       ),
-    );
+    ]);
 
     totalParticipantUpdates += ratingChanges.length;
     console.log(`  Done. Updated ${userIds.length} memberships, ${ratingChanges.length} participant deltas.`);

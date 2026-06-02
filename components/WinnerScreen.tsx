@@ -102,8 +102,6 @@ function SuitConfetti({ color }: { color: string }) {
   );
 }
 
-
-
 export default function WinnerScreen({
   winner, scoreUs, scoreThem, max, winners, confetti = true, onRematch, onExit,
 }: WinnerScreenProps) {

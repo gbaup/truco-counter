@@ -9,7 +9,7 @@ const PUBLIC_ROUTES = ["/login", "/register", "/join"];
 
 export const useMyGroups = () => {
   const pathname = usePathname();
-  const isPublicRoute = PUBLIC_ROUTES.some((p) => pathname?.startsWith(p));
+  const isPublicRoute = PUBLIC_ROUTES.some((p) => pathname === p || pathname?.startsWith(p + "/"));
 
   return useQuery({
     queryKey: queryKeys.myGroups,
