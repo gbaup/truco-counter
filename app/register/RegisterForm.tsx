@@ -67,7 +67,7 @@ export default function RegisterForm() {
     // Auth cookie is now set — invalidate cached queries so the home page
     // fetches fresh data with the new session instead of using stale nulls.
     await queryClient.invalidateQueries({ queryKey: queryKeys.currentUser });
-    await queryClient.invalidateQueries({ queryKey: ["groups", "me"] });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.myGroups });
 
     if (inviteToken) {
       const joinResult = await joinGroup(inviteToken);

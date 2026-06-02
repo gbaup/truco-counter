@@ -14,13 +14,13 @@ export function resolveWinner(
   if (matchState.score1 >= matchState.maxPoints) {
     return {
       team: "us",
-      usernames: matchState.team1.map((u) => u.username ?? u.name),
+      usernames: matchState.team1.map((u) => u.username ?? u.name ?? ""),
     };
   }
   if (matchState.score2 >= matchState.maxPoints) {
     return {
       team: "them",
-      usernames: matchState.team2.map((u) => u.username ?? u.name),
+      usernames: matchState.team2.map((u) => u.username ?? u.name ?? ""),
     };
   }
   return null;

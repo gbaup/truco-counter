@@ -1,5 +1,6 @@
 export const queryKeys = {
   currentUser: ["currentUser"] as const,
+  myGroups: ["groups", "me"] as const,
   users: Object.assign(
     (groupId?: string) =>
       groupId ? (["users", groupId] as const) : (["users"] as const),

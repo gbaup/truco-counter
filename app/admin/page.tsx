@@ -51,11 +51,7 @@ export default function AdminPage() {
     if (meLoading || groupsLoading) return;
     if (!me) { router.replace("/login"); return; }
     if (!isGroupAdmin) { router.replace("/"); return; }
-    if (activeGroupId && !adminedGroups.some((g) => g.id === activeGroupId)) {
-      router.replace("/");
-      return;
-    }
-  }, [me, meLoading, groupsLoading, isGroupAdmin, activeGroupId, adminedGroups, router]);
+  }, [me, meLoading, groupsLoading, isGroupAdmin, router]);
 
   if (meLoading || groupsLoading) return <LoadingScreen />;
 
@@ -134,7 +130,7 @@ export default function AdminPage() {
         currentNickname={editingUser?.username ?? ""}
         overline={t("nickname.overline.admin", { name: editingUser?.username ?? "" })}
         headline={t("nickname.headline.admin")}
-        onSave={(draft) => updateOther.mutateAsync({ userId: editingUser!.id, username: draft })}
+        onSave={(draft) => { const u = editingUser; if (!u) return Promise.resolve(); return updateOther.mutateAsync({ userId: u.id, username: draft }); }}
         onClose={() => setEditingUser(null)}
         onSaved={() => setEditingUser(null)}
       />

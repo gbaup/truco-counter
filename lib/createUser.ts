@@ -15,9 +15,9 @@ export async function generateUsernameFromEmail(emailPrefix: string): Promise<st
     if (!existing) return base;
   }
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 5; i++) {
     const suffix = Math.floor(Math.random() * 900 + 100).toString();
-    const candidate = `${base.slice(0, 17)}${suffix}`;
+    const candidate = `${base}${suffix}`;
     if (!USERNAME_RE.test(candidate)) continue;
     const existing = await prisma.users.findUnique({ where: { username: candidate } });
     if (!existing) return candidate;

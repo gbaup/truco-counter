@@ -120,7 +120,7 @@ export default function GroupAdminSection({ adminedGroups, selectedGroupId }: Pr
         open={editing}
         currentName={groupName}
         onClose={() => setEditing(false)}
-        onSave={(name) => updateName.mutateAsync({ groupId: selectedGroupId!, name })}
+        onSave={(name) => { if (!selectedGroupId) return Promise.resolve(); return updateName.mutateAsync({ groupId: selectedGroupId, name }); }}
         onSaved={() => setEditing(false)}
       />
     </div>

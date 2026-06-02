@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { applyDecay, missedMatchesWhere } from "@/lib/glicko";
+import { applyDecay } from "@/lib/glicko";
 import { withAdminAuth } from "@/lib/withAuth";
 
 export const POST = withAdminAuth(async () => {
@@ -18,17 +18,21 @@ export const POST = withAdminAuth(async () => {
 
             if (!latestGroupMatch?.created_at) continue;
 
-            const memberships = await prisma.group_memberships.findMany({
-                where: { group_id: group.id },
-                select: { user_id: true, rating_deviation: true, last_decay_at: true },
-            });
+            const [memberships, groupMatchDates] = await Promise.all([
+                prisma.group_memberships.findMany({
+                    where: { group_id: group.id },
+                    select: { user_id: true, rating_deviation: true, last_decay_at: true },
+                }),
+                prisma.matches.findMany({
+                    where: { status: "finished", group_id: group.id, created_at: { not: null, lte: latestGroupMatch.created_at } },
+                    select: { created_at: true },
+                }),
+            ]);
 
             await Promise.all(
                 memberships.map(async (m) => {
                     if (m.last_decay_at === null) return;
-                    const missedMatches = await prisma.matches.count({
-                        where: missedMatchesWhere(m.last_decay_at, undefined, group.id),
-                    });
+                    const missedMatches = groupMatchDates.filter((match) => match.created_at! > m.last_decay_at!).length;
                     if (missedMatches === 0) return;
                     const newRD = Math.round(applyDecay(m.rating_deviation, missedMatches) * 100) / 100;
                     await prisma.group_memberships.update({
