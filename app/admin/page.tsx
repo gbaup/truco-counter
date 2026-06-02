@@ -30,7 +30,7 @@ export default function AdminPage() {
 
   const { data: me, isPending: meLoading } = useCurrentUser();
   const { data: groups = [], isPending: groupsLoading } = useMyGroups();
-  const { activeGroupId, setActiveGroup } = useActiveGroup();
+  const { activeGroupId } = useActiveGroup();
 
   const adminedGroups = groups.filter((g) => g.admin_id === me?.userId);
   const isGroupAdmin = adminedGroups.length > 0;
@@ -48,16 +48,14 @@ export default function AdminPage() {
   const updateOther = useUpdateUserUsername();
 
   useEffect(() => {
-    if (selectedGroupId && selectedGroupId !== activeGroupId) {
-      setActiveGroup(selectedGroupId);
-    }
-  }, [selectedGroupId, activeGroupId, setActiveGroup]);
-
-  useEffect(() => {
     if (meLoading || groupsLoading) return;
     if (!me) { router.replace("/login"); return; }
     if (!isGroupAdmin) { router.replace("/"); return; }
-  }, [me, meLoading, groupsLoading, isGroupAdmin, router]);
+    if (activeGroupId && !adminedGroups.some((g) => g.id === activeGroupId)) {
+      router.replace("/");
+      return;
+    }
+  }, [me, meLoading, groupsLoading, isGroupAdmin, activeGroupId, adminedGroups, router]);
 
   if (meLoading || groupsLoading) return <LoadingScreen />;
 

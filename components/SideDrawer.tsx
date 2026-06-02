@@ -228,8 +228,8 @@ export default function SideDrawer({
           })}
         </nav>
 
-        {/* Admin section */}
-        {(role === UserRole.admin || isGroupAdmin) && (
+        {/* Admin section. Note: only group admins can see this. Global admins section to be implemented. */}
+        {isGroupAdmin && (
           <div className="mt-4">
             <p
               className="text-caption-italic text-text-mute mb-1.5"

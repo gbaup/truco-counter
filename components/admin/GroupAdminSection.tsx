@@ -43,8 +43,6 @@ export default function GroupAdminSection({ adminedGroups, selectedGroupId }: Pr
     revoke(data.tokenId);
   }
 
-  console.log({ adminedGroups })
-
   return (
     <div className="px-5 pt-5 pb-4 border-b border-border">
       <div className="rounded-2xl bg-surface border border-border p-3.5 shadow-card">
