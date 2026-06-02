@@ -13,13 +13,15 @@ export default function LivePage() {
   const { data: liveData, isLoading } = useLiveMatch();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const isScorer = !!me && !!liveData?.live && liveData.live.scorer === me.username;
+
   useEffect(() => {
-    if (!isLoading && !liveData?.live) {
+    if (!isLoading && (!liveData?.live || isScorer)) {
       router.replace("/");
     }
-  }, [liveData?.live, isLoading, router]);
+  }, [liveData?.live, isLoading, isScorer, router]);
 
-  if (!me || isLoading || !liveData?.live) return null;
+  if (!me || isLoading || !liveData?.live || isScorer) return null;
 
   const live = liveData.live;
 
