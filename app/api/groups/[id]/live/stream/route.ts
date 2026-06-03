@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { withGroupMemberFeatureAuth } from "@/lib/withAuth";
 import { Session } from "@/types/auth";
 import { formatLivePayload } from "@/lib/domain/match";
-import { getLog } from "@/lib/liveLog";
+import { getLog } from "@/lib/liveStore";
 
 async function getMatchPayload(groupId: string) {
   const match = await prisma.matches.findFirst({

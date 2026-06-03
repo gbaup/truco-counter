@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withGroupMemberFeatureAuth } from "@/lib/withAuth";
-import { appendHand, clearLog } from "@/lib/liveLog";
+import { appendHand, clearLog } from "@/lib/liveStore";
 import { Session } from "@/types/auth";
 import { Hand } from "@/types/match";
 

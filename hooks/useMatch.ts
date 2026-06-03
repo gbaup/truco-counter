@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { PublicUser } from "@/types/database";
 import { MatchState } from "@/types/game";
-import { createMatch, updateMatch, saveMatch, postLiveHand, clearLiveLog } from "@/services/matchService";
+import { createMatch, updateMatch, saveMatch } from "@/services/matchService";
 import { determineWinner } from "@/lib/domain/match-display";
 import {
     loadMatch,
@@ -10,6 +10,7 @@ import {
 } from "@/lib/persistence/matchStorage";
 import { useActiveGroup } from "./useActiveGroup";
 import { usePointLog } from "./usePointLog";
+import { useLiveSync } from "./useLiveSync";
 
 function useScoreSync(matchState: MatchState, isFreePlay: boolean) {
     const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -49,18 +50,8 @@ export function useMatch() {
 
     useScoreSync(matchState, isFreePlay);
 
-    // Keep a stable ref so the onHandCommit closure always reads current state.
-    const livePostRef = useRef({ matchId: matchState.matchId, groupId: matchState.groupId, isFreePlay });
-    useEffect(() => {
-        livePostRef.current = { matchId: matchState.matchId, groupId: matchState.groupId, isFreePlay };
-    });
-
-    const pointLog = usePointLog(matchState.matchId, (hand) => {
-        const { matchId, groupId, isFreePlay: fp } = livePostRef.current;
-        if (!fp && matchId && groupId) {
-            postLiveHand(groupId, matchId, hand).catch(() => {});
-        }
-    });
+    const { onHandCommit, clearOnFinish } = useLiveSync(matchState.matchId, matchState.groupId, isFreePlay);
+    const pointLog = usePointLog(matchState.matchId, onHandCommit);
 
     const startMatch = async (team1: PublicUser[], team2: PublicUser[], maxPoints: number) => {
         if (isStarting) return;
@@ -134,10 +125,7 @@ export function useMatch() {
         }
 
         setIsSaving(false);
-        const { matchId, groupId, isFreePlay: fp } = livePostRef.current;
-        if (!fp && matchId && groupId) {
-            clearLiveLog(groupId, matchId).catch(() => {});
-        }
+        clearOnFinish();
         setMatchState({
             view: "setup",
             team1: [], team2: [], maxPoints: 30, score1: 0, score2: 0,

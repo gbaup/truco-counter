@@ -121,6 +121,7 @@ export default function Home() {
 
   const live = features.liveMatch ? (liveData?.live ?? null) : null;
   const liveDot = live !== null;
+  const isWatchingOthersMatch = !!live && live.scorer !== me?.username;
 
   const counterBlurred = !!winner || matchLogOpen || isTransitioning;
 
@@ -133,7 +134,7 @@ export default function Home() {
       />
 
       {matchState.view === "setup" ? (
-        live && live.scorer !== me?.username ? (
+        isWatchingOthersMatch ? (
           <LiveGate
             live={live}
             onWatch={() => router.push("/live")}
