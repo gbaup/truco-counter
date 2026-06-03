@@ -15,6 +15,14 @@ export const POST = withGroupMemberFeatureAuth<{ params: Promise<{ id: string }>
     const { id: groupId } = await params;
     const body = (await request.json()) as Body;
 
+    if (
+      typeof body.matchId !== "string" ||
+      body.matchId.trim() === "" ||
+      (body.action !== "append" && body.action !== "clear")
+    ) {
+      return NextResponse.json({ success: false, error: "Invalid request body" }, { status: 400 });
+    }
+
     const match = await prisma.matches.findFirst({
       where: { id: body.matchId, group_id: groupId, status: "ongoing" },
       select: { created_by: true },
@@ -31,7 +39,17 @@ export const POST = withGroupMemberFeatureAuth<{ params: Promise<{ id: string }>
     if (body.action === "clear") {
       clearLog(body.matchId);
     } else {
-      appendHand(body.matchId, body.hand);
+      const h = body.hand;
+      if (
+        !h ||
+        typeof h.id !== "string" ||
+        typeof h.us !== "number" || !Number.isFinite(h.us) ||
+        typeof h.them !== "number" || !Number.isFinite(h.them) ||
+        typeof h.ts !== "number" || !Number.isFinite(h.ts)
+      ) {
+        return NextResponse.json({ success: false, error: "Invalid hand" }, { status: 400 });
+      }
+      appendHand(body.matchId, h);
     }
 
     return NextResponse.json({ success: true });

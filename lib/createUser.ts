@@ -52,7 +52,7 @@ export async function createUserFromGoogle(params: {
   email: string;
   googleId: string;
 }) {
-  const passwordPlaceholder = randomBytes(16).toString("hex");
+  const passwordPlaceholder = await bcrypt.hash(randomBytes(16).toString("hex"), 10);
   return prisma.users.create({
     data: {
       name: params.name,

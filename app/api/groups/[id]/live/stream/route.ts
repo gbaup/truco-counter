@@ -37,14 +37,26 @@ export const GET = withGroupMemberFeatureAuth<{ params: Promise<{ id: string }> 
           }
         };
 
-        await send();
+        if (request.signal.aborted) {
+          controller.close();
+          return;
+        }
 
-        const interval = setInterval(send, 3000);
+        // eslint-disable-next-line prefer-const
+        let interval: ReturnType<typeof setInterval> | undefined;
 
         request.signal.addEventListener("abort", () => {
-          clearInterval(interval);
+          if (interval !== undefined) clearInterval(interval);
           controller.close();
         });
+
+        await send();
+
+        interval = setInterval(send, 3000);
+        if (request.signal.aborted) {
+          clearInterval(interval);
+          return;
+        }
       },
     });
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { PublicUser } from "@/types/database";
 import { MatchState } from "@/types/game";
 import { createMatch, updateMatch, saveMatch } from "@/services/matchService";
@@ -76,6 +76,34 @@ export function useMatch() {
         }
     };
 
+    const isLoadedRef = useRef(false);
+
+    useEffect(() => {
+        isLoadedRef.current = isLoaded;
+    }, [isLoaded]);
+
+    const prevScoreRef = useRef<{ score1: number; score2: number } | null>(null);
+
+    useLayoutEffect(() => {
+        const curr = { score1: matchState.score1, score2: matchState.score2 };
+        if (!isLoadedRef.current) {
+            prevScoreRef.current = curr;
+            return;
+        }
+        const prev = prevScoreRef.current;
+        if (prev) {
+            if (curr.score1 !== prev.score1) {
+                const dir = curr.score1 > prev.score1 ? 1 : -1;
+                pointLog.register("us", dir);
+            }
+            if (curr.score2 !== prev.score2) {
+                const dir = curr.score2 > prev.score2 ? 1 : -1;
+                pointLog.register("them", dir);
+            }
+        }
+        prevScoreRef.current = curr;
+    }, [matchState.score1, matchState.score2]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const incrementScore = (team: 1 | 2) => {
         const currentScore = team === 1 ? matchState.score1 : matchState.score2;
         if (currentScore >= matchState.maxPoints) return;
@@ -84,7 +112,6 @@ export function useMatch() {
             if (s >= prev.maxPoints) return prev;
             return { ...prev, [team === 1 ? "score1" : "score2"]: s + 1 };
         });
-        pointLog.register(team === 1 ? "us" : "them", +1);
     };
 
     const decrementScore = (team: 1 | 2) => {
@@ -95,7 +122,6 @@ export function useMatch() {
             if (s <= 0) return prev;
             return { ...prev, [team === 1 ? "score1" : "score2"]: s - 1 };
         });
-        pointLog.register(team === 1 ? "us" : "them", -1);
     };
 
     const finishMatch = async (result: { score1: number; score2: number; status?: "finished" | "cancelled" }) => {
