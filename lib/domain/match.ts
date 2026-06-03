@@ -1,4 +1,4 @@
-import { LiveMatchData } from "@/types/match";
+import { LiveMatchData, Hand } from "@/types/match";
 
 type OngoingMatchRow = {
   id: string;
@@ -13,7 +13,8 @@ type OngoingMatchRow = {
 };
 
 export function formatLivePayload(
-  match: OngoingMatchRow | null
+  match: OngoingMatchRow | null,
+  hands: Hand[] = []
 ): { live: LiveMatchData | null } {
   if (!match) return { live: null };
 
@@ -34,6 +35,7 @@ export function formatLivePayload(
       teamUs,
       teamThem,
       scorer: match.users?.name ?? match.users?.username ?? "?",
+      hands,
     },
   };
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -51,10 +51,31 @@ export default function Home() {
   const [showExitModal, setShowExitModal] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [matchLogOpen, setMatchLogOpen] = useState(false);
+  const [transitionAction, setTransitionAction] = useState<"rematch" | "finish" | null>(null);
+  const isTransitioning = transitionAction !== null;
 
   const resolved = resolveWinner(matchState);
   const winner = resolved?.team ?? null;
   const winnerNames = resolved?.usernames ?? [];
+
+  const winnerDataRef = useRef<{
+    winner: "us" | "them";
+    scoreUs: number;
+    scoreThem: number;
+    max: number;
+    winnerNames: string[];
+  } | null>(null);
+  if (winner) {
+    winnerDataRef.current = {
+      winner,
+      scoreUs: matchState.score1,
+      scoreThem: matchState.score2,
+      max: matchState.maxPoints,
+      winnerNames,
+    };
+  }
+
+  const showWinnerScreen = !!winner || isTransitioning;
 
   if (!isLoaded || isGroupsPending) return null;
 
@@ -75,17 +96,34 @@ export default function Home() {
   };
 
   const handleRematch = async () => {
+    if (isTransitioning) return;
     const t1 = matchState.team1;
     const t2 = matchState.team2;
     const max = matchState.maxPoints;
-    await finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" });
-    await handleStartMatch(t1, t2, max);
+    setTransitionAction("rematch");
+    try {
+      await finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" });
+      await handleStartMatch(t1, t2, max);
+    } finally {
+      setTransitionAction(null);
+    }
+  };
+
+  const handleFinish = async () => {
+    if (isTransitioning) return;
+    setTransitionAction("finish");
+    try {
+      await finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" });
+    } finally {
+      setTransitionAction(null);
+    }
   };
 
   const live = features.liveMatch ? (liveData?.live ?? null) : null;
   const liveDot = live !== null;
+  const isWatchingOthersMatch = !!live && live.scorer !== me?.username;
 
-  const counterBlurred = !!winner || matchLogOpen;
+  const counterBlurred = !!winner || matchLogOpen || isTransitioning;
 
   return (
     <div className="min-h-screen bg-background">
@@ -96,7 +134,7 @@ export default function Home() {
       />
 
       {matchState.view === "setup" ? (
-        live ? (
+        isWatchingOthersMatch ? (
           <LiveGate
             live={live}
             onWatch={() => router.push("/live")}
@@ -132,17 +170,6 @@ export default function Home() {
               showMatchLog={features.pointsLogs}
             />
           </div>
-          {winner && (
-            <WinnerScreen
-              winner={winner}
-              scoreUs={matchState.score1}
-              scoreThem={matchState.score2}
-              max={matchState.maxPoints}
-              winners={winnerNames}
-              onRematch={handleRematch}
-              onExit={() => finishMatch({ score1: matchState.score1, score2: matchState.score2, status: "finished" })}
-            />
-          )}
           {features.pointsLogs && (
             <MatchLogSheet
               open={matchLogOpen}
@@ -165,6 +192,21 @@ export default function Home() {
             onCancel={() => setShowExitModal(false)}
           />
         </main>
+      )}
+
+      {showWinnerScreen && winnerDataRef.current && (
+        <div className="fixed inset-0 z-50">
+          <WinnerScreen
+            winner={winnerDataRef.current.winner}
+            scoreUs={winnerDataRef.current.scoreUs}
+            scoreThem={winnerDataRef.current.scoreThem}
+            max={winnerDataRef.current.max}
+            winners={winnerDataRef.current.winnerNames}
+            loadingButton={transitionAction === "rematch" ? "rematch" : transitionAction === "finish" ? "exit" : undefined}
+            onRematch={handleRematch}
+            onExit={handleFinish}
+          />
+        </div>
       )}
     </div>
   );

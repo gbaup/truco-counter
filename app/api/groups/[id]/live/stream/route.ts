@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { withGroupMemberFeatureAuth } from "@/lib/withAuth";
 import { Session } from "@/types/auth";
 import { formatLivePayload } from "@/lib/domain/match";
+import { getLog } from "@/lib/liveStore";
 
 async function getMatchPayload(groupId: string) {
   const match = await prisma.matches.findFirst({
@@ -15,7 +16,8 @@ async function getMatchPayload(groupId: string) {
     orderBy: { created_at: "desc" },
   });
 
-  return formatLivePayload(match);
+  const hands = match ? getLog(match.id) : [];
+  return formatLivePayload(match, hands);
 }
 
 export const GET = withGroupMemberFeatureAuth<{ params: Promise<{ id: string }> }>(
@@ -35,14 +37,26 @@ export const GET = withGroupMemberFeatureAuth<{ params: Promise<{ id: string }> 
           }
         };
 
-        await send();
+        if (request.signal.aborted) {
+          controller.close();
+          return;
+        }
 
-        const interval = setInterval(send, 3000);
+        // eslint-disable-next-line prefer-const
+        let interval: ReturnType<typeof setInterval> | undefined;
 
         request.signal.addEventListener("abort", () => {
-          clearInterval(interval);
+          if (interval !== undefined) clearInterval(interval);
           controller.close();
         });
+
+        await send();
+
+        interval = setInterval(send, 3000);
+        if (request.signal.aborted) {
+          clearInterval(interval);
+          return;
+        }
       },
     });
 

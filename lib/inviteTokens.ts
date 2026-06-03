@@ -22,11 +22,23 @@ export async function findOrCreateShareToken(
   groupId: string,
   userId: string,
 ): Promise<{ id: string; token: string }> {
-  const existing = await prisma.invite_tokens.findFirst({
-    where: { group_id: groupId, revoked_at: null },
-    orderBy: { created_at: "asc" },
-  });
-  return existing ?? createToken(groupId, userId);
+  return prisma.$transaction(
+    async (tx) => {
+      const existing = await tx.invite_tokens.findFirst({
+        where: { group_id: groupId, revoked_at: null },
+        orderBy: { created_at: "asc" },
+      });
+      if (existing) return existing;
+      return tx.invite_tokens.create({
+        data: {
+          group_id: groupId,
+          created_by_user_id: userId,
+          token: generateToken(),
+        },
+      });
+    },
+    { isolationLevel: "Serializable" },
+  );
 }
 
 export async function validateToken(token: string) {
