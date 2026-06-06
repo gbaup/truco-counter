@@ -3,6 +3,8 @@ import { getSession } from "@/lib/auth";
 import { Session } from "@/types/auth";
 import { serverT } from "@/lib/serverT";
 import Link from "next/link";
+import Suit from "@/components/ui/Suit";
+import InviteHero from "@/components/InviteHero";
 import JoinButton from "./JoinButton";
 
 export default async function JoinPage({ params }: { params: Promise<{ token: string }> }) {
@@ -25,13 +27,36 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
     },
   });
 
+  // ── Estado 4 · token inválido / revocado / inexistente — dorso de carta.
   if (!inviteToken || inviteToken.revoked_at) {
     return (
-      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-6">
-        <div className="text-center flex flex-col gap-4">
-          <p className="text-text text-lg font-semibold">{serverT("join.invalidTitle")}</p>
-          <p className="text-text-dim text-sm">{serverT("join.invalidDescription")}</p>
-          <Link href="/login" className="text-us font-semibold text-sm">
+      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-6 text-text">
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 40% at 18% -5%, color-mix(in srgb, var(--color-them) 12%, transparent) 0%, transparent 60%), radial-gradient(ellipse 80% 45% at 85% 4%, color-mix(in srgb, var(--color-us) 13%, transparent) 0%, transparent 60%)",
+          }}
+        />
+        <div className="relative flex flex-col items-center gap-6 text-center">
+          <div
+            className="flex h-[168px] w-[120px] -rotate-[4deg] items-center justify-center rounded-[16px] border border-border"
+            style={{
+              background: "linear-gradient(150deg, var(--color-surface-elevated), var(--color-surface))",
+              boxShadow: "0 24px 48px -20px rgba(0,0,0,0.6)",
+            }}
+          >
+            <span className="opacity-35">
+              <Suit kind="espada" size={40} color="var(--color-text-mute)" />
+            </span>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <p className="text-[22px] font-bold text-text" style={{ fontFamily: "var(--font-crimson-pro), serif" }}>
+              {serverT("join.invalidTitle")}
+            </p>
+            <p className="max-w-[260px] text-sm text-text-dim">{serverT("join.invalidDescription")}</p>
+          </div>
+          <Link href="/login" className="text-sm font-semibold text-us">
             {serverT("join.goToLogin")}
           </Link>
         </div>
@@ -40,68 +65,92 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
   }
 
   const group = inviteToken.groups;
-  const session = (await getSession()) as Session | null;
-
-  if (!session?.userId) {
-    const memberCount = group._count.memberships;
-    const memberLabel = serverT(
-      memberCount === 1 ? "join.memberCount_one" : "join.memberCount_other",
-      { count: String(memberCount) }
-    );
-
-    return (
-      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-6">
-        <div className="w-full max-w-sm flex flex-col items-center gap-6">
-          <div className="text-center">
-            <p className="text-text-dim text-sm uppercase tracking-widest mb-1">{serverT("join.overline")}</p>
-            <h1 className="text-text text-2xl font-bold">{group.name}</h1>
-            <p className="text-text-dim mt-2 text-sm">{memberLabel}</p>
-          </div>
-
-          <div className="w-full flex flex-col gap-2.5">
-            <Link
-              href={`/register?token=${token}`}
-              className="w-full bg-us text-white rounded-lg py-4 text-base font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-            >
-              {serverT("join.createAccount")}
-            </Link>
-            <Link
-              href={`/login?token=${token}`}
-              className="w-full bg-surface border border-border text-text rounded-lg py-4 text-base font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-            >
-              {serverT("join.alreadyHaveAccount")}
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const isAlreadyMember = group.memberships.some((m) => m.user_id === session.userId);
-
-  if (isAlreadyMember) {
-    return (
-      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-6">
-        <div className="text-center flex flex-col gap-4">
-          <p className="text-text text-lg font-semibold">
-            {serverT("join.alreadyMember", { groupName: group.name })}
-          </p>
-          <Link href="/" className="text-us font-semibold text-sm">
-            {serverT("join.goHome")}
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
+  const memberCount = group._count.memberships;
   const roster = group.memberships
     .map((m) => m.users?.name ?? m.users?.username ?? null)
     .filter((n): n is string => n !== null);
+  const groupPreview = { name: group.name, memberCount, roster };
 
+  const inMesaLabel = serverT("invite.inMesa", { count: String(memberCount) });
+  const joiningToLabel = serverT("invite.joiningTo");
+  const session = (await getSession()) as Session | null;
+
+  // ── Estado 1 · SIN sesión — carta + dos CTAs (crear cuenta / ya tengo cuenta).
+  if (!session?.userId) {
+    return (
+      <InviteHero
+        group={groupPreview}
+        joiningToLabel={joiningToLabel}
+        inMesaLabel={inMesaLabel}
+        inviterLine={
+          <>
+            <span className="font-bold capitalize text-text">
+              {group.admin?.name ?? group.admin?.username ?? ""}
+            </span>{" "}
+            {serverT("invite.invitedBy")}
+          </>
+        }
+      >
+        <Link
+          href={`/register?token=${token}`}
+          className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-us py-4 text-base font-bold text-white transition-transform active:scale-[0.98]"
+        >
+          {serverT("join.createAccount")}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+            <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+          </svg>
+        </Link>
+        <Link
+          href={`/login?token=${token}`}
+          className="flex w-full items-center justify-center rounded-[14px] border border-border bg-surface py-3.5 text-base font-semibold text-text transition-transform active:scale-[0.98]"
+        >
+          {serverT("join.alreadyHaveAccount")}
+        </Link>
+        <div
+          className="mt-1 text-center text-[12px] italic text-text-mute"
+          style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+        >
+          {serverT("invite.signupHint", { group: group.name })}
+        </div>
+      </InviteHero>
+    );
+  }
+
+  // ── Estado 3 · ya sos miembro — carta + sello ✓ + ir al grupo.
+  const isAlreadyMember = group.memberships.some((m) => m.user_id === session.userId);
+  if (isAlreadyMember) {
+    return (
+      <InviteHero
+        group={groupPreview}
+        joiningToLabel={joiningToLabel}
+        inMesaLabel={inMesaLabel}
+        inviterLine={
+          <span className="flex items-center justify-center gap-2 font-semibold text-them">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="17" height="17">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            {serverT("invite.alreadyMemberSeal")}
+          </span>
+        }
+      >
+        <Link
+          href="/"
+          className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-us py-4 text-base font-bold text-white transition-transform active:scale-[0.98]"
+        >
+          {serverT("invite.goToGroup", { group: group.name })}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+            <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+          </svg>
+        </Link>
+      </InviteHero>
+    );
+  }
+
+  // ── Estado 2 · CON sesión, puede unirse — client (joinGroup) vía JoinButton.
   return (
     <JoinButton
       token={token}
-      group={{ name: group.name, memberCount: group._count.memberships, roster }}
+      group={groupPreview}
       inviter={group.admin?.name ?? group.admin?.username ?? ""}
     />
   );
