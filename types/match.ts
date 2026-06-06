@@ -15,6 +15,7 @@ export interface LiveMatchData {
   teamUs: string[];
   teamThem: string[];
   scorer: string;
+  scorerUsername: string;
   hands: Hand[];
 }
 

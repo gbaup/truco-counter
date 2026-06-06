@@ -105,8 +105,6 @@ export function useMatch() {
     }, [matchState.score1, matchState.score2]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const incrementScore = (team: 1 | 2) => {
-        const currentScore = team === 1 ? matchState.score1 : matchState.score2;
-        if (currentScore >= matchState.maxPoints) return;
         setMatchState((prev) => {
             const s = team === 1 ? prev.score1 : prev.score2;
             if (s >= prev.maxPoints) return prev;

@@ -81,7 +81,6 @@ export async function POST(request: Request) {
       }
     }
 
-    let inviteGroupId: string | null = null;
     if (inviteToken) {
       const tokenRecord = await validateToken(inviteToken);
       if (!tokenRecord) {
@@ -90,7 +89,6 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
-      inviteGroupId = tokenRecord.group_id;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -107,9 +105,14 @@ export async function POST(request: Request) {
         },
       });
 
-      if (inviteGroupId) {
+      if (inviteToken) {
+        const tokenRecord = await tx.invite_tokens.findUnique({
+          where: { token: inviteToken, revoked_at: null },
+          select: { group_id: true },
+        });
+        if (!tokenRecord) throw new Error("TOKEN_REVOKED");
         await tx.group_memberships.create({
-          data: { group_id: inviteGroupId, user_id: newUser.id },
+          data: { group_id: tokenRecord.group_id, user_id: newUser.id },
         });
       }
 
@@ -130,6 +133,9 @@ export async function POST(request: Request) {
 
     return response;
   } catch (err) {
+    if (err instanceof Error && err.message === "TOKEN_REVOKED") {
+      return NextResponse.json({ success: false, error: "Invalid or revoked invite link" }, { status: 400 });
+    }
     console.error("Register API error:", err);
     return NextResponse.json(
       { success: false, error: "Internal server error" },

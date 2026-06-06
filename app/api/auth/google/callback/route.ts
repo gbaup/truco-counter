@@ -112,15 +112,18 @@ export async function GET(request: Request) {
         googleId: googleUser.id,
       });
 
+      let joinedGroup = false;
       if (inviteToken) {
         const joinResult = await joinGroupWithToken(newUser.id, inviteToken);
-        if (joinResult !== "joined") {
+        if (joinResult === "joined") {
+          joinedGroup = true;
+        } else {
           console.warn(`OAuth invite join skipped (${joinResult}) for new user ${newUser.id}`);
         }
       }
 
       const token = await signToken({ userId: newUser.id, username: newUser.username, role: newUser.role });
-      const response = redirect(inviteToken ? "/" : "/groups/new");
+      const response = redirect(joinedGroup ? "/" : "/groups/new");
       response.cookies.set("auth-token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",

@@ -207,7 +207,7 @@ export default function MatchSetup({ onStartMatch, isStarting, onMenuOpen, freeP
                   {t("matchSetup.pool")}
                   {activeTeam && (
                     <span className={activeTeam === 1 ? "text-us" : "text-them"}>
-                      {" · "}sumando a {activeTeam === 1 ? t("matchSetup.team1") : t("matchSetup.team2")}
+                      {" · "}{t("matchSetup.addingTo", { team: activeTeam === 1 ? t("matchSetup.team1") : t("matchSetup.team2") })}
                     </span>
                   )}
                 </p>

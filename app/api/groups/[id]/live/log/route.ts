@@ -42,9 +42,9 @@ export const POST = withGroupMemberFeatureAuth<{ params: Promise<{ id: string }>
       const h = body.hand;
       if (
         !h ||
-        typeof h.id !== "string" ||
-        typeof h.us !== "number" || !Number.isFinite(h.us) ||
-        typeof h.them !== "number" || !Number.isFinite(h.them) ||
+        typeof h.id !== "string" || h.id.trim() === "" || h.id.length > 64 ||
+        typeof h.us !== "number" || !Number.isInteger(h.us) || h.us < 0 ||
+        typeof h.them !== "number" || !Number.isInteger(h.them) || h.them < 0 ||
         typeof h.ts !== "number" || !Number.isFinite(h.ts)
       ) {
         return NextResponse.json({ success: false, error: "Invalid hand" }, { status: 400 });

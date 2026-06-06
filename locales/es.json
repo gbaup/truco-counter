@@ -128,6 +128,7 @@
         "equalPlayers": "Los equipos deben tener la misma cantidad de jugadores",
         "menuAriaLabel": "Menú",
         "addToTeam": "Agregar a {{team}}",
+        "addingTo": "sumando a {{team}}",
         "tapAPlayer": "↓ elegí un jugador",
         "addButton": "+ agregar",
         "button": {

@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { randomBytes } from "crypto";
 
+const ROSTER_PREVIEW_LIMIT = 5;
+
 function generateToken(): string {
   return randomBytes(24).toString("base64url");
 }
@@ -51,7 +53,7 @@ export async function validateToken(token: string) {
           admin: { select: { name: true, username: true } },
           memberships: {
             select: { users: { select: { name: true, username: true } } },
-            take: 5,
+            take: ROSTER_PREVIEW_LIMIT,
             orderBy: { joined_at: "asc" },
           },
         },
@@ -83,18 +85,3 @@ export async function joinGroupWithToken(
   }, { isolationLevel: "Serializable" });
 }
 
-export async function revokeToken(
-  tokenId: string,
-): Promise<{ notFound: boolean; alreadyRevoked: boolean }> {
-  const existing = await prisma.invite_tokens.findUnique({
-    where: { id: tokenId },
-    select: { revoked_at: true },
-  });
-  if (!existing) return { notFound: true, alreadyRevoked: false };
-  if (existing.revoked_at) return { notFound: false, alreadyRevoked: true };
-  await prisma.invite_tokens.update({
-    where: { id: tokenId },
-    data: { revoked_at: new Date() },
-  });
-  return { notFound: false, alreadyRevoked: false };
-}

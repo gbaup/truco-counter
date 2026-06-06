@@ -35,6 +35,7 @@ export function formatLivePayload(
       teamUs,
       teamThem,
       scorer: match.users?.name ?? match.users?.username ?? "?",
+      scorerUsername: match.users?.username ?? "?",
       hands,
     },
   };
