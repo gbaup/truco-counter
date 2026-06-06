@@ -50,18 +50,16 @@ export async function register(data: {
   }
 }
 
-export async function joinGroup(token: string): Promise<{ success: boolean; error?: string }> {
+export async function joinGroup(token: string): Promise<{ success: boolean; error?: string; errorCode?: string }> {
   try {
-    await fetchJSON<{ success: boolean }>(
-      `/api/invite/${token}/join`,
-      { method: "POST" }
-    );
+    const response = await fetch(`/api/invite/${token}/join`, { method: "POST" });
+    const data = await response.json().catch(() => ({})) as { error?: string; errorCode?: string };
+    if (!response.ok) {
+      return { success: false, error: data.error ?? `HTTP ${response.status}`, errorCode: data.errorCode };
+    }
     return { success: true };
   } catch (err) {
-    return {
-      success: false,
-      error: err instanceof Error ? err.message : "Failed to join group",
-    };
+    return { success: false, error: err instanceof Error ? err.message : "Failed to join group" };
   }
 }
 

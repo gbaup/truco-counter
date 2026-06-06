@@ -79,27 +79,43 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
           </>
         }
       >
-        <Link
-          href={`/register?token=${token}`}
-          className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-us py-4 text-base font-bold text-white transition-transform active:scale-[0.98]"
-        >
-          {serverT("join.createAccount")}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
-            <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
-          </svg>
-        </Link>
-        <Link
-          href={`/login?token=${token}`}
-          className="flex w-full items-center justify-center rounded-[14px] border border-border bg-surface py-3.5 text-base font-semibold text-text transition-transform active:scale-[0.98]"
-        >
-          {serverT("join.alreadyHaveAccount")}
-        </Link>
-        <div
-          className="mt-1 text-center text-[12px] italic text-text-mute"
-          style={{ fontFamily: "var(--font-crimson-pro), serif" }}
-        >
-          {serverT("invite.signupHint", { group: group.name })}
-        </div>
+        {inviteToken.isFull ? (
+          <>
+            <div className="flex w-full items-center justify-center rounded-[14px] border border-border bg-surface-elevated py-4 text-base font-bold text-text-mute">
+              {serverT("join.errors.groupFull")}
+            </div>
+            <Link
+              href="/login"
+              className="flex w-full items-center justify-center rounded-[14px] border border-border bg-surface py-3.5 text-base font-semibold text-text transition-transform active:scale-[0.98]"
+            >
+              {serverT("join.alreadyHaveAccount")}
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link
+              href={`/register?token=${token}`}
+              className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-us py-4 text-base font-bold text-white transition-transform active:scale-[0.98]"
+            >
+              {serverT("join.createAccount")}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+                <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+              </svg>
+            </Link>
+            <Link
+              href={`/login?token=${token}`}
+              className="flex w-full items-center justify-center rounded-[14px] border border-border bg-surface py-3.5 text-base font-semibold text-text transition-transform active:scale-[0.98]"
+            >
+              {serverT("join.alreadyHaveAccount")}
+            </Link>
+            <div
+              className="mt-1 text-center text-[12px] italic text-text-mute"
+              style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+            >
+              {serverT("invite.signupHint", { group: group.name })}
+            </div>
+          </>
+        )}
       </InviteHero>
     );
   }
@@ -146,6 +162,7 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
       token={token}
       group={groupPreview}
       inviter={group.admin?.name ?? group.admin?.username ?? ""}
+      isFull={inviteToken.isFull}
     />
   );
 }

@@ -73,7 +73,7 @@ export default function JoinPage() {
     const result = await joinGroup(tk);
     setJoining(false);
     if (!result.success) {
-      toast.error(t("register.errors.joinFailed"));
+      toast.error(result.errorCode === "group_full" ? t("join.errors.groupFull") : t("register.errors.joinFailed"));
       return;
     }
     router.push("/");
@@ -180,15 +180,17 @@ export default function JoinPage() {
           {joining ? "…" : resolved && group ? t("join.submitTo", { group: group.name }) : t("join.submit")}
         </button>
 
-        <p
-          className="mt-auto pt-6 text-center text-text-mute text-[13px] italic"
-          style={{ fontFamily: "var(--font-crimson-pro), serif" }}
-        >
-          {t("join.noInvite")}{" "}
-          <Link href="/groups/new" className="text-us not-italic font-semibold">
-            {t("join.noInviteCreate")}
-          </Link>
-        </p>
+        {process.env.NEXT_PUBLIC_ENABLE_GROUP_CREATION !== "false" && (
+          <p
+            className="mt-auto pt-6 text-center text-text-mute text-[13px] italic"
+            style={{ fontFamily: "var(--font-crimson-pro), serif" }}
+          >
+            {t("join.noInvite")}{" "}
+            <Link href="/groups/new" className="text-us not-italic font-semibold">
+              {t("join.noInviteCreate")}
+            </Link>
+          </p>
+        )}
       </form>
     </div>
   );

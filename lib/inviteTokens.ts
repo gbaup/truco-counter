@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { randomBytes } from "crypto";
+import { parseGroupFeatures, DEFAULT_MEMBER_LIMIT } from "@/lib/domain/groupFeatures";
 
 const ROSTER_PREVIEW_LIMIT = 5;
 
@@ -61,15 +62,21 @@ export async function validateToken(token: string) {
     },
   });
   if (!record || record.revoked_at) return null;
-  return record;
+  const features = parseGroupFeatures(record.groups.features);
+  const limit = features.memberLimit ?? DEFAULT_MEMBER_LIMIT;
+  const isFull = record.groups._count.memberships >= limit;
+  return { ...record, isFull };
 }
 
 export async function joinGroupWithToken(
   userId: string,
   token: string,
-): Promise<"joined" | "already_member" | "invalid_token"> {
+): Promise<"joined" | "already_member" | "invalid_token" | "group_full"> {
   const record = await validateToken(token);
   if (!record) return "invalid_token";
+
+  const features = parseGroupFeatures(record.groups.features);
+  const limit = features.memberLimit ?? DEFAULT_MEMBER_LIMIT;
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.group_memberships.findUnique({
@@ -77,6 +84,9 @@ export async function joinGroupWithToken(
       select: { id: true },
     });
     if (existing) return "already_member";
+
+    const memberCount = await tx.group_memberships.count({ where: { group_id: record.group_id } });
+    if (memberCount >= limit) return "group_full";
 
     await tx.group_memberships.create({
       data: { group_id: record.group_id, user_id: userId },

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { USERNAME_RE, NAME_RE, EMAIL_RE } from "@/lib/validators";
 import bcrypt from "bcryptjs";
 import { validateToken } from "@/lib/inviteTokens";
+import { parseGroupFeatures, DEFAULT_MEMBER_LIMIT } from "@/lib/domain/groupFeatures";
 
 export async function POST(request: Request) {
   if (process.env.NEXT_PUBLIC_ENABLE_REGISTRATION === "false") {
@@ -111,6 +112,14 @@ export async function POST(request: Request) {
           select: { group_id: true },
         });
         if (!tokenRecord) throw new Error("TOKEN_REVOKED");
+
+        const [groupRecord, memberCount] = await Promise.all([
+          tx.groups.findUniqueOrThrow({ where: { id: tokenRecord.group_id }, select: { features: true } }),
+          tx.group_memberships.count({ where: { group_id: tokenRecord.group_id } }),
+        ]);
+        const limit = parseGroupFeatures(groupRecord.features).memberLimit ?? DEFAULT_MEMBER_LIMIT;
+        if (memberCount >= limit) throw new Error("GROUP_FULL");
+
         await tx.group_memberships.create({
           data: { group_id: tokenRecord.group_id, user_id: newUser.id },
         });
@@ -135,6 +144,9 @@ export async function POST(request: Request) {
   } catch (err) {
     if (err instanceof Error && err.message === "TOKEN_REVOKED") {
       return NextResponse.json({ success: false, error: "Invalid or revoked invite link" }, { status: 400 });
+    }
+    if (err instanceof Error && err.message === "GROUP_FULL") {
+      return NextResponse.json({ success: false, error: "Group is full", errorCode: "group_full" }, { status: 422 });
     }
     console.error("Register API error:", err);
     return NextResponse.json(

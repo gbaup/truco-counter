@@ -23,14 +23,16 @@ function ChooseTableContent() {
   const name = searchParams.get("name") ?? "";
 
   const choices: Choice[] = [
-    {
-      href: "/groups/new",
-      suit: "espada",
-      accentVar: "--color-us",
-      title: t("onboarding.choose.createTitle"),
-      sub: t("onboarding.choose.createSub"),
-      primary: true,
-    },
+    ...(process.env.NEXT_PUBLIC_ENABLE_GROUP_CREATION !== "false"
+      ? [{
+          href: "/groups/new",
+          suit: "espada" as const,
+          accentVar: "--color-us",
+          title: t("onboarding.choose.createTitle"),
+          sub: t("onboarding.choose.createSub"),
+          primary: true,
+        }]
+      : []),
     {
       href: "/join",
       suit: "basto",

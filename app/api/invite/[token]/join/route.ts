@@ -16,6 +16,10 @@ export const POST = withAuth(async (_request: Request, session: Session, context
       return NextResponse.json({ success: false, error: "Already a member of this group" }, { status: 409 });
     }
 
+    if (result === "group_full") {
+      return NextResponse.json({ success: false, error: "Group is full", errorCode: "group_full" }, { status: 422 });
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error joining group:", error);

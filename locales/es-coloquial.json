@@ -73,7 +73,10 @@
         "submitTo": "Unirme a {{group}}",
         "noInvite": "¿No te invitó nadie todavía?",
         "noInviteCreate": "Creá tu mesa",
-        "invitedDescription": "Te están esperando en la mesa."
+        "invitedDescription": "Te están esperando en la mesa.",
+        "errors": {
+            "groupFull": "el grupo ya está lleno"
+        }
     },
     "groups": {
         "new": {
