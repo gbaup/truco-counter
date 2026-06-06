@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { randomBytes } from "crypto";
+import { encodeOAuthState } from "@/lib/googleOAuth";
 
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 
@@ -16,10 +16,7 @@ export async function GET(request: Request) {
         }
     }
 
-    const nonce = randomBytes(16).toString("hex");
-    const statePayload: Record<string, string> = { action, nonce };
-    if (token) statePayload.token = token;
-    const state = Buffer.from(JSON.stringify(statePayload)).toString("base64url");
+    const state = encodeOAuthState(action, token);
 
     const params = new URLSearchParams({
         client_id: process.env.GOOGLE_CLIENT_ID!,

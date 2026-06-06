@@ -8,6 +8,7 @@ interface RegisterData {
   username: string;
   email?: string;
   password: string;
+  inviteToken?: string;
 }
 
 export const useRegister = () => {

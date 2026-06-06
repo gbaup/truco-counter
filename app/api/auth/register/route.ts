@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { signToken } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { USERNAME_RE, NAME_RE, EMAIL_RE } from "@/lib/validators";
-import { createUserWithPassword } from "@/lib/createUser";
+import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
   if (process.env.NEXT_PUBLIC_ENABLE_REGISTRATION === "false") {
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { name, lastName, username, email, password } = body;
+    const { name, lastName, username, email, password, inviteToken } = body;
 
     if (!name || !lastName || !username || !password) {
       return NextResponse.json(
@@ -80,12 +80,33 @@ export async function POST(request: Request) {
       }
     }
 
-    const user = await createUserWithPassword({
-      name: name.trim().toLowerCase(),
-      lastName: lastName.trim().toLowerCase(),
-      username: normalizedUsername,
-      email: email ? email.trim().toLowerCase() : null,
-      password,
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.users.create({
+        data: {
+          name: name.trim().toLowerCase(),
+          last_name: lastName.trim().toLowerCase(),
+          username: normalizedUsername,
+          email: email ? email.trim().toLowerCase() : null,
+          password: hashedPassword,
+          password_changed: true,
+        },
+      });
+
+      if (inviteToken) {
+        const record = await tx.invite_tokens.findUnique({
+          where: { token: inviteToken },
+          select: { group_id: true, revoked_at: true },
+        });
+        if (record && !record.revoked_at) {
+          await tx.group_memberships.create({
+            data: { group_id: record.group_id, user_id: newUser.id },
+          });
+        }
+      }
+
+      return newUser;
     });
 
     const token = await signToken({ userId: user.id, username: user.username, role: user.role });

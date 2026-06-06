@@ -30,6 +30,7 @@ export async function register(data: {
   username: string;
   email?: string;
   password: string;
+  inviteToken?: string;
 }): Promise<{ success: boolean; user?: PublicUser; error?: string }> {
   try {
     const result = await fetchJSON<{ success: boolean; user?: PublicUser }>(

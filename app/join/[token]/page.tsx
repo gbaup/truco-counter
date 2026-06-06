@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { validateToken } from "@/lib/inviteTokens";
 import { getSession } from "@/lib/auth";
 import { Session } from "@/types/auth";
 import { serverT } from "@/lib/serverT";
@@ -10,25 +11,10 @@ import JoinButton from "./JoinButton";
 export default async function JoinPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
 
-  const inviteToken = await prisma.invite_tokens.findUnique({
-    where: { token },
-    include: {
-      groups: {
-        include: {
-          _count: { select: { memberships: true } },
-          memberships: {
-            select: { user_id: true, users: { select: { name: true, username: true } } },
-            take: 5,
-            orderBy: { joined_at: "asc" as const },
-          },
-          admin: { select: { name: true, username: true } },
-        },
-      },
-    },
-  });
+  const inviteToken = await validateToken(token);
 
   // ── Estado 4 · token inválido / revocado / inexistente — dorso de carta.
-  if (!inviteToken || inviteToken.revoked_at) {
+  if (!inviteToken) {
     return (
       <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-6 text-text">
         <div

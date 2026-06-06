@@ -10,7 +10,6 @@ import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
 import { toast } from "sonner";
 import Link from "next/link";
-import { joinGroup } from "@/services/auth";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { queryKeys } from "@/hooks/queryKeys";
 import OnboardingField from "@/components/onboarding/OnboardingField";
@@ -63,30 +62,17 @@ export default function RegisterForm() {
       username: data.username.trim().toLowerCase(),
       email: data.email.trim() || undefined,
       password: data.password,
+      inviteToken: inviteToken ?? undefined,
     });
 
     if (!success) return;
-
-    // Join the group BEFORE invalidating queries so the myGroups cache
-    // is refreshed with the membership already committed to the DB.
-    if (inviteToken) {
-      const joinResult = await joinGroup(inviteToken);
-      if (!joinResult.success) {
-        toast.error(t("register.errors.joinFailed"));
-      }
-    }
 
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: queryKeys.currentUser }),
       queryClient.invalidateQueries({ queryKey: queryKeys.myGroups }),
     ]);
 
-    if (inviteToken) {
-      router.push("/");
-      return;
-    }
-
-    router.push(`/onboarding/choose?name=${encodeURIComponent(data.name)}`);
+    router.push(inviteToken ? "/" : `/onboarding/choose?name=${encodeURIComponent(data.name)}`);
     } finally {
       setIsSubmitting(false);
     }

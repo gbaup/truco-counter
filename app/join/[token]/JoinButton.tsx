@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import { joinGroup } from "@/services/auth";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import InvitePage from "@/components/InvitePage";
+import InviteHero from "@/components/InviteHero";
+
+const ArrowIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+  </svg>
+);
 
 interface JoinButtonProps {
   token: string;
@@ -30,12 +36,29 @@ export default function JoinButton({ token, group, inviter }: JoinButtonProps) {
   };
 
   return (
-    <InvitePage
+    <InviteHero
       group={group}
-      inviter={inviter}
-      joining={isLoading}
-      onJoin={handleJoin}
-      onUseOtherAccount={() => router.push(`/login?token=${token}`)}
-    />
+      joiningToLabel={t("invite.joiningTo")}
+      inMesaLabel={t("invite.inMesa", { count: group.memberCount })}
+      inviterLine={
+        <>
+          <span className="font-bold capitalize text-text">{inviter}</span> {t("invite.invitedBy")}
+        </>
+      }
+    >
+      <button
+        onClick={handleJoin}
+        disabled={isLoading}
+        className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-us py-4 text-base font-bold text-white transition-transform active:scale-[0.98] disabled:bg-surface-elevated disabled:text-text-mute disabled:active:scale-100"
+      >
+        {isLoading ? t("invite.joining") : <>{t("invite.join", { group: group.name })} <ArrowIcon /></>}
+      </button>
+      <div className="text-center text-[13px] italic text-text-mute" style={{ fontFamily: "var(--font-crimson-pro), serif" }}>
+        {t("invite.notYou")}{" "}
+        <button onClick={() => router.push(`/login?token=${token}`)} className="font-semibold not-italic text-us">
+          {t("invite.otherAccount")}
+        </button>
+      </div>
+    </InviteHero>
   );
 }
