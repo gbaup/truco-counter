@@ -7,6 +7,7 @@ const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const action = searchParams.get("action") ?? "login";
+    const token = searchParams.get("token");
 
     if (action === "link") {
         const session = await getSession();
@@ -16,7 +17,9 @@ export async function GET(request: Request) {
     }
 
     const nonce = randomBytes(16).toString("hex");
-    const state = Buffer.from(JSON.stringify({ action, nonce })).toString("base64url");
+    const statePayload: Record<string, string> = { action, nonce };
+    if (token) statePayload.token = token;
+    const state = Buffer.from(JSON.stringify(statePayload)).toString("base64url");
 
     const params = new URLSearchParams({
         client_id: process.env.GOOGLE_CLIENT_ID!,

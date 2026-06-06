@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { exchangeCode, fetchGoogleUser } from "@/lib/googleOAuth";
 import { generateUsernameFromEmail, createUserFromGoogle } from "@/lib/createUser";
+import { validateToken } from "@/lib/inviteTokens";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -30,9 +31,11 @@ export async function GET(request: Request) {
   }
 
   let action: string;
+  let inviteToken: string | null = null;
   try {
     const parsed = JSON.parse(Buffer.from(state, "base64url").toString());
     action = parsed.action ?? "login";
+    inviteToken = parsed.token ?? null;
   } catch {
     return redirect("/login?error=oauth_invalid_state");
   }
@@ -73,6 +76,16 @@ export async function GET(request: Request) {
 
       if (existingByGoogle) {
         // Google account already linked — treat as a login
+        if (inviteToken) {
+          const invite = await validateToken(inviteToken);
+          if (invite) {
+            await prisma.group_memberships.upsert({
+              where: { group_id_user_id: { group_id: invite.group_id, user_id: existingByGoogle.id } },
+              create: { group_id: invite.group_id, user_id: existingByGoogle.id },
+              update: {},
+            });
+          }
+        }
         const token = await signToken({
           userId: existingByGoogle.id,
           username: existingByGoogle.username,
@@ -106,8 +119,17 @@ export async function GET(request: Request) {
         googleId: googleUser.id,
       });
 
+      if (inviteToken) {
+        const invite = await validateToken(inviteToken);
+        if (invite) {
+          await prisma.group_memberships.create({
+            data: { group_id: invite.group_id, user_id: newUser.id },
+          });
+        }
+      }
+
       const token = await signToken({ userId: newUser.id, username: newUser.username, role: newUser.role });
-      const response = redirect("/groups/new");
+      const response = redirect(inviteToken ? "/" : "/groups/new");
       response.cookies.set("auth-token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
