@@ -1,7 +1,6 @@
--- Enable RLS on core tables (groups/group_memberships/invite_tokens covered in 20260606000000).
+-- Enable RLS on all public tables.
 -- Prisma connects as the postgres superuser (BYPASSRLS), so app queries are unaffected.
--- No permissive policies are defined — intentional. All data access goes through
--- Next.js API routes → Prisma; PostgREST is not used by this app.
+-- This blocks unrestricted access via the Supabase PostgREST (Data API).
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.matches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.match_participants ENABLE ROW LEVEL SECURITY;
