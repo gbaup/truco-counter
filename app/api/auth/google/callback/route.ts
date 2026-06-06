@@ -74,7 +74,10 @@ export async function GET(request: Request) {
 
       if (existingByGoogle) {
         if (inviteToken) {
-          await joinGroupWithToken(existingByGoogle.id, inviteToken);
+          const joinResult = await joinGroupWithToken(existingByGoogle.id, inviteToken);
+          if (joinResult !== "joined") {
+            console.warn(`OAuth invite join skipped (${joinResult}) for user ${existingByGoogle.id}`);
+          }
         }
         const token = await signToken({
           userId: existingByGoogle.id,
@@ -110,7 +113,10 @@ export async function GET(request: Request) {
       });
 
       if (inviteToken) {
-        await joinGroupWithToken(newUser.id, inviteToken);
+        const joinResult = await joinGroupWithToken(newUser.id, inviteToken);
+        if (joinResult !== "joined") {
+          console.warn(`OAuth invite join skipped (${joinResult}) for new user ${newUser.id}`);
+        }
       }
 
       const token = await signToken({ userId: newUser.id, username: newUser.username, role: newUser.role });

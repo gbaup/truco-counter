@@ -50,13 +50,13 @@ export async function register(data: {
   }
 }
 
-export async function joinGroup(token: string): Promise<{ success: boolean; groupId?: string; error?: string }> {
+export async function joinGroup(token: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const result = await fetchJSON<{ groupId: string; groupName: string }>(
+    await fetchJSON<{ success: boolean }>(
       `/api/invite/${token}/join`,
       { method: "POST" }
     );
-    return { success: true, groupId: result.groupId };
+    return { success: true };
   } catch (err) {
     return {
       success: false,

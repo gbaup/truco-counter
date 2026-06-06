@@ -69,16 +69,18 @@ export async function joinGroupWithToken(
   const record = await validateToken(token);
   if (!record) return "invalid_token";
 
-  const existing = await prisma.group_memberships.findUnique({
-    where: { group_id_user_id: { group_id: record.group_id, user_id: userId } },
-    select: { id: true },
-  });
-  if (existing) return "already_member";
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.group_memberships.findUnique({
+      where: { group_id_user_id: { group_id: record.group_id, user_id: userId } },
+      select: { id: true },
+    });
+    if (existing) return "already_member";
 
-  await prisma.group_memberships.create({
-    data: { group_id: record.group_id, user_id: userId },
-  });
-  return "joined";
+    await tx.group_memberships.create({
+      data: { group_id: record.group_id, user_id: userId },
+    });
+    return "joined";
+  }, { isolationLevel: "Serializable" });
 }
 
 export async function revokeToken(

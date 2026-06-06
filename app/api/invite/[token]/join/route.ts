@@ -12,6 +12,10 @@ export const POST = withAuth(async (_request: Request, session: Session, context
       return NextResponse.json({ success: false, error: "Invalid or revoked invite link" }, { status: 404 });
     }
 
+    if (result === "already_member") {
+      return NextResponse.json({ success: false, error: "Already a member of this group" }, { status: 409 });
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error joining group:", error);
