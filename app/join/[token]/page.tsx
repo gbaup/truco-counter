@@ -117,7 +117,12 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
   }
 
   // ── Estado 3 · ya sos miembro — carta + sello ✓ + ir al grupo.
-  const isAlreadyMember = group.memberships.some((m) => m.user_id === session.userId);
+  // Note: group.memberships is capped at take:5 (roster), so we query directly.
+  const membershipRow = await prisma.group_memberships.findFirst({
+    where: { group_id: group.id, user_id: session.userId },
+    select: { id: true },
+  });
+  const isAlreadyMember = membershipRow !== null;
   if (isAlreadyMember) {
     return (
       <InviteHero
