@@ -45,3 +45,4 @@ next-env.d.ts
 # local development
 .local
 design_handoffs/
+supabase/.temp
