@@ -107,7 +107,7 @@ export default function InviteHero({
                   <div className="flex">
                     {roster.map((n, i) => (
                       <div
-                        key={n}
+                        key={i}
                         className="flex h-[30px] w-[30px] capitalize items-center justify-center rounded-full text-[12px] font-bold text-white"
                         style={{
                           marginLeft: i === 0 ? 0 : -9,

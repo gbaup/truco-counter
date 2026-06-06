@@ -3,6 +3,7 @@ import { signToken } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { USERNAME_RE, NAME_RE, EMAIL_RE } from "@/lib/validators";
 import bcrypt from "bcryptjs";
+import { validateToken } from "@/lib/inviteTokens";
 
 export async function POST(request: Request) {
   if (process.env.NEXT_PUBLIC_ENABLE_REGISTRATION === "false") {
@@ -80,6 +81,18 @@ export async function POST(request: Request) {
       }
     }
 
+    let inviteGroupId: string | null = null;
+    if (inviteToken) {
+      const tokenRecord = await validateToken(inviteToken);
+      if (!tokenRecord) {
+        return NextResponse.json(
+          { success: false, error: "Invalid or revoked invite link" },
+          { status: 400 }
+        );
+      }
+      inviteGroupId = tokenRecord.group_id;
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.$transaction(async (tx) => {
@@ -94,16 +107,10 @@ export async function POST(request: Request) {
         },
       });
 
-      if (inviteToken) {
-        const record = await tx.invite_tokens.findUnique({
-          where: { token: inviteToken },
-          select: { group_id: true, revoked_at: true },
+      if (inviteGroupId) {
+        await tx.group_memberships.create({
+          data: { group_id: inviteGroupId, user_id: newUser.id },
         });
-        if (record && !record.revoked_at) {
-          await tx.group_memberships.create({
-            data: { group_id: record.group_id, user_id: newUser.id },
-          });
-        }
       }
 
       return newUser;
