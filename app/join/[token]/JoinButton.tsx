@@ -33,6 +33,7 @@ export default function JoinButton({ token, group, inviter }: JoinButtonProps) {
   return (
     <InviteHero
       group={group}
+      overlineLabel={t("invite.overline").toUpperCase()}
       joiningToLabel={t("invite.joiningTo")}
       inMesaLabel={t("invite.inMesa", { count: group.memberCount })}
       inviterLine={

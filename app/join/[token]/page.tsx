@@ -57,6 +57,7 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
     .filter((n): n is string => n !== null);
   const groupPreview = { name: group.name, memberCount, roster };
 
+  const overlineLabel = serverT("invite.overline").toUpperCase();
   const inMesaLabel = serverT("invite.inMesa", { count: String(memberCount) });
   const joiningToLabel = serverT("invite.joiningTo");
   const session = (await getSession()) as Session | null;
@@ -66,6 +67,7 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
     return (
       <InviteHero
         group={groupPreview}
+        overlineLabel={overlineLabel}
         joiningToLabel={joiningToLabel}
         inMesaLabel={inMesaLabel}
         inviterLine={
@@ -113,6 +115,7 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
     return (
       <InviteHero
         group={groupPreview}
+        overlineLabel={overlineLabel}
         joiningToLabel={joiningToLabel}
         inMesaLabel={inMesaLabel}
         inviterLine={

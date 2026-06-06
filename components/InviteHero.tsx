@@ -33,12 +33,14 @@ function hueFromName(n: string) {
 
 export default function InviteHero({
   group,
+  overlineLabel,
   joiningToLabel,
   inMesaLabel,
   inviterLine,
   children,
 }: {
   group: GroupPreview;
+  overlineLabel: string;
   joiningToLabel: string;
   inMesaLabel: string;
   inviterLine?: React.ReactNode;
@@ -67,7 +69,7 @@ export default function InviteHero({
             className="text-[11px] italic tracking-[0.22em] text-text-mute"
             style={{ fontFamily: "var(--font-crimson-pro), serif" }}
           >
-            INVITACIÓN
+            {overlineLabel}
           </div>
 
           <div
