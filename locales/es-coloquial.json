@@ -53,7 +53,7 @@
     "join": {
         "overline": "Te están esperando",
         "invalidTitle": "Este link ya no sirve",
-        "invalidDescription": "El link de invitación fue revocado o no existe.",
+        "invalidDescription": "La invitación fue revocada o venció. Pedile a quien te invitó que te mande una nueva.",
         "goToLogin": "ir al inicio",
         "memberCount_one": "{{count}} jugador en la mesa",
         "memberCount_other": "{{count}} jugadores en la mesa",
@@ -73,7 +73,10 @@
         "submitTo": "Unirme a {{group}}",
         "noInvite": "¿No te invitó nadie todavía?",
         "noInviteCreate": "Creá tu mesa",
-        "invitedDescription": "Te están esperando en la mesa."
+        "invitedDescription": "Te están esperando en la mesa.",
+        "errors": {
+            "groupFull": "el grupo ya está lleno"
+        }
     },
     "groups": {
         "new": {
@@ -128,6 +131,7 @@
         "equalPlayers": "Poné bien los equipos",
         "menuAriaLabel": "Menú",
         "addToTeam": "Agregar a {{team}}",
+        "addingTo": "sumando a {{team}}",
         "tapAPlayer": "↓ elegí uno",
         "addButton": "+ agregar",
         "button": {
@@ -172,7 +176,10 @@
         "join": "Sumarme a {{group}}",
         "joining": "sumándote…",
         "notYou": "¿no sos vos?",
-        "otherAccount": "entrar con otra"
+        "otherAccount": "entrar con otra",
+        "signupHint": "creás la cuenta y ya entrás a {{group}}",
+        "alreadyMemberSeal": "ya estás en esta mesa",
+        "goToGroup": "ir a {{group}}"
     },
     "live": {
         "badge": "en vivo",

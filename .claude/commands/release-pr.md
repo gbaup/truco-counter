@@ -9,6 +9,7 @@ Run these commands in parallel:
 ```bash
 git log main..HEAD --oneline
 git diff main...HEAD --stat
+git diff main...HEAD -- .env.local .env.example
 gh pr list --base main --state merged --limit 10 --json title,mergedAt \
   | jq 'sort_by(.mergedAt) | reverse | .[].title'
 ```
@@ -30,6 +31,12 @@ Notes:
 - Major and minor bumps stay two-part: `v3.0`, `v2.1`
 
 **Present the version suggestion with a one-line justification. Wait for confirmation before continuing.**
+
+## Step 2b — Detect new env variables
+
+Scan the diff output from Step 1 (`.env.local`, `.env.example`, and any changes that introduce new `process.env.*` references) for newly added environment variables.
+
+If any are found, carry them into Step 5 — they will appear as a deployment reminder block in the PR body.
 
 ## Step 3 — Group changes into sections
 
@@ -75,6 +82,15 @@ Produce a `- [ ]` checklist covering:
 
 ### <Section>
 - <Bullet>
+
+---
+
+## Deployment
+
+<Only include this section when new env variables were detected. List each var and end with the reminder blockquote.>
+
+> ⚠️ **New env variables** — set these on the deployment environment before deploying:
+> - `VAR_NAME` — description
 
 ---
 

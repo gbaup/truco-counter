@@ -2,7 +2,7 @@
 
 import { useTranslation } from "react-i18next";
 import Logo from "@/components/ui/Logo";
-import { MenuIcon } from "@/components/ui/icons";
+import { EyeIcon, MenuIcon } from "@/components/ui/icons";
 import { LiveBadge, LiveDot, MiniScore } from "./LiveBadge";
 
 type LiveMatch = {
@@ -12,12 +12,6 @@ type LiveMatch = {
   teamUs: string[];
   teamThem: string[];
 };
-
-const EyeIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="17" height="17">
-    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" /><circle cx="12" cy="12" r="3" />
-  </svg>
-);
 
 export default function LiveGate({ live, onWatch, onMenuOpen }: { live: LiveMatch; onWatch: () => void; onMenuOpen: () => void }) {
   const { t } = useTranslation();

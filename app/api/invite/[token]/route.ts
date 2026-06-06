@@ -15,6 +15,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
         name: record.groups.name,
         memberCount: record.groups._count.memberships,
         createdByName: record.groups.admin.name ?? record.groups.admin.username,
+        isFull: record.isFull,
         roster: record.groups.memberships
           .map((m) => m.users?.name ?? m.users?.username ?? null)
           .filter((n): n is string => n !== null),

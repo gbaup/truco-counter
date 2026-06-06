@@ -190,7 +190,7 @@ export default function SideDrawer({
               );
             }
 
-            if (href === "/" && live && username !== null && live.scorer !== username) {
+            if (href === "/" && live && username !== null && live.scorerUsername !== username) {
               return (
                 <Link
                   key="live-home"

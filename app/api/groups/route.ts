@@ -5,6 +5,10 @@ import { Session } from "@/types/auth";
 import { parseGroupFeatures } from "@/lib/domain/groupFeatures";
 
 export const POST = withAuth(async (request: Request, session: Session) => {
+  if (process.env.NEXT_PUBLIC_ENABLE_GROUP_CREATION === "false") {
+    return NextResponse.json({ success: false, error: "Group creation is disabled" }, { status: 403 });
+  }
+
   try {
     const { name } = await request.json();
 

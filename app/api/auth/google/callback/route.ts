@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { signToken, getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
-import { exchangeCode, fetchGoogleUser } from "@/lib/googleOAuth";
+import { exchangeCode, fetchGoogleUser, decodeOAuthState } from "@/lib/googleOAuth";
 import { generateUsernameFromEmail, createUserFromGoogle } from "@/lib/createUser";
+import { joinGroupWithToken } from "@/lib/inviteTokens";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -30,9 +31,9 @@ export async function GET(request: Request) {
   }
 
   let action: string;
+  let inviteToken: string | null;
   try {
-    const parsed = JSON.parse(Buffer.from(state, "base64url").toString());
-    action = parsed.action ?? "login";
+    ({ action, token: inviteToken } = decodeOAuthState(state));
   } catch {
     return redirect("/login?error=oauth_invalid_state");
   }
@@ -72,7 +73,12 @@ export async function GET(request: Request) {
       });
 
       if (existingByGoogle) {
-        // Google account already linked — treat as a login
+        if (inviteToken) {
+          const joinResult = await joinGroupWithToken(existingByGoogle.id, inviteToken);
+          if (joinResult !== "joined") {
+            console.warn(`OAuth invite join skipped (${joinResult}) for user ${existingByGoogle.id}`);
+          }
+        }
         const token = await signToken({
           userId: existingByGoogle.id,
           username: existingByGoogle.username,
@@ -106,8 +112,18 @@ export async function GET(request: Request) {
         googleId: googleUser.id,
       });
 
+      let joinedGroup = false;
+      if (inviteToken) {
+        const joinResult = await joinGroupWithToken(newUser.id, inviteToken);
+        if (joinResult === "joined") {
+          joinedGroup = true;
+        } else {
+          console.warn(`OAuth invite join skipped (${joinResult}) for new user ${newUser.id}`);
+        }
+      }
+
       const token = await signToken({ userId: newUser.id, username: newUser.username, role: newUser.role });
-      const response = redirect("/groups/new");
+      const response = redirect(joinedGroup ? "/" : "/groups/new");
       response.cookies.set("auth-token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",

@@ -1,33 +1,26 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { withAuth } from "@/lib/withAuth";
-import { validateToken } from "@/lib/inviteTokens";
+import { joinGroupWithToken } from "@/lib/inviteTokens";
 import { Session } from "@/types/auth";
 
 export const POST = withAuth(async (_request: Request, session: Session, context) => {
   try {
     const { token } = await (context.params as Promise<{ token: string }>);
-    const record = await validateToken(token);
-    if (!record) {
+    const result = await joinGroupWithToken(session.userId, token);
+
+    if (result === "invalid_token") {
       return NextResponse.json({ success: false, error: "Invalid or revoked invite link" }, { status: 404 });
     }
 
-    const existing = await prisma.group_memberships.findUnique({
-      where: { group_id_user_id: { group_id: record.group_id, user_id: session.userId } },
-    });
-    if (existing) {
+    if (result === "already_member") {
       return NextResponse.json({ success: false, error: "Already a member of this group" }, { status: 409 });
     }
 
-    await prisma.group_memberships.create({
-      data: { group_id: record.group_id, user_id: session.userId },
-    });
+    if (result === "group_full") {
+      return NextResponse.json({ success: false, error: "Group is full", errorCode: "group_full" }, { status: 422 });
+    }
 
-    return NextResponse.json({
-      success: true,
-      groupId: record.group_id,
-      groupName: record.groups.name,
-    });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error joining group:", error);
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });

@@ -130,3 +130,7 @@ export function RematchIcon({ size = 24, className }: IconProps) {
     <Icon icon="ph:arrows-clockwise" width={size} height={size} className={className} />
   );
 }
+
+export const ArrowIcon = ({ size = 24, className }: IconProps) => (
+  <Icon icon="ph:arrow-right" width={size} height={size} className={className} />
+);

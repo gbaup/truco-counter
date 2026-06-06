@@ -1,3 +1,17 @@
+import { randomBytes } from "crypto";
+
+export function encodeOAuthState(action: string, token?: string | null): string {
+  const nonce = randomBytes(16).toString("hex");
+  const payload: Record<string, string> = { action, nonce };
+  if (token) payload.token = token;
+  return Buffer.from(JSON.stringify(payload)).toString("base64url");
+}
+
+export function decodeOAuthState(state: string): { action: string; token: string | null } {
+  const parsed = JSON.parse(Buffer.from(state, "base64url").toString());
+  return { action: parsed.action ?? "login", token: parsed.token ?? null };
+}
+
 export async function exchangeCode(code: string): Promise<string> {
     const res = await fetch("https://oauth2.googleapis.com/token", {
         method: "POST",

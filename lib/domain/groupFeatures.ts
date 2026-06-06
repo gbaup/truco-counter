@@ -1,9 +1,12 @@
 import { z } from "zod";
 
+export const DEFAULT_MEMBER_LIMIT = 10;
+
 export const GroupFeaturesSchema = z.object({
   liveMatch: z.boolean().default(false),
   pointsLogs: z.boolean().default(false),
   glickoRanking: z.boolean().default(false),
+  memberLimit: z.number().int().positive().optional(),
 });
 
 export type GroupFeatures = z.infer<typeof GroupFeaturesSchema>;

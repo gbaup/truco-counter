@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { randomBytes } from "crypto";
+import { parseGroupFeatures, DEFAULT_MEMBER_LIMIT } from "@/lib/domain/groupFeatures";
+
+const ROSTER_PREVIEW_LIMIT = 5;
 
 function generateToken(): string {
   return randomBytes(24).toString("base64url");
@@ -51,7 +54,7 @@ export async function validateToken(token: string) {
           admin: { select: { name: true, username: true } },
           memberships: {
             select: { users: { select: { name: true, username: true } } },
-            take: 5,
+            take: ROSTER_PREVIEW_LIMIT,
             orderBy: { joined_at: "asc" },
           },
         },
@@ -59,21 +62,36 @@ export async function validateToken(token: string) {
     },
   });
   if (!record || record.revoked_at) return null;
-  return record;
+  const features = parseGroupFeatures(record.groups.features);
+  const limit = features.memberLimit ?? DEFAULT_MEMBER_LIMIT;
+  const isFull = record.groups._count.memberships >= limit;
+  return { ...record, isFull };
 }
 
-export async function revokeToken(
-  tokenId: string,
-): Promise<{ notFound: boolean; alreadyRevoked: boolean }> {
-  const existing = await prisma.invite_tokens.findUnique({
-    where: { id: tokenId },
-    select: { revoked_at: true },
-  });
-  if (!existing) return { notFound: true, alreadyRevoked: false };
-  if (existing.revoked_at) return { notFound: false, alreadyRevoked: true };
-  await prisma.invite_tokens.update({
-    where: { id: tokenId },
-    data: { revoked_at: new Date() },
-  });
-  return { notFound: false, alreadyRevoked: false };
+export async function joinGroupWithToken(
+  userId: string,
+  token: string,
+): Promise<"joined" | "already_member" | "invalid_token" | "group_full"> {
+  const record = await validateToken(token);
+  if (!record) return "invalid_token";
+
+  const features = parseGroupFeatures(record.groups.features);
+  const limit = features.memberLimit ?? DEFAULT_MEMBER_LIMIT;
+
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.group_memberships.findUnique({
+      where: { group_id_user_id: { group_id: record.group_id, user_id: userId } },
+      select: { id: true },
+    });
+    if (existing) return "already_member";
+
+    const memberCount = await tx.group_memberships.count({ where: { group_id: record.group_id } });
+    if (memberCount >= limit) return "group_full";
+
+    await tx.group_memberships.create({
+      data: { group_id: record.group_id, user_id: userId },
+    });
+    return "joined";
+  }, { isolationLevel: "Serializable" });
 }
+
