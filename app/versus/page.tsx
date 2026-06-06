@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import SideDrawer from "@/components/SideDrawer";
 import UserDropdown from "@/components/UserDropdown";
 import VersusResults from "@/components/VersusResults";
 import Logo from "@/components/ui/Logo";
-import MenuIcon from "@/components/ui/MenuIcon";
+import { MenuIcon } from "@/components/ui/icons";
 import { useUsers } from "@/hooks/useUsers";
 import { useVersusStats } from "@/hooks/useVersusStats";
 
 export default function VersusPage() {
+  const { t } = useTranslation();
   const { data: users = [] } = useUsers();
   const [player1, setPlayer1] = useState<string>("");
   const [player2, setPlayer2] = useState<string>("");
@@ -32,14 +34,14 @@ export default function VersusPage() {
           className="text-caption-italic text-text"
           style={{ fontFamily: "var(--font-crimson-pro), serif" }}
         >
-          rivalidades
+          {t("versus.pageLabel")}
         </span>
         <button
           onClick={() => setDrawerOpen(true)}
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
-          aria-label="Menú"
+          aria-label={t("versus.menuAriaLabel")}
         >
-          <MenuIcon />
+          <MenuIcon size={16} />
         </button>
       </div>
 
@@ -47,22 +49,22 @@ export default function VersusPage() {
         {/* Player selectors */}
         <div className="grid grid-cols-2 gap-2.5">
           <UserDropdown
-            label="jugador 1"
+            label={t("versus.player1")}
             value={player1}
             onChange={setPlayer1}
             users={users}
             disabledId={player2}
             variant="us"
-            placeholder="elegir"
+            placeholder={t("versus.selectPlaceholder")}
           />
           <UserDropdown
-            label="jugador 2"
+            label={t("versus.player2")}
             value={player2}
             onChange={setPlayer2}
             users={users}
             disabledId={player1}
             variant="them"
-            placeholder="elegir"
+            placeholder={t("versus.selectPlaceholder")}
           />
         </div>
 

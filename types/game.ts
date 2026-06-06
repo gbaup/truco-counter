@@ -1,5 +1,8 @@
 import { PublicUser } from "./database";
 
+export type TeamId = 1 | 2;
+export type TeamSide = "us" | "them";
+
 export interface MatchState {
     view: "setup" | "match";
     team1: PublicUser[];
@@ -8,4 +11,5 @@ export interface MatchState {
     score1: number;
     score2: number;
     matchId?: string;
+    groupId?: string;
 }

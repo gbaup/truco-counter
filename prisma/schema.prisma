@@ -4,19 +4,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model match_participants {
-  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  match_id            String?  @db.Uuid
-  user_id             String?  @db.Uuid
-  team                Int?
-  rating_change       Float?
-  elo_rating_change   Float?
-  matches       matches? @relation(fields: [match_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  match_id          String?  @db.Uuid
+  user_id           String?  @db.Uuid
+  team              Int?
+  rating_change     Float?
+  elo_rating_change Float?
+  matches           matches? @relation(fields: [match_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users             users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([match_id, user_id])
 }
@@ -30,8 +30,11 @@ model matches {
   status             String?              @default("finished")
   created_by         String?              @db.Uuid
   updated_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  group_id           String?              @db.Uuid
+  max_points         Int?
   match_participants match_participants[]
   users              users?               @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  groups             groups?              @relation(fields: [group_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
 }
 
 model users {
@@ -39,16 +42,54 @@ model users {
   name               String
   last_name          String
   username           String               @unique
+  email              String?              @unique
   created_at         DateTime?            @default(now()) @db.Timestamptz(6)
   updated_at         DateTime?            @default(now()) @db.Timestamptz(6)
   password           String               @default("")
-  rating             Float                @default(1500)
-  rating_deviation   Float                @default(350)
-  elo_rating         Float                @default(1200)
-  last_decay_at      DateTime?            @db.Timestamptz(6)
   role               String               @default("user")
   password_changed   Boolean              @default(true)
   google_id          String?              @unique
   match_participants match_participants[]
   matches            matches[]
+  admin_of           groups[]
+  group_memberships  group_memberships[]
+  invite_tokens      invite_tokens[]
+}
+
+model groups {
+  id            String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  admin_id      String              @db.Uuid
+  created_at    DateTime?           @default(now()) @db.Timestamptz(6)
+  features      Json                @default("{}")
+  admin         users               @relation(fields: [admin_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  memberships   group_memberships[]
+  invite_tokens invite_tokens[]
+  matches       matches[]
+}
+
+model group_memberships {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  group_id         String    @db.Uuid
+  user_id          String    @db.Uuid
+  joined_at        DateTime? @default(now()) @db.Timestamptz(6)
+  rating           Float     @default(1500)
+  rating_deviation Float     @default(350)
+  elo_rating       Float     @default(1200)
+  last_decay_at    DateTime? @db.Timestamptz(6)
+  groups           groups    @relation(fields: [group_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users            users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([group_id, user_id])
+}
+
+model invite_tokens {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  group_id           String    @db.Uuid
+  created_by_user_id String    @db.Uuid
+  token              String    @unique
+  revoked_at         DateTime? @db.Timestamptz(6)
+  created_at         DateTime? @default(now()) @db.Timestamptz(6)
+  groups             groups    @relation(fields: [group_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users              users     @relation(fields: [created_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

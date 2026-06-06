@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslation } from "react-i18next";
 import Suit from "@/components/ui/Suit";
 
 interface VersusStats {
@@ -15,6 +18,7 @@ interface VersusResultsProps {
 }
 
 export default function VersusResults({ stats, loading, p1Name, p2Name }: VersusResultsProps) {
+  const { t } = useTranslation();
   if (loading) {
     return (
       <div className="flex justify-center py-8">
@@ -29,7 +33,7 @@ export default function VersusResults({ stats, loading, p1Name, p2Name }: Versus
         className="text-caption-italic text-text-mute text-center py-6"
         style={{ fontFamily: "var(--font-crimson-pro), serif" }}
       >
-        Elegí dos jugadores para ver el historial
+        {t("versus.selectPlayers")}
       </p>
     );
   }
@@ -63,7 +67,7 @@ export default function VersusResults({ stats, loading, p1Name, p2Name }: Versus
               className="text-caption-italic text-text-mute"
               style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
             >
-              victorias
+              {t("versus.wins")}
             </p>
           </div>
 
@@ -87,7 +91,7 @@ export default function VersusResults({ stats, loading, p1Name, p2Name }: Versus
                   className="text-caption-italic text-text-mute"
                   style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 9 }}
                 >
-                  emp.
+                  {t("versus.tie")}
                 </p>
               </>
             )}
@@ -112,7 +116,7 @@ export default function VersusResults({ stats, loading, p1Name, p2Name }: Versus
               className="text-caption-italic text-text-mute"
               style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
             >
-              victorias
+              {t("versus.wins")}
             </p>
           </div>
         </div>
@@ -137,7 +141,7 @@ export default function VersusResults({ stats, loading, p1Name, p2Name }: Versus
         className="text-caption-italic text-text-mute text-center"
         style={{ fontFamily: "var(--font-crimson-pro), serif" }}
       >
-        {total} {total === 1 ? "partida" : "partidas"} en total
+        {t("versus.matchCount", { count: total })}
       </p>
     </div>
   );

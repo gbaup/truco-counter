@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import SideDrawer from "@/components/SideDrawer";
 import Logo from "@/components/ui/Logo";
-import MenuIcon from "@/components/ui/MenuIcon";
+import { MenuIcon } from "@/components/ui/icons";
 import BottomSheet from "@/components/ui/BottomSheet";
 import ChangeNicknameSheet from "@/components/ui/ChangeNicknameSheet";
 import SettingsSection from "@/components/settings/SettingsSection";
@@ -137,7 +137,7 @@ export default function SettingsPage() {
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
           aria-label="Menú"
         >
-          <MenuIcon />
+          <MenuIcon size={16} />
         </button>
       </div>
 
@@ -245,7 +245,6 @@ export default function SettingsPage() {
 
       {/* Nickname sheet */}
       <ChangeNicknameSheet
-        key={nicknameSheetOpen ? "open" : "closed"}
         open={nicknameSheetOpen}
         currentNickname={username}
         overline={t("nickname.overline.self")}

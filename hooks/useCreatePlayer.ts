@@ -10,7 +10,7 @@ export function useCreatePlayer() {
     mutationFn: createPlayer,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers });
-      queryClient.invalidateQueries({ queryKey: queryKeys.users });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users() });
     },
   });
 }

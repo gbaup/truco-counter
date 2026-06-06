@@ -57,6 +57,7 @@ export const PATCH = withAuth<{ params: Promise<{ id: string }> }>(
                         winner_team as 1 | 2,
                         matchValue.created_at!,
                         id,
+                        matchValue.group_id ?? null,
                     );
                     return updated;
                 })

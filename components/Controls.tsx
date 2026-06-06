@@ -1,5 +1,7 @@
 "use client";
 
+import { MinusIcon, PlusIcon, CloseIcon } from "@/components/ui/icons";
+
 function triggerHaptic() {
   if (localStorage.getItem("prefs.haptics") === "false") return;
   if (typeof navigator !== "undefined" && navigator.vibrate) {
@@ -13,30 +15,6 @@ interface ControlsProps {
   onExit: () => void;
   score1: number;
   score2: number;
-}
-
-function MinusIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-      <path d="M5 12h14" />
-    </svg>
-  );
-}
-
-function PlusIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-      <path d="M12 5v14M5 12h14" />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-      <path d="M18 6 6 18M6 6l12 12" />
-    </svg>
-  );
 }
 
 export default function Controls({
@@ -55,7 +33,7 @@ export default function Controls({
           className="w-[42px] h-[42px] min-w-[42px] rounded-md border border-us/40 text-us flex items-center justify-center active:scale-95 transition-transform"
           aria-label="Restar punto Nosotros"
         >
-          <MinusIcon />
+          <MinusIcon size={16} />
         </button>
         <div className="flex-1 grid place-items-center text-display-md font-display text-us">
           {score1}
@@ -65,7 +43,7 @@ export default function Controls({
           className="w-[42px] h-[42px] min-w-[42px] rounded-md bg-us text-white flex items-center justify-center active:scale-95 transition-transform"
           aria-label="Sumar punto Nosotros"
         >
-          <PlusIcon />
+          <PlusIcon size={16} />
         </button>
       </div>
 
@@ -75,7 +53,7 @@ export default function Controls({
         className="w-11 h-11 min-w-[44px] rounded-full bg-surface border border-border text-text-dim flex items-center justify-center active:scale-95 transition-transform"
         aria-label="Salir del partido"
       >
-        <CloseIcon />
+        <CloseIcon size={14} />
       </button>
 
       {/* Team 2 (Ellos) */}
@@ -85,7 +63,7 @@ export default function Controls({
           className="w-[42px] h-[42px] min-w-[42px] rounded-md border border-them/40 text-them flex items-center justify-center active:scale-95 transition-transform"
           aria-label="Restar punto Ellos"
         >
-          <MinusIcon />
+          <MinusIcon size={16} />
         </button>
         <div className="flex-1 grid place-items-center text-display-md font-display text-them">
           {score2}
@@ -95,7 +73,7 @@ export default function Controls({
           className="w-[42px] h-[42px] min-w-[42px] rounded-md bg-them text-paper-ink flex items-center justify-center active:scale-95 transition-transform"
           aria-label="Sumar punto Ellos"
         >
-          <PlusIcon />
+          <PlusIcon size={16} />
         </button>
       </div>
     </div>

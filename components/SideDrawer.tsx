@@ -9,7 +9,13 @@ import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
 import PaperPanel from "@/components/ui/PaperPanel";
 import RoleBadge from "@/components/admin/RoleBadge";
+import GroupSelector from "@/components/ui/GroupSelector";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useActiveGroup } from "@/hooks/useActiveGroup";
+import { useLiveMatch } from "@/contexts/LiveMatchContext";
+import { useGroupFeatures } from "@/hooks/useGroupFeatures";
+import { LiveDot, MiniScore } from "@/components/live/LiveBadge";
+import { MenuIcon, CloseIcon, ArrowRightIcon, LockIcon } from "@/components/ui/icons";
 import { UserRole } from "@/types/auth";
 
 interface SideDrawerProps {
@@ -25,8 +31,13 @@ export default function SideDrawer({
 }: SideDrawerProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const { data: me } = useCurrentUser();
+  const { activeGroupId, activeGroup, setActiveGroup, groups, isFreePlay } = useActiveGroup();
+  const { data: liveData } = useLiveMatch();
+  const { liveMatch } = useGroupFeatures();
+  const live = liveMatch ? (liveData?.live ?? null) : null;
   const username = me?.username ?? null;
   const role = (me?.role as UserRole) ?? null;
+  const isGroupAdmin = activeGroup?.admin_id === me?.userId;
   const pathname = usePathname();
   const { t } = useTranslation();
 
@@ -37,10 +48,10 @@ export default function SideDrawer({
 
   const navItems = [
     { href: "/", label: t("sideDrawer.home") },
-    { href: "/profile", label: t("sideDrawer.profile") },
-    { href: "/statistics", label: t("sideDrawer.statistics") },
-    { href: "/versus", label: t("sideDrawer.versus") },
-    { href: "/history", label: t("sideDrawer.history") },
+    { href: "/profile", label: t("sideDrawer.profile"), requiresGroup: true },
+    { href: "/statistics", label: t("sideDrawer.statistics"), requiresGroup: true },
+    { href: "/versus", label: t("sideDrawer.versus"), requiresGroup: true },
+    { href: "/history", label: t("sideDrawer.history"), requiresGroup: true },
     { href: "/settings", label: t("sideDrawer.settings") },
   ];
 
@@ -50,21 +61,14 @@ export default function SideDrawer({
         <button
           onClick={toggleMenu}
           className="fixed top-4 right-4 z-50 w-9 h-9 rounded-md bg-surface border border-border text-text flex items-center justify-center transition-colors hover:bg-surface-elevated"
-          aria-label="Toggle menu"
+          aria-label={t("sideDrawer.toggleMenuAriaLabel")}
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <line x1="4" x2="20" y1="6" y2="6" />
-            <line x1="4" x2="20" y1="12" y2="12" />
-            <line x1="4" x2="20" y1="18" y2="18" />
-          </svg>
+          <MenuIcon size={16} />
+          {live && (
+            <span className="absolute -top-0.5 -right-0.5">
+              <LiveDot size={9} ring />
+            </span>
+          )}
         </button>
       )}
 
@@ -92,19 +96,9 @@ export default function SideDrawer({
           <button
             onClick={closeMenu}
             className="w-8 h-8 rounded-full bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
-            aria-label="Cerrar menú"
+            aria-label={t("sideDrawer.closeMenuAriaLabel")}
           >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-            >
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
+            <CloseIcon size={14} />
           </button>
         </div>
 
@@ -139,7 +133,7 @@ export default function SideDrawer({
                 className="text-caption-italic mt-0.5"
                 style={{ color: "rgba(26, 20, 16, 0.67)", fontSize: 11 }}
               >
-                el de la mesa
+                {t("sideDrawer.currentPlayer")}
               </div>
             </div>
 
@@ -147,18 +141,73 @@ export default function SideDrawer({
           </div>
         </PaperPanel>
 
+        {/* Group selector */}
+        {groups.length > 0 && (
+          <div className="mb-4">
+            <p
+              className="text-caption-italic text-text-mute mb-1.5"
+              style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
+            >
+              {t("sideDrawer.group")}
+            </p>
+            {groups.length === 1 ? (
+              <div className="px-3.5 py-2 rounded-md bg-surface border border-border text-sm text-text font-medium truncate">
+                {activeGroup?.name}
+              </div>
+            ) : (
+              <GroupSelector
+                groups={groups}
+                value={activeGroupId}
+                onChange={(id) => { if (id) { setActiveGroup(id); closeMenu(); } }}
+              />
+            )}
+          </div>
+        )}
+
         {/* Section label */}
         <p
           className="text-caption-italic text-text-mute mb-2.5"
           style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
         >
-          en la mesa
+          {t("sideDrawer.navigationLabel")}
         </p>
 
         {/* Nav items */}
         <nav className="flex flex-col gap-0.5">
-          {navItems.map(({ href, label }) => {
+          {navItems.map(({ href, label, requiresGroup }) => {
             const isActive = pathname === href;
+            const isLocked = isFreePlay && !!requiresGroup;
+
+            if (isLocked) {
+              return (
+                <div
+                  key={href}
+                  className="flex items-center justify-between px-3.5 py-3 rounded-md border border-transparent cursor-not-allowed select-none opacity-40"
+                >
+                  <span className="text-sm text-text font-medium">{label}</span>
+                  <LockIcon size={12} className="text-text-mute" />
+                </div>
+              );
+            }
+
+            if (href === "/" && live && username !== null && live.scorerUsername !== username) {
+              return (
+                <Link
+                  key="live-home"
+                  href="/live"
+                  onClick={closeMenu}
+                  className="flex items-center gap-2.5 px-3.5 py-3 rounded-md border text-sm font-bold bg-danger/10 border-danger/45 text-danger"
+                >
+                  <LiveDot size={9} />
+                  <span className="flex-1">{label}</span>
+                  <span className="flex items-center gap-1.5">
+                    <MiniScore us={live.scoreUs} them={live.scoreThem} />
+                    <ArrowRightIcon size={14} />
+                  </span>
+                </Link>
+              );
+            }
+
             return (
               <Link
                 key={href}
@@ -172,27 +221,14 @@ export default function SideDrawer({
                 )}
               >
                 <span>{label}</span>
-                {isActive && (
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                )}
+                {isActive && <ArrowRightIcon size={14} />}
               </Link>
             );
           })}
         </nav>
 
-        {/* Admin section */}
-        {role === UserRole.admin && (
+        {/* Admin section. Note: only group admins can see this. Global admins section to be implemented. */}
+        {isGroupAdmin && (
           <div className="mt-4">
             <p
               className="text-caption-italic text-text-mute mb-1.5"

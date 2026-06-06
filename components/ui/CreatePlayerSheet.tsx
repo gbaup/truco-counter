@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { USERNAME_RE, NAME_RE } from "@/lib/validators";
 import { INITIAL_USER_PASSWORD } from "@/lib/constants";
 import { twMerge } from "tailwind-merge";
+import { LockIcon } from "@/components/ui/icons";
 
 interface CreatePlayerSheetProps {
   open: boolean;
@@ -37,6 +38,10 @@ export default function CreatePlayerSheet({
     try {
       await createPlayerMutation.mutateAsync({ firstName, lastName, username });
       toast.success(t("create.savedToast", { name: username }));
+      setFirstName("");
+      setLastName("");
+      setUsername("");
+      setErrors({});
       onCreated();
       onClose();
     } catch (e: unknown) {
@@ -75,7 +80,7 @@ export default function CreatePlayerSheet({
             {t("create.preview")}
           </p>
           <p className="font-serif text-base font-bold leading-tight text-paper-ink">
-            {firstName || "Martín"} {lastName || "Pérez"}
+            {firstName || "John"} {lastName || "Doe"}
           </p>
           <p className="mt-0.5 font-display text-[11px] text-paper-ink/60">
             @{username || "apodo"}
@@ -88,21 +93,21 @@ export default function CreatePlayerSheet({
           label={t("create.firstName")}
           value={firstName}
           onChange={(v) => setFirstName(v.toLowerCase())}
-          placeholder="martín"
+          placeholder={t("create.firstNamePlaceholder")}
           maxLength={30}
         />
         <FieldInput
           label={t("create.lastName")}
           value={lastName}
           onChange={(v) => setLastName(v.toLowerCase())}
-          placeholder="pérez"
+          placeholder={t("create.lastNamePlaceholder")}
           maxLength={30}
         />
         <FieldInput
           label={t("create.username")}
           value={username}
           onChange={(v) => setUsername(v.toLowerCase().replace(/\s/g, ""))}
-          placeholder="tincho"
+          placeholder={t("create.usernamePlaceholder")}
           prefix="@"
           maxLength={20}
           error={errors.username}
@@ -110,20 +115,7 @@ export default function CreatePlayerSheet({
       </div>
 
       <div className="mt-3.5 flex items-start gap-2.5 rounded-md border border-warning/40 bg-warning/[0.12] px-3 py-2.5">
-        <svg
-          width={16}
-          height={16}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="mt-0.5 shrink-0 text-warning"
-        >
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
+        <LockIcon size={16} className="mt-0.5 shrink-0 text-warning" />
         <div>
           <p className="text-xs font-bold text-warning">
             {t("create.passwordInfo")}:{" "}

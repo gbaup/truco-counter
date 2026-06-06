@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { SearchIcon } from "@/components/ui/icons";
 
 interface AdminSearchBarProps {
   value: string;
@@ -13,20 +14,7 @@ export default function AdminSearchBar({ value, onChange }: AdminSearchBarProps)
   return (
     <div className="px-5 pb-3">
       <div className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 py-2.5">
-        <svg
-          width={15}
-          height={15}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="shrink-0 text-text-mute"
-        >
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-        </svg>
+        <SearchIcon size={15} className="shrink-0 text-text-mute" />
         <input
           type="search"
           value={value}

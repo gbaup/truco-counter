@@ -6,9 +6,10 @@ import Link from "next/link";
 import SideDrawer from "@/components/SideDrawer";
 import Logo from "@/components/ui/Logo";
 import Suit from "@/components/ui/Suit";
-import MenuIcon from "@/components/ui/MenuIcon";
+import { MenuIcon } from "@/components/ui/icons";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { useProfileData } from "@/hooks/useProfileData";
+import { useGroupFeatures } from "@/hooks/useGroupFeatures";
 import { formatTeamNames } from "@/lib/domain/match";
 import { twMerge } from "tailwind-merge";
 
@@ -16,6 +17,7 @@ export default function ProfilePage() {
   const { t } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const profile = useProfileData();
+  const { glickoRanking } = useGroupFeatures();
 
   if (profile.isLoading) return <LoadingScreen />;
   if (!profile.me) return null;
@@ -46,7 +48,7 @@ export default function ProfilePage() {
           className="w-9 h-9 rounded-lg bg-surface border border-border text-text-dim flex items-center justify-center transition-colors hover:bg-surface-elevated"
           aria-label="Menú"
         >
-          <MenuIcon />
+          <MenuIcon size={16} />
         </button>
       </div>
 
@@ -113,20 +115,24 @@ export default function ProfilePage() {
             >
               {username}
             </h2>
-            <div className="w-[30px] h-px bg-paper-ink opacity-40 mx-auto my-2" />
-            <p
-              className="text-caption-italic"
-              style={{
-                color: "rgba(26,20,16,0.6)",
-                letterSpacing: "0.18em",
-                fontFamily: "var(--font-crimson-pro), serif",
-              }}
-            >
-              glicko
-            </p>
-            <p className="text-display-xl font-display text-paper-ink mt-0.5">
-              {stats ? Math.round(stats.rating) : "—"}
-            </p>
+            {glickoRanking && (
+              <>
+                <div className="w-[30px] h-px bg-paper-ink opacity-40 mx-auto my-2" />
+                <p
+                  className="text-caption-italic"
+                  style={{
+                    color: "rgba(26,20,16,0.6)",
+                    letterSpacing: "0.18em",
+                    fontFamily: "var(--font-crimson-pro), serif",
+                  }}
+                >
+                  glicko
+                </p>
+                <p className="text-display-xl font-display text-paper-ink mt-0.5">
+                  {stats?.rating !== undefined ? Math.round(stats.rating) : "—"}
+                </p>
+              </>
+            )}
           </div>
         </div>
 
@@ -177,21 +183,25 @@ export default function ProfilePage() {
               elo
             </p>
             <p className="font-display font-extrabold text-[18px] text-text">
-              {stats ? Math.round(stats.elo_rating) : "—"}
+              {stats?.elo_rating !== undefined ? Math.round(stats.elo_rating) : "—"}
             </p>
           </div>
-          <div className="w-px self-stretch bg-border mx-2" />
-          <div className="flex-1 text-center">
-            <p
-              className="text-caption-italic text-text-mute"
-              style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
-            >
-              {t("profile.rd")}
-            </p>
-            <p className="font-display font-extrabold text-[18px] text-text-dim">
-              {stats ? Math.round(stats.rating_deviation) : "—"}
-            </p>
-          </div>
+          {glickoRanking && (
+            <>
+              <div className="w-px self-stretch bg-border mx-2" />
+              <div className="flex-1 text-center">
+                <p
+                  className="text-caption-italic text-text-mute"
+                  style={{ fontFamily: "var(--font-crimson-pro), serif", fontSize: 11 }}
+                >
+                  {t("profile.rd")}
+                </p>
+                <p className="font-display font-extrabold text-[18px] text-text-dim">
+                  {stats?.rating_deviation !== undefined ? Math.round(stats.rating_deviation) : "—"}
+                </p>
+              </div>
+            </>
+          )}
           <div className="w-px self-stretch bg-border mx-2" />
           <div className="flex-1 text-center">
             <p

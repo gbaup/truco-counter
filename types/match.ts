@@ -1,5 +1,24 @@
 import { PublicUser } from "./database";
 
+export interface Hand {
+  id: string;
+  us: number;
+  them: number;
+  ts: number;
+}
+
+export interface LiveMatchData {
+  matchId: string;
+  scoreUs: number;
+  scoreThem: number;
+  max: number;
+  teamUs: string[];
+  teamThem: string[];
+  scorer: string;
+  scorerUsername: string;
+  hands: Hand[];
+}
+
 export interface RosterEntry {
     username: string;
     name: string;
@@ -31,6 +50,8 @@ export interface CreateMatchDto {
     team1: PublicUser[];
     team2: PublicUser[];
     status?: "ongoing" | "finished";
+    groupId?: string;
+    maxPoints?: number;
 }
 
 export interface UpdateMatchDto {
