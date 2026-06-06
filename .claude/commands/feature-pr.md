@@ -26,7 +26,7 @@ If `prisma/schema.prisma` changed or a migration file was added, add a `## Migra
 - What the migration does (e.g. new table, column rename, index)
 - The command to apply it: `npx prisma migrate dev` (local) / `npx prisma migrate deploy` (prod)
 
-If new environment variables were introduced, list them with a one-line description.
+If new environment variables were introduced, list them with a one-line description and add a deployment reminder note so they don't get missed when deploying.
 
 Skip this section entirely if neither applies.
 
@@ -63,7 +63,10 @@ A plain, descriptive sentence that reads like a task or ticket title. No convent
 
 ## Migration
 
-<Only include this section if there is a migration or new env var.>
+<Only include this section if there is a migration or new env var. When new env vars are present, always end the section with the deployment reminder block below.>
+
+> ⚠️ **New env variables** — set these on the deployment environment before deploying:
+> - `VAR_NAME` — description
 
 ## Test plan
 
