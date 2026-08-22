@@ -11,6 +11,7 @@ export async function proxy(request: NextRequest) {
         "/api/auth/google",
         "/api/auth/google/callback",
         "/api/auth/register",
+        "/api/cron/keep-alive",
     ];
 
     const PUBLIC_API_PREFIXES = [
