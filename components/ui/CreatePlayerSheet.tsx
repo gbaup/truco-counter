@@ -12,12 +12,14 @@ import { twMerge } from "tailwind-merge";
 import { LockIcon } from "@/components/ui/icons";
 
 interface CreatePlayerSheetProps {
+  groupId: string | null;
   open: boolean;
   onClose: () => void;
   onCreated: () => void;
 }
 
 export default function CreatePlayerSheet({
+  groupId,
   open,
   onClose,
   onCreated,
@@ -27,10 +29,10 @@ export default function CreatePlayerSheet({
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const createPlayerMutation = useCreatePlayer();
+  const createPlayerMutation = useCreatePlayer(groupId);
 
   const canSubmit =
-    NAME_RE.test(firstName) && NAME_RE.test(lastName) && USERNAME_RE.test(username);
+    !!groupId && NAME_RE.test(firstName) && NAME_RE.test(lastName) && USERNAME_RE.test(username);
   const saving = createPlayerMutation.isPending;
 
   async function handleSubmit() {
@@ -45,9 +47,11 @@ export default function CreatePlayerSheet({
       onCreated();
       onClose();
     } catch (e: unknown) {
-      const err = e as Error & { field?: string };
+      const err = e as Error & { field?: string; code?: string };
       if (err.field === "username" && err.message === "taken") {
         setErrors({ username: t("create.usernameTaken", { name: username }) });
+      } else if (err.code === "GROUP_FULL") {
+        setErrors({ _: t("create.groupFull") });
       } else {
         setErrors({ _: t("create.errorCreating") });
       }

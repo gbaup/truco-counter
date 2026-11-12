@@ -64,3 +64,28 @@ export async function updateGroupName(groupId: string, name: string): Promise<Gr
   );
   return result.group;
 }
+
+export async function createGroupPlayer(
+  groupId: string,
+  input: { firstName: string; lastName: string; username: string }
+): Promise<void> {
+  const response = await fetch(`/api/groups/${groupId}/members`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!response.ok) {
+    const errorData = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      field?: string;
+      code?: string;
+    };
+    const err = new Error(errorData.error || `HTTP ${response.status}`) as Error & {
+      field?: string;
+      code?: string;
+    };
+    if (errorData.field) err.field = errorData.field;
+    if (errorData.code) err.code = errorData.code;
+    throw err;
+  }
+}

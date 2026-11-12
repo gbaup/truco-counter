@@ -120,6 +120,7 @@ export default function AdminPage() {
       </main>
 
       <CreatePlayerSheet
+        groupId={selectedGroupId}
         open={creating}
         onClose={() => setCreating(false)}
         onCreated={() => { }}
