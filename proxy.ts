@@ -59,5 +59,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+    // PWA assets must stay public: iOS/Android fetch them without the session cookie.
+    matcher: ["/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|apple-icon|icons/).*)"],
 };
