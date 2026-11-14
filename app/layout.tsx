@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Crimson_Pro, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -29,6 +29,16 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "TrucoPro",
   description: "Contador · Ranking · Historial",
+  applicationName: "TrucoPro",
+  appleWebApp: {
+    capable: true,
+    title: "TrucoPro",
+    statusBarStyle: "black",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0D100E",
 };
 
 export default function RootLayout({
