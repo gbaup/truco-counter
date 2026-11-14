@@ -340,6 +340,7 @@
         "submit": "Crear jugador",
         "savedToast": "@{{name}} agregado al grupo",
         "errorCreating": "no se pudo crear · probá de nuevo",
+        "groupFull": "el grupo ya está completo · no se pueden sumar más jugadores",
         "usernameTaken": "ya hay un @{{name}} en el grupo",
         "firstNamePlaceholder": "Ana",
         "lastNamePlaceholder": "García",
